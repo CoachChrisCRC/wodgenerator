@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WOD Generator | COACH CHRIS</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Configure Tailwind to use the Inter font and set black background */
+        html {
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background-color: #000;
+            color: #fff;
+        }
+        /* Custom styles for the high-contrast button */
+        .btn-primary-white {
+            background-color: white;
+            color: black;
+            box-shadow: 0 4px 15px 0 rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary-white:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px 0 rgba(255, 255, 255, 0.4);
+        }
+        .btn-primary-white:disabled {
+            background-color: #f1f1f1;
+            color: #737373;
+            cursor: not-allowed;
+        }
+        /* Style for the pre-formatted WOD text area */
+        #wod-output pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            min-height: 80px; /* Ensure visual space even when empty */
+        }
+        /* Style for the custom logo text structure */
+        .logo-text {
+            line-height: 1.1;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 antialiased">
+
+    <div id="app-container" class="w-full max-w-md bg-black rounded-xl p-6 md:p-8 space-y-8 border-2 border-white shadow-2xl">
+
+        <!-- Branded Header -->
+        <header class="logo-text text-white/90">
+            <h1 class="font-black tracking-wider leading-none">
+                <div class="text-3xl sm:text-4xl tracking-[.3em]">COACH CHRIS</div>
+                <div class="text-xs tracking-tight text-white/80 mt-[-4px] leading-none">CIRCULAR ROOTS COACHING</div>
+                <div class="text-[10px] tracking-tighter text-white/60 leading-none">TRAIN UNCNVNTNL</div>
+            </h1>
+        </header>
+
+        <!-- WOD Output Card (High Contrast - White on Black background) -->
+        <div id="wod-card" class="bg-white text-black p-5 rounded-xl border border-black shadow-xl transition-opacity duration-500 opacity-0">
+            <h2 class="text-2xl font-extrabold text-black mb-3 pb-2 border-b border-black/20 flex items-center justify-between">
+                WOD <span class="text-base text-black/70 font-semibold tracking-wide"> (Workout of the Day)</span>
+                <svg id="loading-spinner" class="animate-spin h-6 w-6 text-black/70 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </h2>
+
+            <!-- Workout Content -->
+            <div id="wod-output" class="text-black space-y-4">
+                <div id="wod-format-name" class="text-lg font-extrabold uppercase"></div>
+                <div id="wod-format-desc" class="text-sm italic text-black/70"></div>
+                <pre id="wod-movements" class="text-base leading-relaxed bg-black/5 p-4 rounded-lg border border-dashed border-black/30"></pre>
+                <div id="wod-time-cap" class="text-sm font-bold text-black/80 border-t pt-3 border-black/10"></div>
+            </div>
+
+            <hr class="my-4 border-black/10">
+
+            <!-- Quote Section -->
+            <div id="quote-section">
+                <p id="daily-quote" class="text-center text-sm italic text-black/90">"Hit the button below for inspiration!"</p>
+                <p id="quote-source" class="text-right text-xs mt-1 text-black/50 font-semibold"></p>
+            </div>
+            
+            <!-- Citation Section (Hidden by default) -->
+            <div id="citation-container" class="mt-3 hidden">
+                <details>
+                    <summary class="text-xs text-black/70 cursor-pointer hover:text-black">Sources</summary>
+                    <ul id="citation-list" class="mt-1 space-y-1 text-xs text-black/60 list-disc ml-4">
+                        <!-- Citations will be injected here -->
+                    </ul>
+                </details>
+            </div>
+
+        </div>
+
+        <!-- Generate Button (White background, Black text - Strong CTA style) -->
+        <button id="generate-button" class="btn-primary-white w-full font-bold py-4 uppercase rounded-xl tracking-wider focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50">
+            GENERATE NEW WOD
+        </button>
+
+        <!-- DISCLAIMER SECTION -->
+        <p class="text-[10px] text-white/40 text-center pt-2">
+            **Disclaimer:** Consult with a physician before starting any exercise program. All workouts are performed at your own risk. Listen to your body and modify as needed.
+        </p>
+
+        <!-- COPYRIGHT SECTION (Now dynamically updated) -->
+        <p class="text-[10px] text-white/30 text-center pt-1">
+            Copyright &copy; <span id="current-year"></span> COACH CHRIS | CIRCULAR ROOTS COACHING | TRAIN UNCNVNTNL. All rights reserved.
+        </p>
+        <!-- NEW MOTIVATIONAL LINE -->
+        <p class="text-[9px] text-white/30 text-center mt-[-4px]">
+            FITTER STRONGER BETTER
+        </p>
+
+    </div>
+
+    <script type="module">
+        // API Configuration and Globals
+        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=";
+        const apiKey = ""; // Canvas provides the API key
+
+        // --- DOM Elements ---
+        const generateButton = document.getElementById('generate-button');
+        const wodCard = document.getElementById('wod-card');
+        const wodFormatName = document.getElementById('wod-format-name');
+        const wodFormatDesc = document.getElementById('wod-format-desc');
+        const wodMovements = document.getElementById('wod-movements');
+        const wodTimeCap = document.getElementById('wod-time-cap');
+        const dailyQuote = document.getElementById('daily-quote');
+        const quoteSource = document.getElementById('quote-source');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const citationContainer = document.getElementById('citation-container');
+        const citationList = document.getElementById('citation-list');
+        const currentYearSpan = document.getElementById('current-year');
+
+        // --- WOD Data Definitions ---
+        const formats = [
+            { name: "AMRAP", description: "As Many Rounds/Reps As Possible in the time cap.", generator: () => `TIME CAP: ${Math.floor(Math.random() * 8) * 2 + 10} MINUTES` }, // 10, 12, 14, ... 24 min
+            { name: "FOR TIME", description: "Complete the following work as quickly as possible.", generator: () => `ROUNDS: ${Math.floor(Math.random() * 3) + 3} ROUNDS FOR TIME` }, // 3, 4, or 5 rounds
+            { name: "EMOM", description: "Every Minute On the Minute. Perform the work at the start of each minute.", generator: () => `TOTAL TIME: ${Math.floor(Math.random() * 8) * 2 + 10} MINUTES` }, // 10, 12, 14, ... 24 min
+            { name: "CHIPPER", description: "A long workout where you complete all reps of one movement before moving to the next.", generator: () => "ONE TIME THROUGH FOR TIME (HIGH VOLUME)" },
+        ];
+
+        // Only Kettlebell and Bodyweight movements
+        const movements = {
+            bodyweight: [
+                "Air Squats", "Push-ups", "Sit-ups", "Burpees", "Lunges", 
+                "Box Jumps (Step-ups)", "Run (400m)", "Hand-release Push-ups"
+            ],
+            kettlebell: [
+                "Kettlebell Swings (American)", "Kettlebell Goblet Squats", 
+                "Kettlebell Press (Each Arm)", "Kettlebell Cleans (Each Arm)", 
+                "Kettlebell Snatches (Each Arm)"
+            ],
+        };
+
+        // --- Utility Functions ---
+        function selectRandom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        /**
+         * Fetches data from an API with exponential backoff for retries.
+         */
+        async function fetchWithRetry(url, options, maxRetries = 5) {
+            let error = null;
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return await response.json();
+                } catch (e) {
+                    error = e;
+                    const delay = Math.pow(2, i) * 1000 + Math.random() * 500;
+                    if (i < maxRetries - 1) {
+                        // console.warn(`Request failed (${e.message}). Retrying in ${delay.toFixed(0)}ms...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                }
+            }
+            throw new Error(`Failed to fetch after ${maxRetries} attempts: ${error.message}`);
+        }
+
+        // --- WOD Generation Logic (Designed to mix BW and KB) ---
+        function generateMovements(formatName) {
+            let movementList = [];
+            
+            // Randomly choose the mix of movements: use 1 or 2 domains (Bodyweight/Kettlebell)
+            const domains = ['bodyweight', 'kettlebell'];
+            const numDomains = Math.random() < 0.33 ? 1 : 2; // 1/3 chance of 1 domain, 2/3 chance of 2 domains
+            
+            let selectedDomains = [];
+            if (numDomains === 1) {
+                selectedDomains.push(selectRandom(domains));
+            } else {
+                selectedDomains = domains; // Use both bodyweight and kettlebell
+            }
+
+            // Determine the total number of movements (2 or 3)
+            const numMovements = Math.floor(Math.random() * 2) + 2; 
+            let availableMovements = [];
+            
+            // Combine all available movements based on selected domains
+            selectedDomains.forEach(domain => {
+                availableMovements = availableMovements.concat(movements[domain]);
+            });
+
+            // Ensure we don't pick the same movement twice
+            let finalSelection = [];
+            let tempAvailable = [...availableMovements];
+
+            for (let i = 0; i < numMovements; i++) {
+                if (tempAvailable.length === 0) break;
+                const move = selectRandom(tempAvailable);
+                finalSelection.push(move);
+                // Remove selected movement from temporary array
+                tempAvailable = tempAvailable.filter(m => m !== move); 
+            }
+            
+            // 2. Assign reps/distance
+            for (const move of finalSelection) {
+                let repCount;
+                // Extract base name, ignoring (distance/side)
+                let movementName = move.split('(')[0].trim(); 
+                
+                if (move.includes("Run")) {
+                    // Use the pre-set distance from the name
+                    const preset = move.match(/\((.*?)\)/)[1]; 
+                    movementList.push(`- ${preset.toUpperCase()} OF ${movementName.toUpperCase()}`);
+                } else if (formatName === "EMOM") {
+                    // Lower rep count for EMOM
+                    repCount = Math.floor(Math.random() * 6) + 5; // 5 to 10 reps
+                    movementList.push(`- ${repCount} ${movementName.toUpperCase()}`);
+                } else if (movementName === "Burpees" || movementName.includes("Clean") || movementName.includes("Snatch")) {
+                    // Medium rep count for high-intensity or complex movements
+                    repCount = selectRandom([8, 10, 12, 15]);
+                    // Add "per side" or "each arm" if applicable
+                    if (move.includes("(Each Arm)")) {
+                         movementList.push(`- ${repCount} REPS PER ARM OF ${movementName.toUpperCase()}`);
+                    } else {
+                        movementList.push(`- ${repCount} ${movementName.toUpperCase()}`);
+                    }
+                } else {
+                    // Standard reps for gymnastics/squats/swings
+                    repCount = selectRandom([15, 20, 25, 30]);
+                    movementList.push(`- ${repCount} ${movementName.toUpperCase()}`);
+                }
+            }
+
+            // Shuffle the movements for variety in the display
+            movementList.sort(() => Math.random() - 0.5);
+
+            return movementList.join('\n');
+        }
+        
+        // --- Quote Generation (Gemini API with Grounding) ---
+        async function getDailyQuote() {
+            const userQuery = "Provide one concise, inspiring, and motivational fitness or workout quote from a famous athlete or historical figure. Do not use quotes from fictional characters.";
+            const systemPrompt = "You are a quote generator for a Workout of the Day (WOD) application. Respond only with the quote and the source attribution (e.g., 'Quote' - Source). Do not add any extra commentary, greetings, or formatting like bolding or markdown headers.";
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                // Enable Google Search grounding
+                tools: [{ "google_search": {} }], 
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+
+            const apiUrl = `${API_URL}${apiKey}`;
+
+            try {
+                const result = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const text = candidate.content.parts[0].text;
+                    let sources = [];
+                    const groundingMetadata = candidate.groundingMetadata;
+                    // Extract citations
+                    if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                        sources = groundingMetadata.groundingAttributions
+                            .map(attribution => ({
+                                uri: attribution.web?.uri,
+                                title: attribution.web?.title,
+                            }))
+                            .filter(source => source.uri && source.title);
+                    }
+                    return { quote: text, sources };
+                }
+                return { quote: "The body achieves what the mind believes. - Placeholder", sources: [] };
+
+            } catch (e) {
+                console.error("Quote generation failed:", e);
+                return { quote: "The only bad workout is the one that didn't happen. - Unknown (Fallback Quote)", sources: [] };
+            }
+        }
+
+        // --- Main Controller ---
+        async function generateWOD() {
+            // UI State: Loading
+            generateButton.disabled = true;
+            generateButton.textContent = "GENERATING... STAND BY";
+            loadingSpinner.classList.remove('hidden');
+            wodCard.classList.add('opacity-50');
+
+            try {
+                // 1. Generate Workout Structure
+                const selectedFormat = selectRandom(formats);
+                const movementsText = generateMovements(selectedFormat.name);
+
+                wodFormatName.textContent = selectedFormat.name;
+                wodFormatDesc.textContent = selectedFormat.description;
+                wodMovements.textContent = movementsText;
+                
+                // Set the specific format detail (Rounds or Time Cap)
+                const formatDetail = selectedFormat.generator();
+                wodTimeCap.textContent = formatDetail;
+                
+                // 2. Get Motivational Quote from Gemini API
+                const { quote, sources } = await getDailyQuote();
+
+                // Split quote from source, assuming format is "Quote - Source"
+                const parts = quote.split(' - ');
+                // Use innerHTML to allow for potential line breaks (though usually one line)
+                const quoteText = parts[0].trim().replace(/(\n)/g, '<br>'); 
+                // Handle case where source might not be included
+                const quoteAttribution = parts.length > 1 ? '- ' + parts.slice(1).join(' - ').trim() : '- Unknown';
+
+                dailyQuote.innerHTML = `"${quoteText}"`; // Wrap quote in quotes for style
+                quoteSource.textContent = quoteAttribution;
+                
+                // 3. Handle Quote Source/Citation
+                if (sources && sources.length > 0) {
+                    citationList.innerHTML = sources.map(s => `<li><a href="${s.uri}" target="_blank" class="hover:underline text-black/70">${s.title}</a></li>`).join('');
+                    citationContainer.classList.remove('hidden');
+                } else {
+                    citationList.innerHTML = "";
+                    citationContainer.classList.add('hidden');
+                }
+
+            } catch (error) {
+                console.error("A critical error occurred during WOD generation:", error);
+                // Fail state for the UI
+                wodFormatName.textContent = "FATAL ERROR";
+                wodFormatDesc.textContent = "A critical error occurred while fetching data (check console).";
+                wodMovements.textContent = "The network connection failed or the API call timed out/retried too many times.";
+                wodTimeCap.textContent = "STATUS: ABORTED";
+                dailyQuote.textContent = "Error fetching motivation. Try again!";
+                quoteSource.textContent = "";
+                citationContainer.classList.add('hidden');
+            } finally {
+                // UI State: Ready
+                loadingSpinner.classList.add('hidden');
+                generateButton.textContent = "GENERATE NEW WOD";
+                generateButton.disabled = false;
+                wodCard.classList.remove('opacity-50');
+                wodCard.classList.remove('opacity-0'); // Ensure it becomes visible on first run
+            }
+        }
+        
+        // --- Dynamic Content Initialization ---
+        function initializeApp() {
+             // Set the current year for the copyright notice
+            if (currentYearSpan) {
+                currentYearSpan.textContent = new Date().getFullYear();
+            }
+            
+            generateButton.addEventListener('click', generateWOD);
+            // Run on load to populate the initial card
+            generateWOD(); 
+        }
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+    </script>
+</body>
+</html>
+
