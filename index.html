@@ -80,13 +80,10 @@
 
             <hr class="my-4 border-black/10">
             
-            <!-- Copy and Share Button Group -->
-            <div class="flex space-x-2">
-                <button id="copy-button" class="bg-black text-white hover:bg-gray-800 font-semibold py-2 w-1/2 rounded-lg text-sm transition duration-150">
+            <!-- Copy Button (Full width) -->
+            <div class="flex">
+                <button id="copy-button" class="bg-black text-white hover:bg-gray-800 font-semibold py-2 w-full rounded-lg text-sm transition duration-150">
                     Copy WOD
-                </button>
-                <button id="share-button" class="bg-black text-white hover:bg-gray-800 font-semibold py-2 w-1/2 rounded-lg text-sm transition duration-150">
-                    Share WOD
                 </button>
             </div>
 
@@ -119,7 +116,6 @@
         // ===================================
         const generateButton = document.getElementById('generate-button');
         const copyButton = document.getElementById('copy-button');
-        const shareButton = document.getElementById('share-button'); // New element
         const wodCard = document.getElementById('wod-card');
         const wodFormatName = document.getElementById('wod-format-name');
         const wodFormatDesc = document.getElementById('wod-format-desc');
@@ -228,37 +224,6 @@
                 document.body.removeChild(tempTextArea);
             }
         }
-
-        /**
-         * Shares the generated WOD using the Web Share API or falls back to copying.
-         */
-        async function shareWOD() {
-            const wodText = compileWODText();
-            const shareTitle = "New WOD Challenge from COACH CHRIS";
-
-            if (navigator.share) {
-                try {
-                    await navigator.share({
-                        title: shareTitle,
-                        text: wodText
-                        // URL is often required, but omitted here as we're sharing pure text content
-                    });
-                    // Note: No success feedback needed as the native UI handles it.
-                } catch (error) {
-                    // This error usually happens if the user cancels or the environment is restricted.
-                    if (error.name !== 'AbortError') {
-                        // Fallback to copy if sharing fails critically
-                        copyWODToClipboard();
-                        showActionSuccess(shareButton, 'Copied! (Share Unavailable)', 'Share WOD');
-                    }
-                }
-            } else {
-                // Fallback for browsers that don't support the Web Share API
-                copyWODToClipboard();
-                showActionSuccess(shareButton, 'Copied! (Share Unavailable)', 'Share WOD');
-            }
-        }
-
 
         // ===================================
         // 5. WOD Generation Logic
@@ -376,7 +341,6 @@
             
             generateButton.addEventListener('click', generateFullWOD);
             copyButton.addEventListener('click', copyWODToClipboard);
-            shareButton.addEventListener('click', shareWOD); // Bind share function
             
             // Run on load to populate the initial card immediately
             generateFullWOD(); 
