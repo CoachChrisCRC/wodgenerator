@@ -78,25 +78,6 @@
                 <div id="wod-time-cap" class="text-sm font-bold text-black/80 border-t pt-3 border-black/10"></div>
             </div>
 
-            <hr class="my-4 border-black/10">
-
-            <!-- Quote Section -->
-            <div id="quote-section">
-                <!-- Initial placeholder text for the quote -->
-                <p id="daily-quote" class="text-center text-sm italic text-black/90">"Hit the button below for inspiration!"</p>
-                <p id="quote-source" class="text-right text-xs mt-1 text-black/50 font-semibold"></p>
-            </div>
-            
-            <!-- Citation Section (Hidden by default) -->
-            <div id="citation-container" class="mt-3 hidden">
-                <details>
-                    <summary class="text-xs text-black/70 cursor-pointer hover:text-black">Sources</summary>
-                    <ul id="citation-list" class="mt-1 space-y-1 text-xs text-black/60 list-disc ml-4">
-                        <!-- Citations will be injected here -->
-                    </ul>
-                </details>
-            </div>
-
         </div>
 
         <!-- Generate Button (White background, Black text - Strong CTA style) -->
@@ -122,30 +103,22 @@
 
     <script type="module">
         // ===================================
-        // 1. API Configuration & DOM Elements
+        // 1. DOM Elements
         // ===================================
-        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=";
-        const apiKey = ""; // Canvas provides the API key
-
-        // DOM Elements
         const generateButton = document.getElementById('generate-button');
         const wodCard = document.getElementById('wod-card');
         const wodFormatName = document.getElementById('wod-format-name');
         const wodFormatDesc = document.getElementById('wod-format-desc');
         const wodMovements = document.getElementById('wod-movements');
         const wodTimeCap = document.getElementById('wod-time-cap');
-        const dailyQuote = document.getElementById('daily-quote');
-        const quoteSource = document.getElementById('quote-source');
         const loadingSpinner = document.getElementById('loading-spinner');
-        const citationContainer = document.getElementById('citation-container');
-        const citationList = document.getElementById('citation-list');
         const currentYearSpan = document.getElementById('current-year');
 
         // ===================================
         // 2. WOD Data Definitions
         // ===================================
         const formats = [
-            // AMRAP/EMOM generate times between 10 and 30 minutes
+            // AMRAP/EMOM generate times between 10 and 30 minutes (always even numbers)
             { name: "AMRAP", description: "As Many Rounds/Reps As Possible in the time cap (10-30 min focus).", 
               generator: () => `TIME CAP: ${Math.floor(Math.random() * 11) * 2 + 10} MINUTES` }, 
             { name: "FOR TIME", description: "Complete the following work as quickly as possible (typically 15-25 min).", 
@@ -170,31 +143,10 @@
         };
 
         // ===================================
-        // 3. Utility Functions
+        // 3. Utility Function
         // ===================================
         function selectRandom(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
-        }
-
-        /**
-         * Fetches data from an API with exponential backoff for retries.
-         */
-        async function fetchWithRetry(url, options, maxRetries = 5) {
-            let error = null;
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    const response = await fetch(url, options);
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    return await response.json();
-                } catch (e) {
-                    error = e;
-                    const delay = Math.pow(2, i) * 1000 + Math.random() * 500;
-                    if (i < maxRetries - 1) {
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                    }
-                }
-            }
-            throw new Error(`Failed to fetch after ${maxRetries} attempts: ${error.message}`);
         }
 
         // ===================================
@@ -206,8 +158,9 @@
          */
         function generateMovements(formatName) {
             let movementList = [];
-            const selectedCategories = ['lower', 'upper', 'core_cardio']; // Always use all three
-            let allSelectedMoves = []; // Tracks movements picked to prevent duplicates
+            // Always use all three categories for full-body guarantee
+            const selectedCategories = ['lower', 'upper', 'core_cardio']; 
+            let allSelectedMoves = []; 
 
             for (const category of selectedCategories) {
                 // Filter out moves already selected 
@@ -264,118 +217,41 @@
             const formatDetail = selectedFormat.generator();
             wodTimeCap.textContent = formatDetail;
         }
-        
-        /**
-         * Fetches and displays a motivational quote using the Gemini API.
-         */
-        async function fetchAndDisplayQuote() {
-            // Set Loading State for Quote
-            dailyQuote.innerHTML = `<span class="italic text-black/60">"Fetching daily motivation..."</span>`;
-            quoteSource.textContent = "";
-            citationContainer.classList.add('hidden');
-
-            const userQuery = "Provide one concise, inspiring, and motivational fitness or workout quote from a famous athlete or historical figure. Do not use quotes from fictional characters.";
-            const systemPrompt = "You are a quote generator for a Workout of the Day (WOD) application. Respond only with the quote and the source attribution (e.g., 'Quote' - Source). Do not add any extra commentary, greetings, or formatting like bolding or markdown headers.";
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                tools: [{ "google_search": {} }], 
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }]
-                },
-            };
-
-            const apiUrl = `${API_URL}${apiKey}`;
-
-            try {
-                const result = await fetchWithRetry(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const candidate = result.candidates?.[0];
-
-                if (candidate && candidate.content?.parts?.[0]?.text) {
-                    const text = candidate.content.parts[0].text;
-                    
-                    // Process quote (split source, format text)
-                    const parts = text.split(' - ');
-                    const quoteText = parts[0].trim().replace(/(\n)/g, '<br>'); 
-                    const quoteAttribution = parts.length > 1 ? '- ' + parts.slice(1).join(' - ').trim() : '- Unknown';
-
-                    dailyQuote.innerHTML = `"${quoteText}"`; // Wrap quote in quotes for style
-                    quoteSource.textContent = quoteAttribution;
-                    
-                    // Handle Source/Citation
-                    let sources = [];
-                    const groundingMetadata = candidate.groundingMetadata;
-                    if (groundingMetadata && groundingMetadata.groundingAttributions) {
-                        sources = groundingMetadata.groundingAttributions
-                            .map(attribution => ({
-                                uri: attribution.web?.uri,
-                                title: attribution.web?.title,
-                            }))
-                            .filter(source => source.uri && source.title);
-                    }
-
-                    if (sources && sources.length > 0) {
-                        citationList.innerHTML = sources.map(s => `<li><a href="${s.uri}" target="_blank" class="hover:underline text-black/70">${s.title}</a></li>`).join('');
-                        citationContainer.classList.remove('hidden');
-                    } else {
-                        citationList.innerHTML = "";
-                        citationContainer.classList.add('hidden');
-                    }
-                    
-                } else {
-                    // Fallback on unexpected response structure
-                    dailyQuote.innerHTML = `"The body achieves what the mind believes."`;
-                    quoteSource.textContent = "- Placeholder";
-                }
-
-
-            } catch (e) {
-                console.error("Quote generation failed:", e);
-                // Fail state for the quote section
-                dailyQuote.innerHTML = `"The only bad workout is the one that didn't happen."`;
-                quoteSource.textContent = "- Unknown (Fallback Quote)";
-            }
-        }
 
         /**
-         * Combines WOD structure generation and asynchronous quote fetching.
+         * Main function to control the UI state and generate the WOD.
          */
-        async function generateFullWOD() {
+        function generateFullWOD() {
             // 1. Set UI State: Loading (start)
             generateButton.disabled = true;
             generateButton.textContent = "GENERATING... STAND BY";
             loadingSpinner.classList.remove('hidden');
             wodCard.classList.add('opacity-50');
 
-            try {
-                // 2. Generate and display the FAST, local workout structure
-                generateWODStructure();
-                
-                // 3. Immediately update UI to show success
-                wodCard.classList.remove('opacity-0'); 
+            // Use a slight delay to simulate processing, improving user experience
+            setTimeout(() => {
+                try {
+                    // 2. Generate and display the FAST, local workout structure
+                    generateWODStructure();
+                    
+                    // 3. Update UI to show success
+                    wodCard.classList.remove('opacity-0'); 
 
-                // 4. Start the slower quote fetch ASYNCHRONOUSLY
-                await fetchAndDisplayQuote();
-
-            } catch (error) {
-                console.error("A critical error occurred during WOD generation:", error);
-                // Fail state for the UI
-                wodFormatName.textContent = "FATAL ERROR";
-                wodFormatDesc.textContent = "A critical error occurred. Please try again.";
-                wodMovements.textContent = "Local WOD generation failed to complete.";
-                wodTimeCap.textContent = "STATUS: ABORTED";
-            } finally {
-                // 5. Set UI State: Ready (end)
-                loadingSpinner.classList.add('hidden');
-                generateButton.textContent = "GENERATE NEW WOD";
-                generateButton.disabled = false;
-                wodCard.classList.remove('opacity-50');
-            }
+                } catch (error) {
+                    console.error("A critical error occurred during WOD generation:", error);
+                    // Fail state for the UI
+                    wodFormatName.textContent = "FATAL ERROR";
+                    wodFormatDesc.textContent = "A critical error occurred. Please refresh or try again.";
+                    wodMovements.textContent = "LOCAL GENERATION FAILED.";
+                    wodTimeCap.textContent = "STATUS: ABORTED";
+                } finally {
+                    // 4. Set UI State: Ready (end)
+                    loadingSpinner.classList.add('hidden');
+                    generateButton.textContent = "GENERATE NEW WOD";
+                    generateButton.disabled = false;
+                    wodCard.classList.remove('opacity-50');
+                }
+            }, 100); 
         }
         
         // ===================================
