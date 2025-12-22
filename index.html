@@ -87,13 +87,34 @@
 
         [data-theme="dark"] .theme-switch-circle { transform: translateX(22px); }
 
-        #wod-movements {
-            white-space: pre-wrap;
-            word-wrap: break-word;
+        #wod-movements-container {
             font-weight: 700;
             background-color: var(--bg-output);
             border: 1px solid var(--border-color);
             color: var(--text-main);
+            padding: 1.25rem;
+            border-radius: 1.8rem;
+        }
+
+        .movement-link {
+            display: block;
+            padding: 2px 0;
+            text-decoration: none;
+            color: inherit;
+            transition: opacity 0.2s;
+        }
+
+        .movement-link:hover {
+            opacity: 0.6;
+        }
+
+        .demo-tag {
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            margin-left: 8px;
+            vertical-align: middle;
+            opacity: 0.4;
         }
 
         .btn-generate {
@@ -270,7 +291,7 @@
                     <span id="wod-format-desc" class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-accent)"></span>
                 </div>
 
-                <pre id="wod-movements" class="w-full p-5 rounded-3xl text-base leading-relaxed"></pre>
+                <div id="wod-movements-container"></div>
 
                 <div class="flex items-center justify-between">
                     <div id="wod-time-cap" class="text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full" style="background-color: var(--bg-toggle); color: var(--text-heading)"></div>
@@ -291,7 +312,59 @@
     <script type="module">
         lucide.createIcons();
 
-        // DOM Elements
+        // Updated Movement Database with Demo Links
+        const PILLARS = {
+            full_body: [
+                { name: "KB Thrusters", url: "https://www.youtube.com/results?search_query=kettlebell+thrusters+demo" },
+                { name: "KB Cluster", url: "https://www.youtube.com/results?search_query=kettlebell+cluster+demo" },
+                { name: "Burpees", url: "https://www.youtube.com/results?search_query=standard+burpee+demo" },
+                { name: "KB Man-Makers", url: "https://www.youtube.com/results?search_query=kettlebell+man+makers+demo" }
+            ],
+            upper: [
+                { name: "KB Push Press", url: "https://www.youtube.com/results?search_query=kettlebell+push+press+demo" },
+                { name: "Push-ups", url: "https://www.youtube.com/results?search_query=perfect+push+up+form" },
+                { name: "KB Single Arm Row", url: "https://www.youtube.com/results?search_query=kettlebell+single+arm+row+demo" },
+                { name: "Floor Press", url: "https://www.youtube.com/results?search_query=kettlebell+floor+press+demo" }
+            ],
+            lower: [
+                { name: "KB Goblet Squats", url: "https://www.youtube.com/results?search_query=kettlebell+goblet+squat+demo" },
+                { name: "KB Swings", url: "https://www.youtube.com/results?search_query=kettlebell+swing+demo" },
+                { name: "Lunges", url: "https://www.youtube.com/results?search_query=walking+lunge+demo" },
+                { name: "KB Romanian Deadlift", url: "https://www.youtube.com/results?search_query=kettlebell+romanian+deadlift+demo" }
+            ],
+            core: [
+                { name: "KB Plank Drags", url: "https://www.youtube.com/results?search_query=kettlebell+plank+drag+demo" },
+                { name: "Sit-ups", url: "https://www.youtube.com/results?search_query=butterfly+sit+up+demo" },
+                { name: "V-Ups", url: "https://www.youtube.com/results?search_query=v+up+demo" },
+                { name: "Hollow Rocks", url: "https://www.youtube.com/results?search_query=hollow+rock+demo" }
+            ],
+            conditioning: [
+                { name: "Run 400m", url: "https://www.youtube.com/results?search_query=proper+running+form+sprinting" },
+                { name: "100m Jog (Active Rest)", url: "https://www.youtube.com/results?search_query=active+recovery+jogging" },
+                { name: "KB Snatches", url: "https://www.youtube.com/results?search_query=kettlebell+snatch+demo" },
+                { name: "Mountain Climbers", url: "https://www.youtube.com/results?search_query=mountain+climbers+demo" }
+            ]
+        };
+
+        const FORMATS = [
+            { 
+                name: "AMRAP", 
+                description: "As Many Rounds As Possible", 
+                generator: () => `TIME CAP: ${[15, 20, 25][Math.floor(Math.random() * 3)]} MINUTES` 
+            }, 
+            { 
+                name: "FOR TIME", 
+                description: "Complete work as fast as possible", 
+                generator: () => `30 MINUTE HARD CAP` 
+            },
+            { 
+                name: "EMOM", 
+                description: "Every Minute on the Minute", 
+                generator: () => `DURATION: ${[20, 30][Math.floor(Math.random() * 2)]} MINUTES` 
+            }
+        ];
+
+        // UI Logic
         const body = document.body;
         const themeToggle = document.getElementById('theme-toggle');
         const generateButton = document.getElementById('generate-button');
@@ -300,7 +373,7 @@
         const homeState = document.getElementById('home-state');
         const wodFormatName = document.getElementById('wod-format-name');
         const wodFormatDesc = document.getElementById('wod-format-desc');
-        const wodMovements = document.getElementById('wod-movements');
+        const wodMovementsContainer = document.getElementById('wod-movements-container');
         const wodTimeCap = document.getElementById('wod-time-cap');
         const infoModal = document.getElementById('modal-overlay');
         const openInfoBtn = document.getElementById('open-info');
@@ -309,7 +382,6 @@
         const launchOverlay = document.getElementById('launch-overlay');
         const loadingText = document.getElementById('loading-text');
 
-        // Logic Data
         const loadingPhrases = [
             "Setting your intention...",
             "Building your foundation...",
@@ -319,23 +391,6 @@
             "Finding your new limit...",
             "Coach Chris is in your corner..."
         ];
-
-        const formats = [
-            { name: "AMRAP", description: "As Many Rounds As Possible", 
-              generator: () => `TIME CAP: ${Math.floor(Math.random() * 11) * 2 + 10} MINUTES` }, 
-            { name: "FOR TIME", description: "Complete work as fast as possible", 
-              generator: () => `ROUNDS: ${Math.floor(Math.random() * 3) + 3} ROUNDS` },
-            { name: "EMOM", description: "Every Minute on the Minute", 
-              generator: () => `DURATION: ${Math.floor(Math.random() * 11) * 2 + 10} MINUTES` }, 
-            { name: "CHIPPER", description: "Complete all reps of one move before next", 
-              generator: () => "ONE ROUND FOR TIME" },
-        ];
-
-        const movements = {
-            lower: ["Air Squats", "Lunges", "KB Goblet Squats", "Kettlebell Swings"],
-            upper: ["Push-ups", "Hand-release Push-ups", "KB Press (Each Arm)"],
-            core_cardio: ["Burpees", "Sit-ups", "Run (400m)", "KB Snatches", "KB Cleans"]
-        };
 
         themeToggle.addEventListener('click', () => {
             const isDark = body.getAttribute('data-theme') === 'dark';
@@ -363,26 +418,38 @@
             launchOverlay.classList.add('active');
             
             setTimeout(() => {
-                const format = selectRandom(formats);
-                let list = [];
-                const cats = ['lower', 'upper', 'core_cardio'];
+                const format = selectRandom(FORMATS);
+                wodMovementsContainer.innerHTML = '';
                 
-                cats.forEach(cat => {
-                    const move = selectRandom(movements[cat]);
+                // Select exactly one movement from each of the 5 pillars
+                const categories = Object.keys(PILLARS);
+                categories.forEach(cat => {
+                    const moveObj = selectRandom(PILLARS[cat]);
                     let reps;
-                    if (move.includes("Run")) {
-                        reps = "400M";
+                    
+                    if (moveObj.name.includes("Run") || moveObj.name.includes("Jog")) {
+                        reps = "";
                     } else if (format.name === "EMOM") {
-                        reps = Math.floor(Math.random() * 6) + 6;
+                        reps = "10-12";
                     } else {
-                        reps = selectRandom([10, 15, 20, 25, 30]);
+                        reps = selectRandom([10, 15, 20]);
                     }
-                    list.push(`${reps} ${move.toUpperCase()}`);
+                    
+                    const movementText = `${reps} ${moveObj.name.toUpperCase()}`.trim();
+                    
+                    const link = document.createElement('a');
+                    link.href = moveObj.url;
+                    link.target = "_blank";
+                    link.className = "movement-link";
+                    link.innerHTML = `
+                        <span>${movementText}</span>
+                        <span class="demo-tag">[WATCH DEMO]</span>
+                    `;
+                    wodMovementsContainer.appendChild(link);
                 });
 
                 wodFormatName.textContent = format.name;
                 wodFormatDesc.textContent = format.description;
-                wodMovements.textContent = list.join('\n');
                 wodTimeCap.textContent = format.generator();
 
                 homeState.classList.add('hidden');
@@ -398,7 +465,13 @@
         }
 
         copyButton.addEventListener('click', () => {
-            const text = `WOD: ${wodFormatName.textContent}\n${wodFormatDesc.textContent}\n\n${wodMovements.textContent}\n\n${wodTimeCap.textContent}\n\nCOACH CHRIS | CIRCULAR ROOTS`;
+            // Extract text only for sharing
+            const movementsText = Array.from(wodMovementsContainer.querySelectorAll('.movement-link span:first-child'))
+                                       .map(el => el.textContent)
+                                       .join('\n');
+                                       
+            const text = `WOD: ${wodFormatName.textContent}\n${wodFormatDesc.textContent}\n\n${movementsText}\n\n${wodTimeCap.textContent}\n\nCOACH CHRIS | CIRCULAR ROOTS`;
+            
             const el = document.createElement('textarea');
             el.value = text;
             document.body.appendChild(el);
