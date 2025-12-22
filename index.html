@@ -4,116 +4,268 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WOD Generator | COACH CHRIS</title>
-    <!-- Load Tailwind CSS -->
+    <!-- Load Tailwind CSS and Lucide Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Configure Tailwind to use the Inter font and set black background */
-        html {
-            font-family: 'Inter', sans-serif;
+        :root {
+            --bg-page: #f3f4f6;
+            --bg-card: #ffffff;
+            --border-color: #e5e7eb;
+            --text-main: #1f2937;
+            --text-heading: #000000;
+            --text-muted: #9ca3af;
+            --text-accent: #6b7280;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            --bg-toggle: #f3f4f6;
+            --toggle-pill-bg: #e5e7eb;
+            --bg-btn-primary: #000000;
+            --btn-text-primary: #ffffff;
+            --bg-output: #f9fafb;
+            --modal-overlay: rgba(0, 0, 0, 0.4);
         }
+
+        [data-theme="dark"] {
+            --bg-page: #0a0a0a;
+            --bg-card: #121212;
+            --border-color: #262626;
+            --text-main: #ffffff;
+            --text-heading: #ffffff;
+            --text-muted: #525252;
+            --text-accent: #a3a3a3;
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            --bg-toggle: #1a1a1a;
+            --toggle-pill-bg: #1a1a1a;
+            --bg-btn-primary: #ffffff;
+            --btn-text-primary: #000000;
+            --bg-output: #1a1a1a;
+            --modal-overlay: rgba(0, 0, 0, 0.8);
+        }
+
         body {
-            background-color: #000;
-            color: #fff;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
-        /* Custom styles for the high-contrast buttons */
-        .btn-primary-white {
-            background-color: white;
-            color: black;
-            box-shadow: 0 4px 15px 0 rgba(255, 255, 255, 0.2);
-            transition: transform 0.2s, box-shadow 0.2s;
+
+        .font-brand { font-family: 'Oswald', sans-serif; }
+
+        .app-card {
+            background-color: var(--bg-card);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
-        .btn-primary-white:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px 0 rgba(255, 255, 255, 0.4);
+
+        /* Theme Toggle Styling */
+        .theme-switch-container {
+            position: relative;
+            width: 44px;
+            height: 22px;
+            background-color: var(--toggle-pill-bg);
+            border-radius: 100px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 2px;
+            border: 1px solid var(--border-color);
         }
-        .btn-primary-white:disabled {
-            background-color: #f1f1f1;
-            color: #737373;
-            cursor: not-allowed;
+
+        .theme-switch-circle {
+            position: absolute;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background-color: var(--bg-btn-primary);
+            border-radius: 50%;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        /* Style for the pre-formatted WOD text area */
-        #wod-output pre {
+
+        [data-theme="dark"] .theme-switch-circle { transform: translateX(22px); }
+
+        #wod-movements {
             white-space: pre-wrap;
             word-wrap: break-word;
-            min-height: 80px; /* Ensure visual space even when empty */
+            font-weight: 700;
+            background-color: var(--bg-output);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
         }
-        /* Style for the custom logo text structure */
-        .logo-text {
-            line-height: 1.1;
-            text-align: center;
+
+        .btn-generate {
+            background-color: var(--bg-btn-primary);
+            color: var(--btn-text-primary);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-generate:active { transform: scale(0.98) translateY(0); }
+        .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background-color: var(--modal-overlay);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .modal-content {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            width: 100%;
+            max-width: 24rem;
+            border-radius: 2rem;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .modal-overlay.active .modal-content { transform: scale(1); }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 antialiased">
+<body class="min-h-screen flex flex-col items-center justify-center p-4" data-theme="light">
 
-    <div id="app-container" class="w-full max-w-md bg-black rounded-xl p-6 md:p-8 space-y-8 border-2 border-white shadow-2xl">
-
-        <!-- Branded Header -->
-        <header class="logo-text text-white/90">
-            <h1 class="font-black tracking-wider leading-none">
-                <div class="text-3xl sm:text-4xl tracking-[.3em]">COACH CHRIS</div>
-                <div class="text-xs tracking-tight text-white/80 mt-[-4px] leading-none">CIRCULAR ROOTS COACHING</div>
-                <div class="text-[10px] tracking-tighter text-white/60 leading-none">TRAIN UNCNVNTNL</div>
-            </h1>
-        </header>
-
-        <!-- WOD Output Card (High Contrast - White on Black background) -->
-        <div id="wod-card" class="bg-white text-black p-5 rounded-xl border border-black shadow-xl transition-opacity duration-500 opacity-0">
-            <h2 class="text-2xl font-extrabold text-black mb-3 pb-2 border-b border-black/20 flex items-center justify-between">
-                WOD <span class="text-base text-black/70 font-semibold tracking-wide"> (Workout of the Day)</span>
-                <!-- Single spinner for the whole process -->
-                <svg id="loading-spinner" class="animate-spin h-6 w-6 text-black/70 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-            </h2>
-
-            <!-- Workout Content -->
-            <div id="wod-output" class="text-black space-y-4">
-                <div id="wod-format-name" class="text-lg font-extrabold uppercase"></div>
-                <div id="wod-format-desc" class="text-sm italic text-black/70"></div>
-                <pre id="wod-movements" class="text-base leading-relaxed bg-black/5 p-4 rounded-lg border border-dashed border-black/30"></pre>
-                <div id="wod-time-cap" class="text-sm font-bold text-black/80 border-t pt-3 border-black/10"></div>
+    <!-- Information Modal -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-content shadow-2xl">
+            <button id="close-modal" class="absolute top-6 right-6 p-2 rounded-full hover:opacity-70 transition-opacity" style="color: var(--text-muted)">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="flex flex-col items-center text-center">
+                <div class="p-4 rounded-2xl mb-4" style="background-color: var(--bg-toggle)">
+                    <i data-lucide="help-circle" class="w-8 h-8" style="color: var(--text-heading)"></i>
+                </div>
+                <h3 class="font-brand font-bold text-2xl uppercase mb-3" style="color: var(--text-heading)">WOD Generator Guide</h3>
+                <div class="space-y-4 text-sm leading-relaxed text-left" style="color: var(--text-accent)">
+                    <p>Build your training session in seconds with our unconventional workout library.</p>
+                    <ul class="space-y-3 list-none">
+                        <li class="flex gap-3">
+                            <i data-lucide="zap" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
+                            <span>Hit <strong>Generate</strong> to create a randomized session using core, upper, and lower body movements.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <i data-lucide="timer" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
+                            <span>Check the <strong>Time Cap</strong> or Round structure to set your training intensity.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <i data-lucide="copy" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
+                            <span>Use the <strong>Copy</strong> button to save the workout to your notes or share with a partner.</span>
+                        </li>
+                    </ul>
+                </div>
+                <button id="modal-confirm" class="w-full mt-8 py-3 font-black uppercase tracking-widest rounded-xl text-xs" style="background-color: var(--bg-btn-primary); color: var(--btn-text-primary)">Got it</button>
             </div>
+        </div>
+    </div>
 
-            <hr class="my-4 border-black/10">
+    <!-- Main Card -->
+    <div class="app-card w-full max-w-md rounded-[2.5rem] overflow-hidden flex flex-col items-center p-8 space-y-8">
+        
+        <header class="w-full flex justify-between items-start">
+            <div class="flex flex-col select-none">
+                <h1 class="font-brand font-bold text-4xl leading-none tracking-wide mb-1" style="color: var(--text-heading)">COACH CHRIS</h1>
+                <h2 class="font-brand font-bold text-lg leading-none mb-[2px]" style="color: var(--text-accent)">CIRCULAR ROOTS COACHING</h2>
+                <h3 class="font-brand font-bold text-lg leading-none uppercase" style="color: var(--text-muted)">Train Uncnvntnl</h3>
+            </div>
             
-            <!-- Copy Button (Full width) -->
-            <div class="flex">
-                <button id="copy-button" class="bg-black text-white hover:bg-gray-800 font-semibold py-2 w-full rounded-lg text-sm transition duration-150">
-                    Copy WOD
+            <div class="flex flex-col items-center gap-3">
+                <div class="flex flex-col items-center gap-1.5">
+                    <span class="text-[9px] font-black uppercase tracking-widest opacity-60" style="color: var(--text-muted)">Theme</span>
+                    <div id="theme-toggle" class="theme-switch-container">
+                        <div class="theme-switch-circle"></div>
+                    </div>
+                </div>
+                <button id="open-info" class="p-2 rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center" style="background-color: var(--bg-toggle); color: var(--text-heading)" title="How to use">
+                    <i data-lucide="help-circle" class="w-5 h-5"></i>
                 </button>
             </div>
+        </header>
 
+        <!-- Application Title Section -->
+        <div class="w-full text-center py-2">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-2" style="background-color: var(--bg-toggle)">
+                <i data-lucide="zap" class="w-3 h-3" style="color: var(--text-heading)"></i>
+                <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-heading)">Fitness Tool</span>
+            </div>
+            <h2 class="font-brand font-bold text-3xl uppercase tracking-tight" style="color: var(--text-heading)">WOD Generator</h2>
         </div>
 
-        <!-- Generate Button (White background, Black text - Strong CTA style) -->
-        <button id="generate-button" class="btn-primary-white w-full font-bold py-4 uppercase rounded-xl tracking-wider focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50">
-            GENERATE NEW WOD
+        <!-- WOD Display Area -->
+        <div id="wod-card" class="w-full space-y-5 opacity-0 transition-opacity duration-500">
+            <div class="flex items-center justify-between border-b pb-2" style="border-color: var(--border-color)">
+                <h3 class="text-xs font-black uppercase tracking-widest" style="color: var(--text-muted)">Daily Session Plan</h3>
+                <div id="loading-spinner" class="hidden">
+                    <i data-lucide="loader-2" class="animate-spin w-4 h-4" style="color: var(--text-muted)"></i>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex flex-col gap-1">
+                    <span id="wod-format-name" class="text-3xl font-black uppercase tracking-tighter leading-none" style="color: var(--text-heading)"></span>
+                    <span id="wod-format-desc" class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-accent)"></span>
+                </div>
+
+                <pre id="wod-movements" class="w-full p-5 rounded-3xl text-base leading-relaxed"></pre>
+
+                <div class="flex items-center justify-between">
+                    <div id="wod-time-cap" class="text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full" style="background-color: var(--bg-toggle); color: var(--text-heading)"></div>
+                    <button id="copy-button" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:opacity-70 transition-opacity" style="color: var(--text-accent)">
+                        <i data-lucide="copy" class="w-3 h-3"></i>
+                        Copy WOD
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <button id="generate-button" class="btn-generate w-full py-5 font-brand font-bold text-xl uppercase tracking-widest rounded-3xl shadow-lg">
+            Generate Workout
         </button>
 
-        <!-- DISCLAIMER SECTION -->
-        <p class="text-[10px] text-white/40 text-center pt-2">
-            **Disclaimer:** Consult with a physician before starting any exercise program. All workouts are performed at your own risk. Listen to your body and modify as needed.
-        </p>
-
-        <!-- COPYRIGHT SECTION (Now dynamically updated) -->
-        <p class="text-[10px] text-white/30 text-center pt-1">
-            Copyright &copy; <span id="current-year"></span> COACH CHRIS | CIRCULAR ROOTS COACHING | TRAIN UNCNVNTNL. All rights reserved.
-        </p>
-        <!-- NEW MOTIVATIONAL LINE -->
-        <p class="text-[9px] text-white/30 text-center mt-[-4px]">
-            FITTER STRONGER BETTER
-        </p>
-
+        <!-- Footer Info -->
+        <div class="w-full pt-2 space-y-3 text-center border-t" style="border-color: var(--border-color)">
+            <p class="text-[10px] font-black tracking-[0.2em] uppercase opacity-40" style="color: var(--text-muted)">
+                Fitter Stronger Better
+            </p>
+            <div class="space-y-1">
+                <p class="text-[8px] leading-tight opacity-50 italic" style="color: var(--text-muted)">
+                    Consult a physician before starting any training program.
+                </p>
+                <p class="text-[9px] font-bold uppercase tracking-tight" style="color: var(--text-muted)">
+                    &copy; <span id="current-year"></span> COACH CHRIS | CIRCULAR ROOTS
+                </p>
+            </div>
+        </div>
     </div>
 
     <script type="module">
-        // ===================================
-        // 1. DOM Elements
-        // ===================================
+        lucide.createIcons();
+
+        // DOM Elements
+        const body = document.body;
+        const themeToggle = document.getElementById('theme-toggle');
         const generateButton = document.getElementById('generate-button');
         const copyButton = document.getElementById('copy-button');
         const wodCard = document.getElementById('wod-card');
@@ -123,232 +275,108 @@
         const wodTimeCap = document.getElementById('wod-time-cap');
         const loadingSpinner = document.getElementById('loading-spinner');
         const currentYearSpan = document.getElementById('current-year');
+        const infoModal = document.getElementById('modal-overlay');
+        const openInfoBtn = document.getElementById('open-info');
+        const closeInfoBtn = document.getElementById('close-modal');
+        const confirmInfoBtn = document.getElementById('modal-confirm');
 
-        // ===================================
-        // 2. WOD Data Definitions
-        // ===================================
+        // Logic Data
         const formats = [
-            // AMRAP/EMOM generate times between 10 and 30 minutes (always even numbers)
-            { name: "AMRAP", description: "As Many Rounds/Reps As Possible in the time cap (10-30 min focus).", 
+            { name: "AMRAP", description: "As Many Rounds As Possible", 
               generator: () => `TIME CAP: ${Math.floor(Math.random() * 11) * 2 + 10} MINUTES` }, 
-            { name: "FOR TIME", description: "Complete the following work as quickly as possible (typically 15-25 min).", 
-              generator: () => `ROUNDS: ${Math.floor(Math.random() * 3) + 3} ROUNDS FOR TIME` }, // 3, 4, or 5 rounds
-            { name: "EMOM", description: "Every Minute On the Minute. Perform the work at the start of each minute (10-30 min focus).", 
-              generator: () => `TOTAL TIME: ${Math.floor(Math.random() * 11) * 2 + 10} MINUTES` }, 
-            { name: "CHIPPER", description: "A high-volume workout. Complete all reps of one movement before moving to the next (time cap recommended).", 
-              generator: () => "ONE TIME THROUGH FOR TIME (HIGH VOLUME)" },
+            { name: "FOR TIME", description: "Complete work as fast as possible", 
+              generator: () => `ROUNDS: ${Math.floor(Math.random() * 3) + 3} ROUNDS` },
+            { name: "EMOM", description: "Every Minute on the Minute", 
+              generator: () => `DURATION: ${Math.floor(Math.random() * 11) * 2 + 10} MINUTES` }, 
+            { name: "CHIPPER", description: "Complete all reps of one move before next", 
+              generator: () => "ONE ROUND FOR TIME" },
         ];
 
-        // Movements categorized by body part to guarantee a Full Body workout
         const movements = {
-            lower: [ // Squats, Lunges, Hinge
-                "Air Squats", "Lunges", "Kettlebell Goblet Squats", "Kettlebell Swings (American)"
-            ],
-            upper: [ // Push and Press
-                "Push-ups", "Hand-release Push-ups", "Kettlebell Press (Each Arm)"
-            ],
-            core_cardio: [ // Midline stability, cardio, or complex movements (Cleans/Snatches act as full body/cardio)
-                "Burpees", "Sit-ups", "Run (400m)", "Kettlebell Snatches (Each Arm)", "Kettlebell Cleans (Each Arm)"
-            ],
+            lower: ["Air Squats", "Lunges", "KB Goblet Squats", "Kettlebell Swings"],
+            upper: ["Push-ups", "Hand-release Push-ups", "KB Press (Each Arm)"],
+            core_cardio: ["Burpees", "Sit-ups", "Run (400m)", "KB Snatches", "KB Cleans"]
         };
 
-        // ===================================
-        // 3. Utility Functions
-        // ===================================
+        // Theme Toggle
+        themeToggle.addEventListener('click', () => {
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        });
+
+        // Modal Logic
+        const openModal = () => infoModal.classList.add('active');
+        const closeModal = () => infoModal.classList.remove('active');
+
+        openInfoBtn.addEventListener('click', openModal);
+        closeInfoBtn.addEventListener('click', closeModal);
+        confirmInfoBtn.addEventListener('click', closeModal);
+        infoModal.addEventListener('click', (e) => {
+            if (e.target === infoModal) closeModal();
+        });
+
         function selectRandom(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
 
-        /**
-         * Compiles the WOD content into a single, clean text string.
-         * @returns {string} The formatted WOD text.
-         */
-        function compileWODText() {
-            const formatName = wodFormatName.textContent;
-            const formatDesc = wodFormatDesc.textContent.replace(/[()]/g, ''); // Remove parentheses for clean text
-            const movements = wodMovements.textContent;
-            const timeCap = wodTimeCap.textContent;
-
-            return `WOD: ${formatName}\n${formatDesc}\n\n${movements}\n\n${timeCap}\n\n--- Coach Chris | TRAIN UNCNVNTNL ---`;
-        }
-
-        /**
-         * Shows visual success feedback on the given button.
-         * @param {HTMLElement} button - The button element to modify.
-         * @param {string} successText - The text to display on success.
-         * @param {string} originalText - The text to revert to.
-         */
-        function showActionSuccess(button, successText, originalText) {
-            button.textContent = successText;
-            button.classList.add('bg-green-600', 'hover:bg-green-600');
-            button.classList.remove('bg-black', 'hover:bg-gray-800');
-
-            setTimeout(() => {
-                button.textContent = originalText;
-                button.classList.remove('bg-green-600', 'hover:bg-green-600');
-                button.classList.add('bg-black', 'hover:bg-gray-800');
-            }, 1500);
-        }
-
-        // ===================================
-        // 4. Action Logic
-        // ===================================
-
-        /**
-         * Copies the generated WOD text to the clipboard.
-         */
-        function copyWODToClipboard() {
-            const wodText = compileWODText();
-
-            // Create a temporary, invisible textarea to hold the text for copying
-            const tempTextArea = document.createElement('textarea');
-            tempTextArea.value = wodText;
-            tempTextArea.style.position = 'absolute';
-            tempTextArea.style.left = '-9999px'; 
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-
-            try {
-                // Use document.execCommand('copy') for maximum compatibility
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    showActionSuccess(copyButton, 'Copied!', 'Copy WOD');
-                } else {
-                    showActionSuccess(copyButton, 'Copy Failed', 'Copy WOD');
-                }
-            } catch (err) {
-                console.error('Copy failed:', err);
-                showActionSuccess(copyButton, 'Copy Failed', 'Copy WOD');
-            } finally {
-                // Clean up the temporary element
-                document.body.removeChild(tempTextArea);
-            }
-        }
-
-        // ===================================
-        // 5. WOD Generation Logic
-        // ===================================
-
-        /**
-         * Generates a list of movements, GUARANTEEING one from Lower, one from Upper, and one from Core/Cardio.
-         */
-        function generateMovements(formatName) {
-            let movementList = [];
-            // Always use all three categories for full-body guarantee
-            const selectedCategories = ['lower', 'upper', 'core_cardio']; 
-            let allSelectedMoves = []; 
-
-            for (const category of selectedCategories) {
-                // Filter out moves already selected 
-                let availableInCat = movements[category].filter(move => !allSelectedMoves.includes(move));
-                if (availableInCat.length === 0) continue; 
-
-                const move = selectRandom(availableInCat);
-                allSelectedMoves.push(move);
-
-                // --- Reps/Distance Assignment Logic ---
-                let repCount;
-                let movementName = move.split('(')[0].trim(); 
-                
-                if (move.includes("Run")) {
-                    const preset = move.match(/\((.*?)\)/)[1]; 
-                    movementList.push(`- ${preset.toUpperCase()} OF ${movementName.toUpperCase()}`);
-                } else if (formatName === "EMOM") {
-                    // Lower rep count for EMOM (5 to 10 reps)
-                    repCount = Math.floor(Math.random() * 6) + 5; 
-                    movementList.push(`- ${repCount} ${movementName.toUpperCase()}`);
-                } else if (movementName === "Burpees" || movementName.includes("Clean") || movementName.includes("Snatch")) {
-                    // Medium rep count for high-intensity or complex movements (8, 10, 12, 15)
-                    repCount = selectRandom([8, 10, 12, 15]);
-                    if (move.includes("(Each Arm)")) {
-                         movementList.push(`- ${repCount} REPS PER ARM OF ${movementName.toUpperCase()}`);
-                    } else {
-                        movementList.push(`- ${repCount} ${movementName.toUpperCase()}`);
-                    }
-                } else {
-                    // Standard reps for gymnastics/squats/swings (15, 20, 25, 30)
-                    repCount = selectRandom([15, 20, 25, 30]);
-                    movementList.push(`- ${repCount} ${movementName.toUpperCase()}`);
-                }
-            }
-
-            // Shuffle the final list of movements to mix the display order
-            movementList.sort(() => Math.random() - 0.5);
-
-            return movementList.join('\n');
-        }
-
-        /**
-         * Generates and displays the WOD structure (format, movements, time cap).
-         */
-        function generateWODStructure() {
-            // 1. Generate Workout Structure
-            const selectedFormat = selectRandom(formats);
-            const movementsText = generateMovements(selectedFormat.name);
-
-            wodFormatName.textContent = selectedFormat.name;
-            wodFormatDesc.textContent = selectedFormat.description;
-            wodMovements.textContent = movementsText;
-            
-            const formatDetail = selectedFormat.generator();
-            wodTimeCap.textContent = formatDetail;
-        }
-
-        /**
-         * Main function to control the UI state and generate the WOD.
-         */
-        function generateFullWOD() {
-            // 1. Set UI State: Loading (start)
+        function generateWOD() {
             generateButton.disabled = true;
-            generateButton.textContent = "GENERATING... STAND BY";
+            generateButton.textContent = "CURATING...";
             loadingSpinner.classList.remove('hidden');
-            wodCard.classList.add('opacity-50');
-
-            // Use a slight delay to simulate processing, improving user experience
+            
             setTimeout(() => {
-                try {
-                    // 2. Generate and display the FAST, local workout structure
-                    generateWODStructure();
-                    
-                    // 3. Update UI to show success
-                    wodCard.classList.remove('opacity-0'); 
+                const format = selectRandom(formats);
+                let list = [];
+                const cats = ['lower', 'upper', 'core_cardio'];
+                
+                cats.forEach(cat => {
+                    const move = selectRandom(movements[cat]);
+                    let reps;
+                    if (move.includes("Run")) {
+                        reps = "400M";
+                    } else if (format.name === "EMOM") {
+                        reps = Math.floor(Math.random() * 6) + 6;
+                    } else {
+                        reps = selectRandom([10, 15, 20, 25, 30]);
+                    }
+                    list.push(`${reps} ${move.toUpperCase()}`);
+                });
 
-                } catch (error) {
-                    console.error("A critical error occurred during WOD generation:", error);
-                    // Fail state for the UI
-                    wodFormatName.textContent = "FATAL ERROR";
-                    wodFormatDesc.textContent = "A critical error occurred. Please refresh or try again.";
-                    wodMovements.textContent = "LOCAL GENERATION FAILED.";
-                    wodTimeCap.textContent = "STATUS: ABORTED";
-                } finally {
-                    // 4. Set UI State: Ready (end)
-                    loadingSpinner.classList.add('hidden');
-                    generateButton.textContent = "GENERATE NEW WOD";
-                    generateButton.disabled = false;
-                    wodCard.classList.remove('opacity-50');
-                }
-            }, 100); 
-        }
-        
-        // ===================================
-        // 6. Initialization
-        // ===================================
-        function initializeApp() {
-             // Set the current year for the copyright notice
-            if (currentYearSpan) {
-                currentYearSpan.textContent = new Date().getFullYear();
-            }
-            
-            generateButton.addEventListener('click', generateFullWOD);
-            copyButton.addEventListener('click', copyWODToClipboard);
-            
-            // Run on load to populate the initial card immediately
-            generateFullWOD(); 
+                wodFormatName.textContent = format.name;
+                wodFormatDesc.textContent = format.description;
+                wodMovements.textContent = list.join('\n');
+                wodTimeCap.textContent = format.generator();
+
+                wodCard.classList.remove('opacity-0');
+                generateButton.textContent = "GENERATE WORKOUT";
+                generateButton.disabled = false;
+                loadingSpinner.classList.add('hidden');
+            }, 400);
         }
 
-        // Initialize the app once the DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', initializeApp);
+        copyButton.addEventListener('click', () => {
+            const text = `WOD: ${wodFormatName.textContent}\n${wodFormatDesc.textContent}\n\n${wodMovements.textContent}\n\n${wodTimeCap.textContent}\n\nCOACH CHRIS | TRAIN UNCNVNTNL`;
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            const originalHTML = copyButton.innerHTML;
+            copyButton.innerHTML = `<i data-lucide="check" class="w-3 h-3"></i> COPIED`;
+            lucide.createIcons();
+            copyButton.style.color = "var(--text-heading)";
+            setTimeout(() => {
+                copyButton.innerHTML = originalHTML;
+                lucide.createIcons();
+                copyButton.style.color = "var(--text-accent)";
+            }, 1500);
+        });
 
+        generateButton.addEventListener('click', generateWOD);
+        currentYearSpan.textContent = new Date().getFullYear();
+        generateWOD();
     </script>
 </body>
 </html>
