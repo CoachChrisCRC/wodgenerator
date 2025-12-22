@@ -25,6 +25,7 @@
             --btn-text-primary: #ffffff;
             --bg-output: #f9fafb;
             --modal-overlay: rgba(0, 0, 0, 0.4);
+            --launch-overlay: rgba(255, 255, 255, 0.9);
         }
 
         [data-theme="dark"] {
@@ -42,6 +43,7 @@
             --btn-text-primary: #000000;
             --bg-output: #1a1a1a;
             --modal-overlay: rgba(0, 0, 0, 0.8);
+            --launch-overlay: rgba(10, 10, 10, 0.95);
         }
 
         body {
@@ -60,7 +62,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Theme Toggle Styling */
         .theme-switch-container {
             position: relative;
             width: 44px;
@@ -109,7 +110,6 @@
         .btn-generate:active { transform: scale(0.98) translateY(0); }
         .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Modal Styles */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -125,10 +125,7 @@
             transition: opacity 0.3s ease;
         }
 
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
         
         .modal-content {
             background-color: var(--bg-card);
@@ -143,9 +140,49 @@
         }
         
         .modal-overlay.active .modal-content { transform: scale(1); }
+
+        #launch-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background-color: var(--launch-overlay);
+            backdrop-filter: blur(12px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #launch-overlay.active { display: flex; opacity: 1; }
+
+        #launch-icon-container {
+            color: var(--text-heading);
+            animation: pulse-scale 1.2s infinite ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes pulse-scale {
+            0% { transform: scale(0.85); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.85); opacity: 0.3; }
+        }
+
+        .hidden-initial { display: none; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4" data-theme="light">
+
+    <!-- Loading Animation Overlay -->
+    <div id="launch-overlay">
+        <div id="launch-icon-container">
+            <i data-lucide="zap" class="w-16 h-16"></i>
+        </div>
+        <p class="mt-4 font-brand font-bold text-xl uppercase tracking-widest" style="color: var(--text-heading)">Generating Heat</p>
+    </div>
 
     <!-- Information Modal -->
     <div id="modal-overlay" class="modal-overlay">
@@ -203,22 +240,28 @@
             </div>
         </header>
 
-        <!-- Application Title Section -->
-        <div class="w-full text-center py-2">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-2" style="background-color: var(--bg-toggle)">
-                <i data-lucide="zap" class="w-3 h-3" style="color: var(--text-heading)"></i>
-                <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-heading)">Fitness Tool</span>
+        <!-- Initial Home State -->
+        <div id="home-state" class="w-full text-center space-y-6 py-4 animate-in fade-in duration-700">
+            <div class="space-y-2">
+                <h2 class="font-brand font-bold text-4xl uppercase tracking-tight" style="color: var(--text-heading)">WOD Generator</h2>
+                <p class="text-xs font-bold uppercase tracking-widest px-4 py-2 inline-block rounded-full" style="background-color: var(--bg-toggle); color: var(--text-accent)">Unconventional Library v1.0</p>
             </div>
-            <h2 class="font-brand font-bold text-3xl uppercase tracking-tight" style="color: var(--text-heading)">WOD Generator</h2>
+            
+            <div class="bg-opacity-50 rounded-3xl p-6 border border-dashed" style="background-color: var(--bg-toggle); border-color: var(--border-color)">
+                <div class="flex justify-center mb-4">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: var(--bg-card)">
+                        <i data-lucide="dumbbell" class="w-6 h-6" style="color: var(--text-heading)"></i>
+                    </div>
+                </div>
+                <h3 class="text-sm font-black uppercase tracking-widest mb-2" style="color: var(--text-heading)">Ready to Train?</h3>
+                <p class="text-xs leading-relaxed" style="color: var(--text-accent)">Click generate below to curate a high-intensity session designed for functional strength and metabolic conditioning.</p>
+            </div>
         </div>
 
-        <!-- WOD Display Area -->
-        <div id="wod-card" class="w-full space-y-5 opacity-0 transition-opacity duration-500">
+        <!-- WOD Display Area (Hidden initially) -->
+        <div id="wod-card" class="w-full space-y-5 hidden-initial opacity-0 transition-opacity duration-500">
             <div class="flex items-center justify-between border-b pb-2" style="border-color: var(--border-color)">
                 <h3 class="text-xs font-black uppercase tracking-widest" style="color: var(--text-muted)">Daily Session Plan</h3>
-                <div id="loading-spinner" class="hidden">
-                    <i data-lucide="loader-2" class="animate-spin w-4 h-4" style="color: var(--text-muted)"></i>
-                </div>
             </div>
 
             <div class="space-y-4">
@@ -269,16 +312,17 @@
         const generateButton = document.getElementById('generate-button');
         const copyButton = document.getElementById('copy-button');
         const wodCard = document.getElementById('wod-card');
+        const homeState = document.getElementById('home-state');
         const wodFormatName = document.getElementById('wod-format-name');
         const wodFormatDesc = document.getElementById('wod-format-desc');
         const wodMovements = document.getElementById('wod-movements');
         const wodTimeCap = document.getElementById('wod-time-cap');
-        const loadingSpinner = document.getElementById('loading-spinner');
         const currentYearSpan = document.getElementById('current-year');
         const infoModal = document.getElementById('modal-overlay');
         const openInfoBtn = document.getElementById('open-info');
         const closeInfoBtn = document.getElementById('close-modal');
         const confirmInfoBtn = document.getElementById('modal-confirm');
+        const launchOverlay = document.getElementById('launch-overlay');
 
         // Logic Data
         const formats = [
@@ -320,10 +364,12 @@
         }
 
         function generateWOD() {
+            // Start Loading Animation
             generateButton.disabled = true;
             generateButton.textContent = "CURATING...";
-            loadingSpinner.classList.remove('hidden');
+            launchOverlay.classList.add('active');
             
+            // Artificial delay
             setTimeout(() => {
                 const format = selectRandom(formats);
                 let list = [];
@@ -347,11 +393,18 @@
                 wodMovements.textContent = list.join('\n');
                 wodTimeCap.textContent = format.generator();
 
-                wodCard.classList.remove('opacity-0');
-                generateButton.textContent = "GENERATE WORKOUT";
-                generateButton.disabled = false;
-                loadingSpinner.classList.add('hidden');
-            }, 400);
+                // Swap views
+                homeState.classList.add('hidden');
+                wodCard.classList.remove('hidden-initial');
+                
+                // Finish Animation
+                launchOverlay.classList.remove('active');
+                setTimeout(() => {
+                    wodCard.classList.remove('opacity-0');
+                    generateButton.textContent = "GENERATE WORKOUT";
+                    generateButton.disabled = false;
+                }, 50);
+            }, 1200);
         }
 
         copyButton.addEventListener('click', () => {
@@ -376,7 +429,6 @@
 
         generateButton.addEventListener('click', generateWOD);
         currentYearSpan.textContent = new Date().getFullYear();
-        generateWOD();
     </script>
 </body>
 </html>
