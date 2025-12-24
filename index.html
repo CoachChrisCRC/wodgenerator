@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WOD Generator | COACH CHRIS</title>
-    <!-- Load Tailwind CSS and Lucide Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
@@ -191,7 +190,6 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4" data-theme="light">
 
-    <!-- Loading Animation Overlay -->
     <div id="launch-overlay">
         <div id="launch-icon-container">
             <i data-lucide="zap" class="w-16 h-16"></i>
@@ -199,7 +197,6 @@
         <p id="loading-text" class="mt-4 font-brand font-bold text-xl uppercase tracking-widest text-center px-8" style="color: var(--text-heading)">Preparing Session</p>
     </div>
 
-    <!-- Information Modal -->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal-content shadow-2xl">
             <button id="close-modal" class="absolute top-6 right-6 p-2 rounded-full hover:opacity-70 transition-opacity" style="color: var(--text-muted)">
@@ -232,7 +229,6 @@
         </div>
     </div>
 
-    <!-- Main Card -->
     <div class="app-card w-full max-w-md rounded-[2.5rem] overflow-hidden flex flex-col items-center p-8 space-y-8">
         
         <header class="w-full flex justify-between items-start">
@@ -255,11 +251,12 @@
             </div>
         </header>
 
-        <!-- Initial Home State -->
         <div id="home-state" class="w-full text-center space-y-6 py-4 animate-in fade-in duration-700">
             <div class="space-y-2">
                 <h2 class="font-brand font-bold text-4xl uppercase tracking-tight" style="color: var(--text-heading)">WOD Generator</h2>
-                <p class="text-xs font-bold uppercase tracking-widest px-4 py-2 inline-block rounded-full" style="background-color: var(--bg-toggle); color: var(--text-accent)">Strength in Resilience</p>
+                <p class="text-xs font-bold uppercase tracking-widest px-4 py-2 flex items-center justify-center gap-2 rounded-full mx-auto w-fit" style="background-color: var(--bg-toggle); color: var(--text-accent)">
+                    <i data-lucide="clock" class="w-3 h-3"></i> 15 - 30 MIN SESSIONS
+                </p>
             </div>
             
             <div class="bg-opacity-50 rounded-3xl p-6 border border-dashed" style="background-color: var(--bg-toggle); border-color: var(--border-color)">
@@ -274,15 +271,11 @@
             </div>
         </div>
 
-        <!-- WOD Display Area -->
         <div id="wod-card" class="w-full space-y-5 hidden-initial opacity-0 transition-opacity duration-500">
             
-            <!-- Kit Required Section -->
             <div id="kit-section" class="space-y-2">
                 <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-muted)">Kit You Will Need</span>
-                <div id="kit-container" class="flex flex-wrap gap-2">
-                    <!-- Dynamic Kit Tags -->
-                </div>
+                <div id="kit-container" class="flex flex-wrap gap-2"></div>
             </div>
 
             <div class="flex items-center justify-between border-b pb-2" style="border-color: var(--border-color)">
@@ -300,14 +293,17 @@
                 <div class="flex items-center justify-between">
                     <div id="wod-time-cap" class="text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full" style="background-color: var(--bg-toggle); color: var(--text-heading)"></div>
                     <button id="copy-button" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:opacity-70 transition-opacity" style="color: var(--text-accent)">
-                        <i data-lucide="copy" class="w-3 h-3"></i>
-                        Share Effort
+                        <i data-lucide="copy" class="w-3 h-3"></i> Share Effort
                     </button>
                 </div>
             </div>
+
+            <div id="instructional-section" class="pt-6 border-t space-y-3" style="border-color: var(--border-color)">
+                <h3 class="text-xs font-black uppercase tracking-widest" style="color: var(--text-muted)">How to Perform this Session</h3>
+                <div id="instruction-content" class="p-4 rounded-2xl text-[11px] leading-relaxed" style="background-color: var(--bg-toggle); color: var(--text-main)"></div>
+            </div>
         </div>
 
-        <!-- Action Button -->
         <button id="generate-button" class="btn-generate w-full py-5 font-brand font-bold text-xl uppercase tracking-widest rounded-3xl shadow-lg">
             Build My Session
         </button>
@@ -316,34 +312,116 @@
     <script type="module">
         lucide.createIcons();
 
-        // Movement Database
         const PILLARS = {
-            full_body: ["KB Thrusters", "KB Cluster", "Burpees", "KB Man-Makers"],
-            upper: ["KB Push Press", "Push-ups", "KB Single Arm Row", "Floor Press"],
-            lower: ["KB Goblet Squats", "KB Swings", "Lunges", "KB Romanian Deadlift"],
-            core: ["KB Plank Drags", "Sit-ups", "V-Ups", "Hollow Rocks"],
-            conditioning: ["Run 400m", "Run 800m", "100m Jog (Active Rest)", "KB Snatches", "Mountain Climbers"]
+            full_body: [
+                { name: "KB Thrusters", type: "power", unilateral: "switch", baseReps: 8 },
+                { name: "KB Cluster", type: "power", unilateral: "alt", baseReps: 6 },
+                { name: "Burpees", type: "cardio", unilateral: null, baseReps: 12 },
+                { name: "KB Man-Makers", type: "power", unilateral: "alt", baseReps: 5 },
+                { name: "KB Clean & Press", type: "power", unilateral: "switch", baseReps: 8 },
+                { name: "KB Turkish Get-Ups", type: "skill", unilateral: "switch", baseReps: 2 }
+            ],
+            upper: [
+                { name: "KB Push Press", type: "strength", unilateral: "switch", baseReps: 10 },
+                { name: "Push-ups", type: "strength", unilateral: null, baseReps: 15 },
+                { name: "KB Single Arm Row", type: "strength", unilateral: "switch", baseReps: 12 },
+                { name: "KB Floor Press", type: "strength", unilateral: "switch", baseReps: 12 },
+                { name: "KB Renegade Rows", type: "strength", unilateral: "alt", baseReps: 10 },
+                { name: "Pike Push-ups", type: "strength", unilateral: null, baseReps: 8 }
+            ],
+            lower: [
+                { name: "KB Goblet Squats", type: "strength", unilateral: null, baseReps: 15 },
+                { name: "KB Swings", type: "power", unilateral: null, baseReps: 20 },
+                { name: "KB Lunges", type: "strength", unilateral: "alt", baseReps: 16 },
+                { name: "KB Romanian Deadlift", type: "strength", unilateral: "switch", baseReps: 12 },
+                { name: "KB Cossack Squats", type: "skill", unilateral: "alt", baseReps: 10 },
+                { name: "KB Box Step-Ups", type: "strength", unilateral: "alt", baseReps: 14 }
+            ],
+            core: [
+                { name: "KB Plank Drags", type: "stability", unilateral: "alt", baseReps: 12 },
+                { name: "Sit-ups", type: "stability", unilateral: null, baseReps: 20 },
+                { name: "V-Ups", type: "stability", unilateral: null, baseReps: 12 },
+                { name: "Hollow Rocks", type: "stability", unilateral: null, baseReps: 20 },
+                { name: "KB Russian Twists", type: "stability", unilateral: "alt", baseReps: 20 },
+                { name: "KB Windmills", type: "skill", unilateral: "switch", baseReps: 5 }
+            ],
+            conditioning: [
+                { name: "Run 400m", type: "distance", unilateral: null, baseReps: 1 },
+                { name: "Run 200m", type: "distance", unilateral: null, baseReps: 1 },
+                { name: "100m Jog", type: "distance", unilateral: null, baseReps: 1 },
+                { name: "KB Snatches", type: "power", unilateral: "switch", baseReps: 10 },
+                { name: "Mountain Climbers", type: "cardio", unilateral: "alt", baseReps: 40 },
+                { name: "Jump Squats", type: "power", unilateral: null, baseReps: 12 },
+                { name: "KB High Pulls", type: "power", unilateral: "switch", baseReps: 12 }
+            ]
         };
 
         const FORMATS = [
             { 
                 name: "AMRAP", 
                 description: "As Many Rounds As Possible", 
-                generator: () => `TIME CAP: ${[15, 20, 25][Math.floor(Math.random() * 3)]} MINUTES` 
+                allowDistance: true,
+                instruction: "Set a timer and cycle through the list continuously. Maintain a pace that allows for consistent movement with minimal rest.",
+                generator: () => `TIME CAP: ${[15, 18, 20, 25, 30][Math.floor(Math.random() * 5)]} MINUTES` 
             }, 
             { 
-                name: "FOR TIME", 
-                description: "Complete work as fast as possible", 
-                generator: () => `30 MINUTE HARD CAP` 
+                name: "ROUNDS FOR TIME", 
+                description: "Fixed rounds for maximum intensity", 
+                allowDistance: true,
+                instruction: "Complete the designated number of rounds as quickly as possible without sacrificing form.",
+                generator: () => `${[3, 4, 5][Math.floor(Math.random() * 3)]} ROUNDS FOR TIME (${[15, 20, 25, 30][Math.floor(Math.random() * 4)]}m CAP)` 
             },
             { 
                 name: "EMOM", 
                 description: "Every Minute on the Minute", 
-                generator: () => `DURATION: ${[20, 30][Math.floor(Math.random() * 2)]} MINUTES` 
+                allowDistance: false,
+                instruction: "Perform one movement at the top of every minute. Use the remainder of the minute to recover.",
+                generator: () => `DURATION: ${[15, 20, 25, 30][Math.floor(Math.random() * 4)]} MINUTES` 
+            },
+            { 
+                name: "CHIPPER", 
+                description: "Single long circuit for time", 
+                allowDistance: true,
+                instruction: "Finish all reps for a movement before proceeding to the next one. Break the reps into manageable sets to keep the intensity high.",
+                generator: () => `COMPLETION TIME (${[20, 25, 30][Math.floor(Math.random() * 3)]}m CAP)` 
+            },
+            { 
+                name: "TABATA", 
+                description: "High-Intensity Interval Training", 
+                allowDistance: false,
+                instruction: "Perform 8 rounds of 20s work / 10s rest for each movement. Complete all rounds for one movement before proceeding to the next.",
+                generator: () => `DURATION: ${[16, 20, 24, 28][Math.floor(Math.random() * 4)]} MINUTES` 
+            },
+            { 
+                name: "INTERVALS", 
+                description: "Work-to-Rest Ratio 1:1", 
+                allowDistance: false,
+                instruction: "Work for the designated period followed by an equal period of passive recovery. Move to the next movement after each rest period.",
+                generator: () => {
+                    const type = Math.random() > 0.5 ? "30/30" : "60/60";
+                    const duration = type === "30/30" ? [20, 24, 30] : [20, 30];
+                    return {
+                        display: `${type} INTERVALS`,
+                        time: `DURATION: ${duration[Math.floor(Math.random() * duration.length)]} MINUTES`,
+                        label: type
+                    };
+                }
             }
         ];
 
-        // UI Logic
+        const COACH_PHRASES = [
+            "Returning to the roots...",
+            "Embracing the unconventional...",
+            "Sharpening the mind...",
+            "Hardening the resolve...",
+            "Preparing the grind...",
+            "Calculating the stimulus...",
+            "Building the foundation...",
+            "Finding the limit...",
+            "Visualizing the effort...",
+            "Setting the intention..."
+        ];
+
         const body = document.body;
         const themeToggle = document.getElementById('theme-toggle');
         const generateButton = document.getElementById('generate-button');
@@ -354,54 +432,60 @@
         const wodFormatDesc = document.getElementById('wod-format-desc');
         const wodMovements = document.getElementById('wod-movements');
         const wodTimeCap = document.getElementById('wod-time-cap');
+        const instructionContent = document.getElementById('instruction-content');
         const kitContainer = document.getElementById('kit-container');
         const infoModal = document.getElementById('modal-overlay');
-        const openInfoBtn = document.getElementById('open-info');
-        const closeInfoBtn = document.getElementById('close-modal');
-        const confirmInfoBtn = document.getElementById('modal-confirm');
         const launchOverlay = document.getElementById('launch-overlay');
         const loadingText = document.getElementById('loading-text');
-
-        const loadingPhrases = [
-            "Setting your intention...",
-            "Building your foundation...",
-            "Curating your growth...",
-            "Preparing your next win...",
-            "Coach Chris is in your corner..."
-        ];
 
         themeToggle.addEventListener('click', () => {
             const isDark = body.getAttribute('data-theme') === 'dark';
             body.setAttribute('data-theme', isDark ? 'light' : 'dark');
         });
 
-        const openModal = () => infoModal.classList.add('active');
-        const closeModal = () => infoModal.classList.remove('active');
-
-        openInfoBtn.addEventListener('click', openModal);
-        closeInfoBtn.addEventListener('click', closeModal);
-        confirmInfoBtn.addEventListener('click', closeModal);
+        document.getElementById('open-info').addEventListener('click', () => infoModal.classList.add('active'));
+        document.getElementById('close-modal').addEventListener('click', () => infoModal.classList.remove('active'));
+        document.getElementById('modal-confirm').addEventListener('click', () => infoModal.classList.remove('active'));
         
-        function selectRandom(arr) {
-            return arr[Math.floor(Math.random() * arr.length)];
-        }
+        function selectRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-        // Distance Formatter
-        function formatDistance(moveText) {
-            const match = moveText.match(/(\d+)m/);
-            if (match) {
-                const meters = parseInt(match[1]);
-                const km = (meters / 1000).toFixed(2);
-                const miles = (meters * 0.000621371).toFixed(2);
-                return moveText.replace(`${meters}m`, `${meters}m (${km}km / ${miles}mi)`);
+        function calculateReps(move, formatName, intervalType = "") {
+            const { baseReps, type, unilateral } = move;
+            let activeUni = Array.isArray(unilateral) ? selectRandom(unilateral) : unilateral;
+            let finalReps = baseReps;
+
+            if (formatName === "INTERVALS") {
+                const tag = activeUni === 'alt' ? ' (ALT)' : activeUni === 'switch' ? ' (SWITCH HALF)' : '';
+                return `${intervalType.split('/')[0]}S WORK${tag}`;
             }
-            return moveText;
+
+            if (formatName === "EMOM") {
+                if (type === "distance") return "WORK FULL PERIOD";
+                finalReps = Math.ceil(baseReps * 0.8);
+            } else if (formatName === "TABATA") {
+                return "MAX REPS (20 SECS)";
+            } else if (formatName === "CHIPPER") {
+                if (type === "distance") return "COMPLETE ONCE";
+                if (type === "skill") finalReps = 15;
+                else if (type === "power") finalReps = 30;
+                else finalReps = 50;
+            } else {
+                if (type === "distance") return "•";
+                finalReps = baseReps;
+            }
+
+            if (activeUni && typeof finalReps === 'number') {
+                if (finalReps % 2 !== 0) finalReps++; 
+                const tag = activeUni === 'alt' ? ' (ALT)' : activeUni === 'switch' ? ' (SWITCH HALF)' : '';
+                return `${finalReps}${tag}`;
+            }
+            return finalReps;
         }
 
         function generateWOD() {
-            loadingText.textContent = selectRandom(loadingPhrases);
+            loadingText.textContent = selectRandom(COACH_PHRASES);
             generateButton.disabled = true;
-            generateButton.textContent = "CURATING...";
+            generateButton.textContent = "COACHING...";
             launchOverlay.classList.add('active');
             
             setTimeout(() => {
@@ -409,57 +493,57 @@
                 let list = [];
                 let kitNeeded = new Set(["Bodyweight Space"]); 
                 
-                const categories = Object.keys(PILLARS);
-                categories.forEach(cat => {
-                    let move = selectRandom(PILLARS[cat]);
-                    let reps;
+                let intervalData = null;
+                if (format.name === "INTERVALS") {
+                    intervalData = format.generator();
+                    wodFormatName.textContent = intervalData.display;
+                    wodTimeCap.textContent = intervalData.time;
+                } else {
+                    wodFormatName.textContent = format.name;
+                    wodTimeCap.textContent = format.generator();
+                }
+
+                Object.keys(PILLARS).forEach(cat => {
+                    const possibleMovements = PILLARS[cat].filter(m => {
+                        if (!format.allowDistance && m.type === "distance") return false;
+                        return true;
+                    });
                     
-                    if (move.includes("KB")) kitNeeded.add("Kettlebell");
-                    if (move.includes("Run") || move.includes("Jog")) kitNeeded.add("Space to run/jog");
+                    let moveObj = selectRandom(possibleMovements);
+                    if (moveObj.name.includes("KB")) kitNeeded.add("Kettlebell");
+                    if (moveObj.name.includes("Run") || moveObj.name.includes("Jog")) kitNeeded.add("Run/Jog Space");
                     
-                    if (move.includes("Run") || move.includes("Jog")) {
-                        reps = "•";
-                        move = formatDistance(move);
-                    } else if (format.name === "EMOM") {
-                        reps = "10-12";
-                    } else {
-                        reps = selectRandom([10, 15, 20]);
-                    }
-                    
-                    list.push(`${reps} ${move.toUpperCase()}`.trim());
+                    const displayReps = calculateReps(moveObj, format.name, intervalData ? intervalData.label : "");
+                    list.push(`${displayReps} ${moveObj.name.toUpperCase()}`.trim());
                 });
 
                 kitContainer.innerHTML = '';
                 kitNeeded.forEach(kit => {
                     const tag = document.createElement('div');
                     tag.className = 'kit-tag';
-                    let icon = kit === 'Kettlebell' ? 'dumbbell' : kit.includes('run') ? 'map-pin' : 'move';
-                    tag.innerHTML = `<i data-lucide="${icon}" class="w-3 h-3"></i> ${kit}`;
+                    tag.innerHTML = `<i data-lucide="check-circle" class="w-3 h-3"></i> ${kit}`;
                     kitContainer.appendChild(tag);
                 });
-                lucide.createIcons();
 
-                wodFormatName.textContent = format.name;
                 wodFormatDesc.textContent = format.description;
-                // Improved formatting for the text block: Bulleted list with consistent spacing
                 wodMovements.textContent = list.join('\n');
-                wodTimeCap.textContent = format.generator();
+                instructionContent.textContent = format.instruction;
 
                 homeState.classList.add('hidden');
                 wodCard.classList.remove('hidden-initial');
-                
                 launchOverlay.classList.remove('active');
+                
                 setTimeout(() => {
                     wodCard.classList.remove('opacity-0');
                     generateButton.textContent = "BUILD ANOTHER SESSION";
                     generateButton.disabled = false;
+                    lucide.createIcons();
                 }, 50);
-            }, 1200);
+            }, 1000);
         }
 
         copyButton.addEventListener('click', () => {
-            const kits = Array.from(kitContainer.querySelectorAll('.kit-tag')).map(t => t.textContent.trim()).join(', ');
-            const text = `WOD: ${wodFormatName.textContent}\n${wodFormatDesc.textContent}\n\nKIT: ${kits}\n\n${wodMovements.textContent}\n\n${wodTimeCap.textContent}\n\nCOACH CHRIS | CIRCULAR ROOTS`;
+            const text = `WOD: ${wodFormatName.textContent}\n${wodMovements.textContent}\n\n${wodTimeCap.textContent}\n\nCOACH CHRIS | CIRCULAR ROOTS`;
             const el = document.createElement('textarea');
             el.value = text;
             document.body.appendChild(el);
@@ -470,10 +554,7 @@
             const originalHTML = copyButton.innerHTML;
             copyButton.innerHTML = `<i data-lucide="check" class="w-3 h-3"></i> COPIED`;
             lucide.createIcons();
-            setTimeout(() => {
-                copyButton.innerHTML = originalHTML;
-                lucide.createIcons();
-            }, 1500);
+            setTimeout(() => { copyButton.innerHTML = originalHTML; lucide.createIcons(); }, 1500);
         });
 
         generateButton.addEventListener('click', generateWOD);
