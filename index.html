@@ -204,6 +204,12 @@
         }
 
         .hidden-initial { display: none; }
+
+        .baseline-badge {
+            background-color: var(--bg-btn-primary);
+            color: var(--btn-text-primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4" data-theme="light">
@@ -215,6 +221,7 @@
         <p id="loading-text" class="mt-4 font-brand font-bold text-xl uppercase tracking-widest text-center px-8" style="color: var(--text-heading)">Preparing Session</p>
     </div>
 
+    <!-- HELP MODAL -->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal-content shadow-2xl">
             <button id="close-modal" class="absolute top-6 right-6 p-2 rounded-full hover:opacity-70 transition-opacity" style="color: var(--text-muted)">
@@ -222,27 +229,27 @@
             </button>
             <div class="flex flex-col items-center text-center">
                 <div class="p-4 rounded-2xl mb-4" style="background-color: var(--bg-toggle)">
-                    <i data-lucide="heart" class="w-8 h-8" style="color: var(--text-heading)"></i>
+                    <i data-lucide="help-circle" class="w-8 h-8" style="color: var(--text-heading)"></i>
                 </div>
-                <h3 class="font-brand font-bold text-2xl uppercase mb-3" style="color: var(--text-heading)">The Circular Way</h3>
+                <h3 class="font-brand font-bold text-2xl uppercase mb-3" style="color: var(--text-heading)">How it Works</h3>
                 <div class="space-y-4 text-sm leading-relaxed text-left" style="color: var(--text-accent)">
-                    <p>Every session is an opportunity to prove your resilience and build a stronger foundation.</p>
+                    <p>This tool generates custom workouts based on the equipment you have available right now.</p>
                     <ul class="space-y-3 list-none">
                         <li class="flex gap-3">
-                            <i data-lucide="shield-check" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
-                            <span><strong>Bodyweight is Base:</strong> Foundation movements are automatically included in every session to ensure movement integrity.</span>
+                            <i data-lucide="shield" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
+                            <span><strong>Always Included:</strong> Bodyweight fundamentals (pushups, lunges, burpees, etc.) are the base of every session to ensure you can train anywhere.</span>
                         </li>
                         <li class="flex gap-3">
-                            <i data-lucide="dumbbell" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
-                            <span><strong>Add Supplemental Kit:</strong> Toggle Kettlebells, Pull Up Bars, or Run Space to integrate them into your workout.</span>
+                            <i data-lucide="layers" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
+                            <span><strong>Select Gear:</strong> Tap the supplemental kit icons (Kettlebell, Run, Pullup) to mix those movements into the generator pool.</span>
                         </li>
                         <li class="flex gap-3">
-                            <i data-lucide="flame" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
-                            <span><strong>Respect the Cap:</strong> The Time Cap is your target for intensity. Don't let form slip to beat the clock.</span>
+                            <i data-lucide="zap" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
+                            <span><strong>Unilateral Focus:</strong> Kettlebell reps are designed for a single bell. <em>(Switch Half)</em> means finish reps on one side then the other. <em>(Alt)</em> means switch every rep.</span>
                         </li>
                     </ul>
                 </div>
-                <button id="modal-confirm" class="w-full mt-8 py-3 font-black uppercase tracking-widest rounded-xl text-xs" style="background-color: var(--bg-btn-primary); color: var(--btn-text-primary)">Let's Move</button>
+                <button id="modal-confirm" class="w-full mt-8 py-3 font-black uppercase tracking-widest rounded-xl text-xs" style="background-color: var(--bg-btn-primary); color: var(--btn-text-primary)">Understood</button>
             </div>
         </div>
     </div>
@@ -279,26 +286,42 @@
             </div>
             
             <div class="rounded-3xl p-6 border border-dashed space-y-4" style="background-color: var(--bg-toggle); border-color: var(--border-color)">
-                <h3 class="text-xs font-black uppercase tracking-widest" style="color: var(--text-heading)">Select Supplemental Kit</h3>
                 
-                <div class="grid grid-cols-1 gap-2">
-                    <label class="kit-option p-4 rounded-2xl text-[11px] font-bold uppercase tracking-wider">
-                        <input type="checkbox" name="kit-select" value="kettlebell" checked>
-                        Kettlebell
-                    </label>
-                    <div class="grid grid-cols-2 gap-2">
+                <div class="space-y-4">
+                    <!-- BODYWEIGHT DISPLAY -->
+                    <div class="baseline-badge p-4 rounded-2xl flex items-center justify-between border-2 border-transparent">
+                        <div class="flex flex-col items-start">
+                            <span class="text-xs font-bold uppercase tracking-widest">Bodyweight Foundation</span>
+                            <span class="text-[9px] font-black opacity-60 uppercase tracking-tighter">Included in every session</span>
+                        </div>
+                        <i data-lucide="shield" class="w-5 h-5"></i>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-1">
+                        <div class="h-[1px] flex-1 bg-gray-300 dark:bg-gray-700"></div>
+                        <span class="text-[10px] font-black uppercase tracking-widest opacity-40">Add Supplemental Kit</span>
+                        <div class="h-[1px] flex-1 bg-gray-300 dark:bg-gray-700"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-2">
                         <label class="kit-option p-4 rounded-2xl text-[11px] font-bold uppercase tracking-wider">
-                            <input type="checkbox" name="kit-select" value="run">
-                            Run Space
+                            <input type="checkbox" name="kit-select" value="kettlebell" checked>
+                            Single Kettlebell
                         </label>
-                        <label class="kit-option p-4 rounded-2xl text-[11px] font-bold uppercase tracking-wider">
-                            <input type="checkbox" name="kit-select" value="pullup">
-                            Pull Up Bar
-                        </label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="kit-option p-4 rounded-2xl text-[11px] font-bold uppercase tracking-wider">
+                                <input type="checkbox" name="kit-select" value="run">
+                                Run Space
+                            </label>
+                            <label class="kit-option p-4 rounded-2xl text-[11px] font-bold uppercase tracking-wider">
+                                <input type="checkbox" name="kit-select" value="pullup">
+                                Pull Up Bar
+                            </label>
+                        </div>
                     </div>
                 </div>
 
-                <p class="text-xs leading-relaxed" style="color: var(--text-muted)">Minimalist sessions designed to build your base. Bodyweight movements are included by default.</p>
+                <p class="text-xs leading-relaxed px-4 pt-2" style="color: var(--text-muted)">Minimalist sessions designed to build fitness & resilience, anywhere.</p>
             </div>
         </div>
 
@@ -351,32 +374,30 @@
 
         const PILLARS = {
             full_body: [
-                { name: "KB Thrusters", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell" },
-                { name: "KB Cluster", type: "power", unilateral: "alt", baseReps: 6, kit: "kettlebell" },
+                { name: "SA KB Thrusters", type: "power", unilateral: "switch", baseReps: 10, kit: "kettlebell" },
+                { name: "SA KB Cluster", type: "power", unilateral: "alt", baseReps: 6, kit: "kettlebell" },
                 { name: "Burpees", type: "cardio", unilateral: null, baseReps: 12, kit: "bodyweight" },
-                { name: "KB Man-Makers", type: "power", unilateral: "alt", baseReps: 5, kit: "kettlebell" },
-                { name: "KB Clean & Press", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell" },
+                { name: "SA KB Clean & Press", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell" },
                 { name: "KB Turkish Get-Ups", type: "skill", unilateral: "switch", baseReps: 2, kit: "kettlebell" }
             ],
             upper: [
-                { name: "KB Push Press", type: "strength", unilateral: "switch", baseReps: 10, kit: "kettlebell" },
+                { name: "SA KB Push Press", type: "strength", unilateral: "switch", baseReps: 10, kit: "kettlebell" },
                 { name: "Push-ups", type: "strength", unilateral: null, baseReps: 15, kit: "bodyweight" },
-                { name: "KB Single Arm Row", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
-                { name: "KB Floor Press", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
-                { name: "KB Renegade Rows", type: "strength", unilateral: "alt", baseReps: 10, kit: "kettlebell" },
+                { name: "SA KB Row", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
+                { name: "SA KB Floor Press", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
                 { name: "Pike Push-ups", type: "strength", unilateral: null, baseReps: 8, kit: "bodyweight" },
                 { name: "Pull Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup" }
             ],
             lower: [
                 { name: "KB Goblet Squats", type: "strength", unilateral: null, baseReps: 15, kit: "kettlebell" },
                 { name: "KB Swings", type: "power", unilateral: null, baseReps: 20, kit: "kettlebell" },
-                { name: "KB Lunges", type: "strength", unilateral: "alt", baseReps: 16, kit: "kettlebell" },
-                { name: "KB Romanian Deadlift", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
+                { name: "SA KB Lunges", type: "strength", unilateral: "alt", baseReps: 16, kit: "kettlebell" },
+                { name: "SA KB Romanian Deadlift", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
                 { name: "KB Cossack Squats", type: "skill", unilateral: "alt", baseReps: 10, kit: "kettlebell" },
                 { name: "Air Squats", type: "strength", unilateral: null, baseReps: 25, kit: "bodyweight" }
             ],
             core: [
-                { name: "KB Plank Drags", type: "stability", unilateral: "alt", baseReps: 12, kit: "kettlebell" },
+                { name: "SA KB Plank Drags", type: "stability", unilateral: "alt", baseReps: 12, kit: "kettlebell" },
                 { name: "Sit-ups", type: "stability", unilateral: null, baseReps: 20, kit: "bodyweight" },
                 { name: "V-Ups", type: "stability", unilateral: null, baseReps: 12, kit: "bodyweight" },
                 { name: "Hollow Rocks", type: "stability", unilateral: null, baseReps: 20, kit: "bodyweight" },
@@ -387,7 +408,7 @@
                 { name: "Run 400m", type: "distance", unilateral: null, baseReps: 1, kit: "run" },
                 { name: "Run 200m", type: "distance", unilateral: null, baseReps: 1, kit: "run" },
                 { name: "100m Jog", type: "distance", unilateral: null, baseReps: 1, kit: "run" },
-                { name: "KB Snatches", type: "power", unilateral: "switch", baseReps: 10, kit: "kettlebell" },
+                { name: "SA KB Snatches", type: "power", unilateral: ["alt", "switch"], baseReps: 10, kit: "kettlebell" },
                 { name: "Mountain Climbers", type: "cardio", unilateral: "alt", baseReps: 40, kit: "bodyweight" },
                 { name: "Jump Squats", type: "power", unilateral: null, baseReps: 12, kit: "bodyweight" }
             ]
@@ -494,7 +515,6 @@
         }
 
         function generateWOD() {
-            // Bodyweight is ALWAYS included in the active pool
             const selectedKit = Array.from(document.querySelectorAll('input[name="kit-select"]:checked')).map(cb => cb.value);
             const activePoolKits = ["bodyweight", ...selectedKit];
 
@@ -524,7 +544,6 @@
                     }
                 });
 
-                // Extra check: ensure bodyweight is represented if too few moves
                 if (list.length < 3) {
                     list.push("10 BURPEES");
                     kitActuallyUsed.add("bodyweight");
@@ -532,7 +551,7 @@
 
                 kitContainer.innerHTML = '';
                 kitActuallyUsed.forEach(k => {
-                    const label = k === 'kettlebell' ? 'Kettlebell' : k === 'run' ? 'Run Space' : k === 'pullup' ? 'Pull Up Bar' : 'Bodyweight';
+                    const label = k === 'kettlebell' ? 'Single KB' : k === 'run' ? 'Run Space' : k === 'pullup' ? 'Pull Up Bar' : 'Bodyweight';
                     const tag = document.createElement('div');
                     tag.className = 'kit-tag';
                     tag.innerHTML = `<i data-lucide="check-circle" class="w-3 h-3"></i> ${label}`;
