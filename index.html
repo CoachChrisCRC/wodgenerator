@@ -86,6 +86,24 @@
 
         [data-theme="dark"] .theme-switch-circle { transform: translateX(22px); }
 
+        .kit-option {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .kit-option input { display: none; }
+        .kit-option:has(input:checked) {
+            background-color: var(--bg-btn-primary);
+            color: var(--btn-text-primary);
+            border-color: var(--bg-btn-primary);
+        }
+
         #wod-movements {
             white-space: pre-wrap;
             word-wrap: break-word;
@@ -212,15 +230,11 @@
                     <ul class="space-y-3 list-none">
                         <li class="flex gap-3">
                             <i data-lucide="shield-check" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
-                            <span>Hit <strong>Generate</strong> to curate a focused session of core, upper, and lower body work.</span>
+                            <span>Select your gear under <strong>Required Kit</strong> to filter available movements.</span>
                         </li>
                         <li class="flex gap-3">
                             <i data-lucide="flame" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
-                            <span>Respect the <strong>Time Cap</strong>. It's designed to help you find your limit and grow past it.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <i data-lucide="users" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
-                            <span><strong>Copy & Share</strong> your results to inspire the community and stay accountable.</span>
+                            <span>Respect the <strong>Time Cap</strong>. It's designed to help you find your limit.</span>
                         </li>
                     </ul>
                 </div>
@@ -251,6 +265,7 @@
             </div>
         </header>
 
+        <!-- SETUP SCREEN -->
         <div id="home-state" class="w-full text-center space-y-6 py-4 animate-in fade-in duration-700">
             <div class="space-y-2">
                 <h2 class="font-brand font-bold text-4xl uppercase tracking-tight" style="color: var(--text-heading)">WOD Generator</h2>
@@ -259,23 +274,41 @@
                 </p>
             </div>
             
-            <div class="bg-opacity-50 rounded-3xl p-6 border border-dashed" style="background-color: var(--bg-toggle); border-color: var(--border-color)">
-                <div class="flex justify-center mb-4">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: var(--bg-card)">
-                        <i data-lucide="dumbbell" class="w-6 h-6" style="color: var(--text-heading)"></i>
+            <div class="rounded-3xl p-6 border border-dashed space-y-4" style="background-color: var(--bg-toggle); border-color: var(--border-color)">
+                <h3 class="text-xs font-black uppercase tracking-widest" style="color: var(--text-heading)">Select Available Kit</h3>
+                
+                <div class="grid grid-cols-1 gap-2">
+                    <label class="kit-option p-4 rounded-2xl text-[11px] font-bold uppercase tracking-wider">
+                        <input type="checkbox" name="kit-select" value="kettlebell" checked>
+                        Kettlebell
+                    </label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="kit-option p-4 rounded-2xl text-[11px] font-bold uppercase tracking-wider">
+                            <input type="checkbox" name="kit-select" value="run">
+                            Run Space
+                        </label>
+                        <label class="kit-option p-4 rounded-2xl text-[11px] font-bold uppercase tracking-wider">
+                            <input type="checkbox" name="kit-select" value="pullup">
+                            Pull Up Bar
+                        </label>
                     </div>
                 </div>
-                <h3 class="text-sm font-black uppercase tracking-widest mb-2" style="color: var(--text-heading)">Required Kit</h3>
-                <p class="text-[11px] font-bold uppercase tracking-wider mb-3" style="color: var(--text-accent)">Kettlebell • Bodyweight Space • Run/Jog Space</p>
+
                 <p class="text-xs leading-relaxed" style="color: var(--text-muted)">Minimalist sessions designed to build your base, test your grit, and prove your capability anywhere.</p>
             </div>
         </div>
 
+        <!-- RESULT SCREEN -->
         <div id="wod-card" class="w-full space-y-5 hidden-initial opacity-0 transition-opacity duration-500">
             
-            <div id="kit-section" class="space-y-2">
-                <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-muted)">Kit You Will Need</span>
-                <div id="kit-container" class="flex flex-wrap gap-2"></div>
+            <div class="flex items-center justify-between">
+                <div id="kit-section" class="space-y-2">
+                    <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-muted)">Kit Required For This Plan</span>
+                    <div id="kit-container" class="flex flex-wrap gap-2"></div>
+                </div>
+                <button id="reset-button" class="p-2.5 rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center border border-dashed" style="background-color: var(--bg-toggle); color: var(--text-accent); border-color: var(--border-color)" title="Restart and adjust kit">
+                    <i data-lucide="refresh-ccw" class="w-4 h-4"></i>
+                </button>
             </div>
 
             <div class="flex items-center justify-between border-b pb-2" style="border-color: var(--border-color)">
@@ -314,45 +347,45 @@
 
         const PILLARS = {
             full_body: [
-                { name: "KB Thrusters", type: "power", unilateral: "switch", baseReps: 8 },
-                { name: "KB Cluster", type: "power", unilateral: "alt", baseReps: 6 },
-                { name: "Burpees", type: "cardio", unilateral: null, baseReps: 12 },
-                { name: "KB Man-Makers", type: "power", unilateral: "alt", baseReps: 5 },
-                { name: "KB Clean & Press", type: "power", unilateral: "switch", baseReps: 8 },
-                { name: "KB Turkish Get-Ups", type: "skill", unilateral: "switch", baseReps: 2 }
+                { name: "KB Thrusters", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell" },
+                { name: "KB Cluster", type: "power", unilateral: "alt", baseReps: 6, kit: "kettlebell" },
+                { name: "Burpees", type: "cardio", unilateral: null, baseReps: 12, kit: "bodyweight" },
+                { name: "KB Man-Makers", type: "power", unilateral: "alt", baseReps: 5, kit: "kettlebell" },
+                { name: "KB Clean & Press", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell" },
+                { name: "KB Turkish Get-Ups", type: "skill", unilateral: "switch", baseReps: 2, kit: "kettlebell" }
             ],
             upper: [
-                { name: "KB Push Press", type: "strength", unilateral: "switch", baseReps: 10 },
-                { name: "Push-ups", type: "strength", unilateral: null, baseReps: 15 },
-                { name: "KB Single Arm Row", type: "strength", unilateral: "switch", baseReps: 12 },
-                { name: "KB Floor Press", type: "strength", unilateral: "switch", baseReps: 12 },
-                { name: "KB Renegade Rows", type: "strength", unilateral: "alt", baseReps: 10 },
-                { name: "Pike Push-ups", type: "strength", unilateral: null, baseReps: 8 }
+                { name: "KB Push Press", type: "strength", unilateral: "switch", baseReps: 10, kit: "kettlebell" },
+                { name: "Push-ups", type: "strength", unilateral: null, baseReps: 15, kit: "bodyweight" },
+                { name: "KB Single Arm Row", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
+                { name: "KB Floor Press", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
+                { name: "KB Renegade Rows", type: "strength", unilateral: "alt", baseReps: 10, kit: "kettlebell" },
+                { name: "Pike Push-ups", type: "strength", unilateral: null, baseReps: 8, kit: "bodyweight" },
+                { name: "Pull Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup" }
             ],
             lower: [
-                { name: "KB Goblet Squats", type: "strength", unilateral: null, baseReps: 15 },
-                { name: "KB Swings", type: "power", unilateral: null, baseReps: 20 },
-                { name: "KB Lunges", type: "strength", unilateral: "alt", baseReps: 16 },
-                { name: "KB Romanian Deadlift", type: "strength", unilateral: "switch", baseReps: 12 },
-                { name: "KB Cossack Squats", type: "skill", unilateral: "alt", baseReps: 10 },
-                { name: "KB Box Step-Ups", type: "strength", unilateral: "alt", baseReps: 14 }
+                { name: "KB Goblet Squats", type: "strength", unilateral: null, baseReps: 15, kit: "kettlebell" },
+                { name: "KB Swings", type: "power", unilateral: null, baseReps: 20, kit: "kettlebell" },
+                { name: "KB Lunges", type: "strength", unilateral: "alt", baseReps: 16, kit: "kettlebell" },
+                { name: "KB Romanian Deadlift", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
+                { name: "KB Cossack Squats", type: "skill", unilateral: "alt", baseReps: 10, kit: "kettlebell" },
+                { name: "Air Squats", type: "strength", unilateral: null, baseReps: 25, kit: "bodyweight" }
             ],
             core: [
-                { name: "KB Plank Drags", type: "stability", unilateral: "alt", baseReps: 12 },
-                { name: "Sit-ups", type: "stability", unilateral: null, baseReps: 20 },
-                { name: "V-Ups", type: "stability", unilateral: null, baseReps: 12 },
-                { name: "Hollow Rocks", type: "stability", unilateral: null, baseReps: 20 },
-                { name: "KB Russian Twists", type: "stability", unilateral: "alt", baseReps: 20 },
-                { name: "KB Windmills", type: "skill", unilateral: "switch", baseReps: 5 }
+                { name: "KB Plank Drags", type: "stability", unilateral: "alt", baseReps: 12, kit: "kettlebell" },
+                { name: "Sit-ups", type: "stability", unilateral: null, baseReps: 20, kit: "bodyweight" },
+                { name: "V-Ups", type: "stability", unilateral: null, baseReps: 12, kit: "bodyweight" },
+                { name: "Hollow Rocks", type: "stability", unilateral: null, baseReps: 20, kit: "bodyweight" },
+                { name: "KB Windmills", type: "skill", unilateral: "switch", baseReps: 5, kit: "kettlebell" },
+                { name: "Toes to Bar", type: "stability", unilateral: null, baseReps: 10, kit: "pullup" }
             ],
             conditioning: [
-                { name: "Run 400m", type: "distance", unilateral: null, baseReps: 1 },
-                { name: "Run 200m", type: "distance", unilateral: null, baseReps: 1 },
-                { name: "100m Jog", type: "distance", unilateral: null, baseReps: 1 },
-                { name: "KB Snatches", type: "power", unilateral: "switch", baseReps: 10 },
-                { name: "Mountain Climbers", type: "cardio", unilateral: "alt", baseReps: 40 },
-                { name: "Jump Squats", type: "power", unilateral: null, baseReps: 12 },
-                { name: "KB High Pulls", type: "power", unilateral: "switch", baseReps: 12 }
+                { name: "Run 400m", type: "distance", unilateral: null, baseReps: 1, kit: "run" },
+                { name: "Run 200m", type: "distance", unilateral: null, baseReps: 1, kit: "run" },
+                { name: "100m Jog", type: "distance", unilateral: null, baseReps: 1, kit: "run" },
+                { name: "KB Snatches", type: "power", unilateral: "switch", baseReps: 10, kit: "kettlebell" },
+                { name: "Mountain Climbers", type: "cardio", unilateral: "alt", baseReps: 40, kit: "bodyweight" },
+                { name: "Jump Squats", type: "power", unilateral: null, baseReps: 12, kit: "bodyweight" }
             ]
         };
 
@@ -382,49 +415,30 @@
                 name: "CHIPPER", 
                 description: "Single long circuit for time", 
                 allowDistance: true,
-                instruction: "Finish all reps for a movement before proceeding to the next one. Break the reps into manageable sets to keep the intensity high.",
+                instruction: "Finish all reps for a movement before proceeding to the next one. Break the reps into manageable sets.",
                 generator: () => `COMPLETION TIME (${[20, 25, 30][Math.floor(Math.random() * 3)]}m CAP)` 
             },
             { 
                 name: "TABATA", 
                 description: "High-Intensity Interval Training", 
                 allowDistance: false,
-                instruction: "Perform 8 rounds of 20s work / 10s rest for each movement. Complete all rounds for one movement before proceeding to the next.",
+                instruction: "Perform 8 rounds of 20s work / 10s rest for each movement. Complete all rounds for one movement before proceeding to next.",
                 generator: () => `DURATION: ${[16, 20, 24, 28][Math.floor(Math.random() * 4)]} MINUTES` 
-            },
-            { 
-                name: "INTERVALS", 
-                description: "Work-to-Rest Ratio 1:1", 
-                allowDistance: false,
-                instruction: "Work for the designated period followed by an equal period of passive recovery. Move to the next movement after each rest period.",
-                generator: () => {
-                    const type = Math.random() > 0.5 ? "30/30" : "60/60";
-                    const duration = type === "30/30" ? [20, 24, 30] : [20, 30];
-                    return {
-                        display: `${type} INTERVALS`,
-                        time: `DURATION: ${duration[Math.floor(Math.random() * duration.length)]} MINUTES`,
-                        label: type
-                    };
-                }
             }
         ];
 
         const COACH_PHRASES = [
-            "Returning to the roots...",
-            "Embracing the unconventional...",
-            "Sharpening the mind...",
-            "Hardening the resolve...",
-            "Preparing the grind...",
             "Calculating the stimulus...",
             "Building the foundation...",
             "Finding the limit...",
-            "Visualizing the effort...",
-            "Setting the intention..."
+            "Setting the intention...",
+            "Filtering the gear..."
         ];
 
         const body = document.body;
         const themeToggle = document.getElementById('theme-toggle');
         const generateButton = document.getElementById('generate-button');
+        const resetButton = document.getElementById('reset-button');
         const copyButton = document.getElementById('copy-button');
         const wodCard = document.getElementById('wod-card');
         const homeState = document.getElementById('home-state');
@@ -449,15 +463,10 @@
         
         function selectRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-        function calculateReps(move, formatName, intervalType = "") {
+        function calculateReps(move, formatName) {
             const { baseReps, type, unilateral } = move;
             let activeUni = Array.isArray(unilateral) ? selectRandom(unilateral) : unilateral;
             let finalReps = baseReps;
-
-            if (formatName === "INTERVALS") {
-                const tag = activeUni === 'alt' ? ' (ALT)' : activeUni === 'switch' ? ' (SWITCH HALF)' : '';
-                return `${intervalType.split('/')[0]}S WORK${tag}`;
-            }
 
             if (formatName === "EMOM") {
                 if (type === "distance") return "WORK FULL PERIOD";
@@ -466,9 +475,7 @@
                 return "MAX REPS (20 SECS)";
             } else if (formatName === "CHIPPER") {
                 if (type === "distance") return "COMPLETE ONCE";
-                if (type === "skill") finalReps = 15;
-                else if (type === "power") finalReps = 30;
-                else finalReps = 50;
+                finalReps = type === "power" ? 30 : 50;
             } else {
                 if (type === "distance") return "•";
                 finalReps = baseReps;
@@ -483,45 +490,48 @@
         }
 
         function generateWOD() {
+            // Bodyweight is ALWAYS included in the active pool
+            const selectedKit = Array.from(document.querySelectorAll('input[name="kit-select"]:checked')).map(cb => cb.value);
+            const activePoolKits = ["bodyweight", ...selectedKit];
+
             loadingText.textContent = selectRandom(COACH_PHRASES);
             generateButton.disabled = true;
-            generateButton.textContent = "COACHING...";
             launchOverlay.classList.add('active');
             
             setTimeout(() => {
                 const format = selectRandom(FORMATS);
                 let list = [];
-                let kitNeeded = new Set(["Bodyweight Space"]); 
+                let kitActuallyUsed = new Set(); 
                 
-                let intervalData = null;
-                if (format.name === "INTERVALS") {
-                    intervalData = format.generator();
-                    wodFormatName.textContent = intervalData.display;
-                    wodTimeCap.textContent = intervalData.time;
-                } else {
-                    wodFormatName.textContent = format.name;
-                    wodTimeCap.textContent = format.generator();
-                }
+                wodFormatName.textContent = format.name;
+                wodTimeCap.textContent = format.generator();
 
                 Object.keys(PILLARS).forEach(cat => {
-                    const possibleMovements = PILLARS[cat].filter(m => {
+                    const pool = PILLARS[cat].filter(m => {
                         if (!format.allowDistance && m.type === "distance") return false;
-                        return true;
+                        return activePoolKits.includes(m.kit);
                     });
                     
-                    let moveObj = selectRandom(possibleMovements);
-                    if (moveObj.name.includes("KB")) kitNeeded.add("Kettlebell");
-                    if (moveObj.name.includes("Run") || moveObj.name.includes("Jog")) kitNeeded.add("Run/Jog Space");
-                    
-                    const displayReps = calculateReps(moveObj, format.name, intervalData ? intervalData.label : "");
-                    list.push(`${displayReps} ${moveObj.name.toUpperCase()}`.trim());
+                    if (pool.length > 0) {
+                        let moveObj = selectRandom(pool);
+                        kitActuallyUsed.add(moveObj.kit);
+                        const displayReps = calculateReps(moveObj, format.name);
+                        list.push(`${displayReps} ${moveObj.name.toUpperCase()}`.trim());
+                    }
                 });
 
+                // Extra check: ensure bodyweight is represented if too few moves
+                if (list.length < 3) {
+                    list.push("10 BURPEES");
+                    kitActuallyUsed.add("bodyweight");
+                }
+
                 kitContainer.innerHTML = '';
-                kitNeeded.forEach(kit => {
+                kitActuallyUsed.forEach(k => {
+                    const label = k === 'kettlebell' ? 'Kettlebell' : k === 'run' ? 'Run Space' : k === 'pullup' ? 'Pull Up Bar' : 'Bodyweight';
                     const tag = document.createElement('div');
                     tag.className = 'kit-tag';
-                    tag.innerHTML = `<i data-lucide="check-circle" class="w-3 h-3"></i> ${kit}`;
+                    tag.innerHTML = `<i data-lucide="check-circle" class="w-3 h-3"></i> ${label}`;
                     kitContainer.appendChild(tag);
                 });
 
@@ -541,6 +551,19 @@
                 }, 50);
             }, 1000);
         }
+
+        function resetToSetup() {
+            wodCard.classList.add('opacity-0');
+            setTimeout(() => {
+                wodCard.classList.add('hidden-initial');
+                homeState.classList.remove('hidden');
+                generateButton.textContent = "Build My Session";
+                generateButton.disabled = false;
+                lucide.createIcons();
+            }, 300);
+        }
+
+        resetButton.addEventListener('click', resetToSetup);
 
         copyButton.addEventListener('click', () => {
             const text = `WOD: ${wodFormatName.textContent}\n${wodMovements.textContent}\n\n${wodTimeCap.textContent}\n\nCOACH CHRIS | CIRCULAR ROOTS`;
