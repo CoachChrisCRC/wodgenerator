@@ -23,8 +23,12 @@
             --bg-btn-primary: #000000;
             --btn-text-primary: #ffffff;
             --bg-output: #f9fafb;
+            --bg-strategy-pill: #eeeeee;
+            --text-strategy-pill: #333333;
             --modal-overlay: rgba(0, 0, 0, 0.4);
             --launch-overlay: rgba(255, 255, 255, 0.9);
+            --bg-focus: #000000;
+            --text-focus: #ffffff;
         }
 
         [data-theme="dark"] {
@@ -41,8 +45,12 @@
             --bg-btn-primary: #ffffff;
             --btn-text-primary: #000000;
             --bg-output: #1a1a1a;
+            --bg-strategy-pill: #262626;
+            --text-strategy-pill: #e5e5e5;
             --modal-overlay: rgba(0, 0, 0, 0.8);
             --launch-overlay: rgba(10, 10, 10, 0.95);
+            --bg-focus: #ffffff;
+            --text-focus: #000000;
         }
 
         body {
@@ -166,9 +174,9 @@
             transform: scale(0.95);
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             width: 100%;
-            max-width: 30rem;
+            max-width: 28rem;
             border-radius: 2.5rem;
-            padding: 2.5rem;
+            padding: 2rem;
             position: relative;
             max-height: 90vh;
             overflow-y: auto;
@@ -209,6 +217,48 @@
             border-radius: 4px;
             text-transform: uppercase;
         }
+
+        .focus-pill {
+            background-color: var(--bg-focus);
+            color: var(--text-focus);
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .strategy-step {
+            background-color: var(--bg-strategy-pill);
+            color: var(--text-strategy-pill);
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .help-step {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .help-icon-box {
+            background-color: var(--bg-toggle);
+            color: var(--text-heading);
+            padding: 12px;
+            border-radius: 16px;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4" data-theme="light">
@@ -227,39 +277,52 @@
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
             <div class="flex flex-col">
-                <div class="flex items-center gap-4 mb-6">
-                    <div class="p-3 rounded-2xl" style="background-color: var(--bg-toggle)">
-                        <i data-lucide="info" class="w-6 h-6" style="color: var(--text-heading)"></i>
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="p-3 rounded-2xl" style="background-color: var(--bg-btn-primary); color: var(--btn-text-primary)">
+                        <i data-lucide="terminal" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h3 class="font-brand font-bold text-2xl uppercase leading-none" style="color: var(--text-heading)">The Framework</h3>
-                        <p class="text-[10px] font-bold uppercase tracking-widest opacity-60" style="color: var(--text-accent)">Modular Session Generation</p>
+                        <h3 class="font-brand font-bold text-2xl uppercase leading-none" style="color: var(--text-heading)">System Manual</h3>
+                        <p class="text-[10px] font-bold uppercase tracking-widest opacity-60" style="color: var(--text-accent)">Quick Start Guide</p>
                     </div>
                 </div>
 
-                <div class="space-y-6 text-xs leading-relaxed" style="color: var(--text-accent)">
-                    <section>
-                        <h4 class="font-black uppercase tracking-widest mb-2 text-[11px]" style="color: var(--text-heading)">1. Movement Pillars</h4>
-                        <p>Workouts are built across 5 specific pillars: Full Body Power, Upper Push/Pull, Lower Strength, Core Stability, and Metabolic Conditioning. This ensures balanced structural integrity in every session.</p>
-                    </section>
+                <div class="space-y-8">
+                    <!-- Step 1 -->
+                    <div class="help-step">
+                        <div class="help-icon-box">
+                            <i data-lucide="layout-grid" class="w-5 h-5"></i>
+                        </div>
+                        <div class="space-y-1">
+                            <h4 class="text-xs font-black uppercase tracking-wide" style="color: var(--text-heading)">1. Select Your Kit</h4>
+                            <p class="text-[11px] leading-relaxed" style="color: var(--text-accent)">Tap the equipment you have available. The system automatically includes bodyweight movements to ensure a balanced session.</p>
+                        </div>
+                    </div>
 
-                    <section>
-                        <h4 class="font-black uppercase tracking-widest mb-2 text-[11px]" style="color: var(--text-heading)">2. Time Optimization</h4>
-                        <p>Every session is calculated to fit a 15-30 minute window. For AMRAP and EMOM formats, the duration is set. For "For Time" and "Chipper" formats, a recommended time-cap is calculated based on movement complexity.</p>
-                    </section>
+                    <!-- Step 2 -->
+                    <div class="help-step">
+                        <div class="help-icon-box">
+                            <i data-lucide="zap" class="w-5 h-5"></i>
+                        </div>
+                        <div class="space-y-1">
+                            <h4 class="text-xs font-black uppercase tracking-wide" style="color: var(--text-heading)">2. Build Session</h4>
+                            <p class="text-[11px] leading-relaxed" style="color: var(--text-accent)">Hit the "Build My Session" button. Our engine drafts a random format (AMRAP, EMOM, etc.) optimized for your selected equipment.</p>
+                        </div>
+                    </div>
 
-                    <section>
-                        <h4 class="font-black uppercase tracking-widest mb-2 text-[11px]" style="color: var(--text-heading)">3. Supplemental Gear</h4>
-                        <p>By selecting equipment, you unlock specific movement pools. If "Single Kettlebell" is unchecked, the system defaults to pure bodyweight alternatives to ensure you can always train anywhere.</p>
-                    </section>
-
-                    <section class="p-4 rounded-2xl border border-dashed" style="background-color: var(--bg-toggle); border-color: var(--border-color)">
-                        <h4 class="font-black uppercase tracking-widest mb-2 text-[11px]" style="color: var(--text-heading)">Coaching Advice</h4>
-                        <p class="italic text-[10px]">"Consistency beats intensity in the long run. If a session feels too heavy, reduce the reps by 20% and focus on the quality of movement. Breathe nasally during your rest periods."</p>
-                    </section>
+                    <!-- Step 3 -->
+                    <div class="help-step">
+                        <div class="help-icon-box">
+                            <i data-lucide="target" class="w-5 h-5"></i>
+                        </div>
+                        <div class="space-y-1">
+                            <h4 class="text-xs font-black uppercase tracking-wide" style="color: var(--text-heading)">3. Execute Strategy</h4>
+                            <p class="text-[11px] leading-relaxed" style="color: var(--text-accent)">Read the "Focus" and "How-To" steps. Each format requires a different mental approach—check the intensity pill to pace yourself correctly.</p>
+                        </div>
+                    </div>
                 </div>
 
-                <button id="modal-confirm" class="w-full mt-8 py-4 font-black uppercase tracking-widest rounded-2xl text-xs" style="background-color: var(--bg-btn-primary); color: var(--btn-text-primary)">Return to Training</button>
+                <button id="modal-confirm" class="w-full mt-10 py-4 font-black uppercase tracking-widest rounded-2xl text-xs" style="background-color: var(--bg-btn-primary); color: var(--btn-text-primary)">Understood. Let's Train.</button>
             </div>
         </div>
     </div>
@@ -267,7 +330,7 @@
     <div class="app-card w-full max-w-md rounded-[2.5rem] overflow-hidden flex flex-col items-center p-8 space-y-8">
         
         <header class="w-full flex justify-between items-start">
-            <div class="flex flex-col select-none">
+            <div class="flex flex-col select-none text-left">
                 <h1 class="font-brand font-bold text-4xl leading-none tracking-wide mb-1" style="color: var(--text-heading)">COACH CHRIS</h1>
                 <h2 class="font-brand font-bold text-lg leading-none mb-[2px]" style="color: var(--text-accent)">CIRCULAR ROOTS COACHING</h2>
                 <h3 class="font-brand font-bold text-lg leading-none uppercase" style="color: var(--text-muted)">Train Uncnvntnl</h3>
@@ -297,20 +360,23 @@
             
             <div class="rounded-3xl p-6 border border-dashed space-y-4" style="background-color: var(--bg-toggle); border-color: var(--border-color)">
                 <div class="space-y-4">
+                    <!-- Bodyweight Foundation -->
                     <div class="p-4 rounded-2xl flex items-center justify-between" style="background-color: var(--bg-btn-primary); color: var(--btn-text-primary)">
-                        <div class="flex flex-col items-start">
+                        <div class="flex flex-col items-start text-left">
                             <span class="text-xs font-bold uppercase tracking-widest">Bodyweight Foundation</span>
                             <span class="text-[9px] font-black opacity-60 uppercase tracking-tighter">Essential movements included</span>
                         </div>
                         <i data-lucide="shield" class="w-5 h-5"></i>
                     </div>
 
-                    <div class="flex items-center gap-3 pt-1">
+                    <!-- Supplemental Kit Divider -->
+                    <div class="flex items-center gap-3 py-1">
                         <div class="h-[1px] flex-1 bg-gray-300 dark:bg-gray-700 opacity-30"></div>
                         <span class="text-[10px] font-black uppercase tracking-widest opacity-40">Supplemental Kit</span>
                         <div class="h-[1px] flex-1 bg-gray-300 dark:bg-gray-700 opacity-30"></div>
                     </div>
 
+                    <!-- Kit Options -->
                     <div class="grid grid-cols-1 gap-2">
                         <label class="kit-option p-4 rounded-2xl text-[11px] font-bold uppercase tracking-wider">
                             <input type="checkbox" name="kit-select" value="kettlebell" checked>
@@ -345,14 +411,14 @@
 
             <div class="space-y-4">
                 <div class="flex items-start justify-between">
-                    <div class="flex flex-col gap-1">
+                    <div class="flex flex-col gap-1 text-left">
                         <span id="wod-format-name" class="text-3xl font-black uppercase tracking-tighter leading-none" style="color: var(--text-heading)"></span>
                         <span id="wod-format-desc" class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-accent)"></span>
                     </div>
                     <span id="intensity-indicator" class="intensity-pill"></span>
                 </div>
 
-                <div id="wod-movements" class="w-full p-5 rounded-3xl text-sm"></div>
+                <div id="wod-movements" class="w-full p-5 rounded-3xl text-sm text-left"></div>
 
                 <div class="flex items-center justify-between">
                     <div id="wod-time-cap" class="text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full flex items-center gap-2" style="background-color: var(--bg-toggle); color: var(--text-heading)">
@@ -365,9 +431,9 @@
                 </div>
             </div>
 
-            <div id="instructional-section" class="pt-6 border-t space-y-4" style="border-color: var(--border-color)">
+            <div id="instructional-section" class="pt-6 border-t space-y-4 text-left" style="border-color: var(--border-color)">
                 <h3 class="text-xs font-black uppercase tracking-widest" style="color: var(--text-muted)">Execution Strategy</h3>
-                <div id="instruction-content" class="space-y-3"></div>
+                <div id="instruction-content" class="space-y-2"></div>
             </div>
         </div>
 
@@ -417,18 +483,9 @@
             { name: "AMRAP", style: "Aerobic Capacity & Pacing", howTo: ["Start your timer. Perform movements A through E for prescribed reps.", "Once finished, immediately return to movement A.", "Complete as many full cycles as possible before time runs out."] },
             { name: "ROUNDS FOR TIME", style: "High Intensity Benchmark", howTo: ["Perform the entire list of movements in order. This equals ONE round.", "Repeat this cycle for the total number of rounds specified.", "Stop your clock once the final rep of the final round is complete."] },
             { name: "EMOM", style: "Skill & Power Output", howTo: ["Minute 1: Perform Movement A. Rest for the remainder of that minute.", "Minute 2: Perform Movement B. Rest for the remainder.", "Continue rotating through the list on each subsequent minute."] },
-            { name: "CHIPPER", style: "Mental Resilience", howTo: ["Complete all reps for Movement A before looking at Movement B.", "Work through the list until the very last rep of the last exercise is done.", "Stay moving—short rests are better than long ones."] }
-        ];
-
-        const LOADING_PHRASES = [
-            "Analyzing Systems...",
-            "Preparing Session...",
-            "Calculating Stimulus...",
-            "Optimizing Movements...",
-            "Setting Intention...",
-            "Building Foundation...",
-            "Finding the Limit...",
-            "Drafting Strategy..."
+            { name: "CHIPPER", style: "Mental Resilience", howTo: ["Complete all reps for Movement A before looking at Movement B.", "Work through the list until the very last rep of the last exercise is done.", "Stay moving—short rests are better than long ones."] },
+            { name: "TABATA", style: "Metabolic Threshold", howTo: ["Set your timer for 20s Work / 10s Rest.", "Perform 8 rounds of Movement A, then move to B.", "Push for maximum quality reps in every 20s window."] },
+            { name: "INTERVALS", style: "Mixed Power Output", howTo: [], isInternalSwitch: true }
         ];
 
         const body = document.body;
@@ -445,7 +502,6 @@
         const instructionContent = document.getElementById('instruction-content');
         const kitContainer = document.getElementById('kit-container');
         const launchOverlay = document.getElementById('launch-overlay');
-        const loadingText = document.getElementById('loading-text');
         const intensityIndicator = document.getElementById('intensity-indicator');
 
         themeToggle.addEventListener('click', () => {
@@ -455,128 +511,104 @@
 
         function calculateReps(move, formatName) {
             const { baseReps, type, unilateral, isTimeBased } = move;
-            let finalReps = baseReps;
-            const activeUni = Array.isArray(unilateral) ? unilateral[0] : unilateral;
+            const tag = unilateral === 'alt' ? ' (Alt)' : unilateral === 'switch' ? ' (Switch Half)' : '';
 
+            if (formatName.includes("TABATA") || formatName.includes("INTERVALS")) {
+                return type === "distance" ? "Max Distance" : `Max Quality Reps${tag}`;
+            }
             if (isTimeBased) return `${baseReps} Seconds`;
-            if (formatName === "CHIPPER") {
-                if (type === "distance") return "Complete 1km";
+            
+            let finalReps = baseReps;
+            if (formatName.includes("CHIPPER")) {
                 finalReps = type === "power" ? 30 : 50;
-            } else if (formatName === "EMOM") {
-                if (type === "distance") return "Run 1 Min";
+                if (type === "distance") return "1km Run";
+            } else if (formatName.includes("EMOM")) {
                 finalReps = Math.ceil(baseReps * 0.85);
+                if (type === "distance") return "1 Min Effort";
             }
-
-            if (activeUni) {
-                const tag = activeUni === 'alt' ? ' (Alt)' : ' (Switch Half)';
-                return `${finalReps}${tag}`;
-            }
-            return finalReps;
+            return `${finalReps}${tag}`;
         }
 
         function generateWOD() {
             const selectedKit = Array.from(document.querySelectorAll('input[name="kit-select"]:checked')).map(cb => cb.value);
             const activeKits = ["bodyweight", ...selectedKit];
 
-            loadingText.textContent = LOADING_PHRASES[Math.floor(Math.random() * LOADING_PHRASES.length)];
             generateButton.disabled = true;
             launchOverlay.classList.add('active');
             
             setTimeout(() => {
-                const format = FORMATS[Math.floor(Math.random() * FORMATS.length)];
+                let format = {...FORMATS[Math.floor(Math.random() * FORMATS.length)]};
                 let kitUsed = new Set();
                 let intensities = [];
-                let rounds = 1;
+                let displayTitle = format.name;
+                let cap = "20:00";
 
-                if (format.name === "ROUNDS FOR TIME") {
-                    rounds = Math.floor(Math.random() * 3) + 3; // Generates 3, 4, or 5
-                    wodFormatName.textContent = `${rounds} ROUNDS FOR TIME`;
-                } else {
-                    wodFormatName.textContent = format.name;
-                }
-                
-                wodFormatDesc.textContent = format.style;
-                wodMovements.innerHTML = '';
-
-                let moveIndex = 0;
+                let movementsSelected = [];
                 Object.keys(PILLARS).forEach(cat => {
                     const pool = PILLARS[cat].filter(m => activeKits.includes(m.kit));
-                    if (pool.length > 0) {
-                        const move = pool[Math.floor(Math.random() * pool.length)];
-                        kitUsed.add(move.kit);
-                        intensities.push(move.intensity);
-                        
-                        const displayReps = calculateReps(move, format.name);
-                        const line = document.createElement('div');
-                        line.className = 'movement-line';
-                        line.innerHTML = `<span>${String.fromCharCode(65 + moveIndex)})</span> <strong>${move.name.toUpperCase()}</strong> : <em>${displayReps}</em>`;
-                        wodMovements.appendChild(line);
-                        moveIndex++;
-                    }
+                    if (pool.length > 0) movementsSelected.push(pool[Math.floor(Math.random() * pool.length)]);
+                });
+
+                if (format.isInternalSwitch) {
+                    const isThirty = Math.random() > 0.5;
+                    displayTitle = isThirty ? "30/30 INTERVALS" : "60/60 INTERVALS";
+                    format.style = isThirty ? "Sustainable Power Output" : "Aerobic Power Development";
+                    format.howTo = isThirty ? ["Work 30s / Rest 30s.", "4-5 rounds per movement."] : ["Work 60s / Rest 60s.", "3-4 rounds per movement."];
+                    cap = isThirty ? "20:00" : "24:00";
+                } else if (format.name === "ROUNDS FOR TIME") {
+                    const rounds = Math.floor(Math.random() * 3) + 3;
+                    displayTitle = `${rounds} ROUNDS FOR TIME`;
+                    cap = `${rounds * 5}:00`;
+                } else if (format.name === "AMRAP") {
+                    const duration = Math.random() > 0.5 ? 20 : 15;
+                    displayTitle = `AMRAP ${duration}`;
+                    cap = `${duration}:00`;
+                } else if (format.name === "EMOM") {
+                    const duration = movementsSelected.length * (Math.random() > 0.5 ? 3 : 4);
+                    displayTitle = `EMOM ${duration}`;
+                    cap = `${duration}:00`;
+                } else if (format.name === "TABATA") {
+                    cap = `${movementsSelected.length * 4}:00`;
+                }
+
+                wodFormatName.textContent = displayTitle;
+                wodFormatDesc.textContent = format.style;
+                wodMovements.innerHTML = '';
+                timeCapValue.textContent = `${cap} CAP`;
+
+                movementsSelected.forEach((move, i) => {
+                    kitUsed.add(move.kit);
+                    intensities.push(move.intensity);
+                    const line = document.createElement('div');
+                    line.className = 'movement-line';
+                    line.innerHTML = `<span>${String.fromCharCode(65 + i)})</span> <strong>${move.name.toUpperCase()}</strong> : <em>${calculateReps(move, displayTitle)}</em>`;
+                    wodMovements.appendChild(line);
                 });
 
                 const highCount = intensities.filter(i => i === 'high').length;
-                let finalIntensity = 'Moderate Effort';
-                let intensityColor = '#f59e0b';
-                let intensityFactor = 1.0;
-                
-                if (highCount >= 3) { 
-                    finalIntensity = 'High Intensity'; 
-                    intensityColor = '#ef4444';
-                    intensityFactor = 1.2;
-                } else if (highCount <= 1) { 
-                    finalIntensity = 'Low Intensity'; 
-                    intensityColor = '#10b981';
-                    intensityFactor = 0.8;
-                }
-                
-                intensityIndicator.textContent = finalIntensity;
-                intensityIndicator.style.backgroundColor = intensityColor;
+                intensityIndicator.textContent = highCount >= 3 ? 'High Intensity' : highCount <= 1 ? 'Low Intensity' : 'Moderate Effort';
+                intensityIndicator.style.backgroundColor = highCount >= 3 ? '#ef4444' : highCount <= 1 ? '#10b981' : '#f59e0b';
                 intensityIndicator.style.color = '#fff';
-
-                // TIME CAP CALCULATION (Guarantee 15-30 mins)
-                let cap = "20:00";
-                if (format.name === "AMRAP") {
-                    cap = Math.random() > 0.5 ? "20:00" : "15:00";
-                } else if (format.name === "EMOM") {
-                    const moveCount = wodMovements.children.length;
-                    const emomRounds = Math.floor(20 / moveCount); 
-                    cap = `${emomRounds * moveCount}:00`;
-                } else if (format.name === "CHIPPER") {
-                    const mins = Math.round(24 * intensityFactor);
-                    cap = `${Math.min(30, Math.max(15, mins))}:00`;
-                } else if (format.name === "ROUNDS FOR TIME") {
-                    const minsPerRound = 5 * intensityFactor;
-                    const totalMins = Math.round(rounds * minsPerRound);
-                    cap = `${Math.min(30, Math.max(15, totalMins))}:00`;
-                }
-                timeCapValue.textContent = `${cap} CAP`;
 
                 kitContainer.innerHTML = '';
                 kitUsed.forEach(k => {
-                    const l = k === 'kettlebell' ? 'KB' : k === 'run' ? 'Run' : k === 'pullup' ? 'Pull Up' : 'Body';
                     const tag = document.createElement('div');
                     tag.className = 'kit-tag';
-                    tag.innerHTML = `<i data-lucide="check" class="w-3 h-3"></i> ${l}`;
+                    tag.innerHTML = `<i data-lucide="check" class="w-3 h-3"></i> ${k === 'kettlebell' ? 'KB' : k === 'run' ? 'Run' : k === 'pullup' ? 'Pull Up' : 'Body'}`;
                     kitContainer.appendChild(tag);
                 });
 
                 instructionContent.innerHTML = '';
                 const focusBox = document.createElement('div');
-                focusBox.className = 'flex items-center gap-2 p-3 rounded-xl mb-3 text-[10px] font-black uppercase tracking-widest';
-                focusBox.style.backgroundColor = 'var(--bg-btn-primary)';
-                focusBox.style.color = 'var(--btn-text-primary)';
-                focusBox.innerHTML = `<i data-lucide="target" class="w-4 h-4"></i> Focus: ${format.style}`;
+                focusBox.className = 'focus-pill';
+                focusBox.innerHTML = `<i data-lucide="target" class="w-4 h-4 shrink-0"></i> <span>Focus: ${format.style}</span>`;
                 instructionContent.appendChild(focusBox);
 
                 format.howTo.forEach(text => {
-                    const p = document.createElement('p');
-                    p.className = 'p-3 rounded-xl text-[11px] border border-dashed';
-                    p.style.backgroundColor = 'var(--bg-toggle)';
-                    p.style.borderColor = 'var(--border-color)';
-                    p.style.color = 'var(--text-accent)';
-                    p.textContent = text;
-                    instructionContent.appendChild(p);
+                    const div = document.createElement('div');
+                    div.className = 'strategy-step';
+                    div.innerHTML = `<i data-lucide="arrow-right-circle" class="w-3 h-3 mt-0.5 opacity-40 shrink-0"></i> <span>${text}</span>`;
+                    instructionContent.appendChild(div);
                 });
 
                 homeState.classList.add('hidden');
@@ -603,16 +635,9 @@
         });
 
         copyButton.addEventListener('click', () => {
-            const cleanMovements = Array.from(wodMovements.querySelectorAll('.movement-line')).map(l => l.innerText).join('\n');
-            const text = `WOD: ${wodFormatName.textContent} (${timeCapValue.textContent})\n${cleanMovements}\n\nCOACH CHRIS`;
-            const el = document.createElement('textarea');
-            el.value = text;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-            copyButton.textContent = 'Copied!';
-            setTimeout(() => copyButton.textContent = 'Share', 1500);
+            const text = `WOD: ${wodFormatName.textContent} (${timeCapValue.textContent})\n${Array.from(wodMovements.querySelectorAll('.movement-line')).map(l => l.innerText).join('\n')}\n\nCOACH CHRIS`;
+            const el = document.createElement('textarea'); el.value = text; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
+            copyButton.textContent = 'Copied!'; setTimeout(() => copyButton.textContent = 'Share', 1500);
         });
 
         document.getElementById('open-info').addEventListener('click', () => document.getElementById('modal-overlay').classList.add('active'));
