@@ -244,8 +244,8 @@
                     </section>
 
                     <section>
-                        <h4 class="font-black uppercase tracking-widest mb-2 text-[11px]" style="color: var(--text-heading)">2. Dynamic Loading</h4>
-                        <p>The system intelligently adjusts repetitions based on the movement type and session format. Skill-based movements (like Turkish Get-ups) are capped at low volumes, while bodyweight movements scale to maintain high intensity.</p>
+                        <h4 class="font-black uppercase tracking-widest mb-2 text-[11px]" style="color: var(--text-heading)">2. Time Optimization</h4>
+                        <p>Every session is calculated to fit a 15-30 minute window. For AMRAP and EMOM formats, the duration is set. For "For Time" and "Chipper" formats, a recommended time-cap is calculated based on movement complexity.</p>
                     </section>
 
                     <section>
@@ -355,7 +355,10 @@
                 <div id="wod-movements" class="w-full p-5 rounded-3xl text-sm"></div>
 
                 <div class="flex items-center justify-between">
-                    <div id="wod-time-cap" class="text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full" style="background-color: var(--bg-toggle); color: var(--text-heading)"></div>
+                    <div id="wod-time-cap" class="text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full flex items-center gap-2" style="background-color: var(--bg-toggle); color: var(--text-heading)">
+                        <i data-lucide="timer" class="w-3 h-3"></i>
+                        <span id="time-cap-value"></span>
+                    </div>
                     <button id="copy-button" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:opacity-70" style="color: var(--text-accent)">
                         <i data-lucide="copy" class="w-3 h-3"></i> Share
                     </button>
@@ -411,10 +414,10 @@
         };
 
         const FORMATS = [
-            { name: "AMRAP", style: "Aerobic Capacity & Pacing", howTo: ["Start your timer. Perform movements A through E for prescribed reps.", "Once finished, immediately return to movement A.", "Complete as many full cycles as possible before time runs out.", "Pace so you can maintain nasal breathing as long as possible."] },
-            { name: "ROUNDS FOR TIME", style: "High Intensity Benchmark", howTo: ["Perform the entire list of movements in order. This equals ONE round.", "Repeat this cycle for the total number of rounds specified.", "Stop your clock once the final rep of the final round is complete.", "Technique over speed—don't let movement quality break down."] },
-            { name: "EMOM", style: "Skill & Power Output", howTo: ["Minute 1: Perform Movement A. Rest for the remainder of that minute.", "Minute 2: Perform Movement B. Rest for the remainder.", "Continue rotating through the list on each subsequent minute.", "If you fall behind the clock, reduce the reps slightly."] },
-            { name: "CHIPPER", style: "Mental Resilience", howTo: ["Complete all reps for Movement A before looking at Movement B.", "Work through the list until the very last rep of the last exercise is done.", "Break large sets into smaller chunks to maintain power.", "Stay moving—short rests are better than long ones."] }
+            { name: "AMRAP", style: "Aerobic Capacity & Pacing", howTo: ["Start your timer. Perform movements A through E for prescribed reps.", "Once finished, immediately return to movement A.", "Complete as many full cycles as possible before time runs out."] },
+            { name: "ROUNDS FOR TIME", style: "High Intensity Benchmark", howTo: ["Perform the entire list of movements in order. This equals ONE round.", "Repeat this cycle for the total number of rounds specified.", "Stop your clock once the final rep of the final round is complete."] },
+            { name: "EMOM", style: "Skill & Power Output", howTo: ["Minute 1: Perform Movement A. Rest for the remainder of that minute.", "Minute 2: Perform Movement B. Rest for the remainder.", "Continue rotating through the list on each subsequent minute."] },
+            { name: "CHIPPER", style: "Mental Resilience", howTo: ["Complete all reps for Movement A before looking at Movement B.", "Work through the list until the very last rep of the last exercise is done.", "Stay moving—short rests are better than long ones."] }
         ];
 
         const LOADING_PHRASES = [
@@ -438,7 +441,7 @@
         const wodFormatName = document.getElementById('wod-format-name');
         const wodFormatDesc = document.getElementById('wod-format-desc');
         const wodMovements = document.getElementById('wod-movements');
-        const wodTimeCap = document.getElementById('wod-time-cap');
+        const timeCapValue = document.getElementById('time-cap-value');
         const instructionContent = document.getElementById('instruction-content');
         const kitContainer = document.getElementById('kit-container');
         const launchOverlay = document.getElementById('launch-overlay');
@@ -475,9 +478,7 @@
             const selectedKit = Array.from(document.querySelectorAll('input[name="kit-select"]:checked')).map(cb => cb.value);
             const activeKits = ["bodyweight", ...selectedKit];
 
-            // Set random phrase
             loadingText.textContent = LOADING_PHRASES[Math.floor(Math.random() * LOADING_PHRASES.length)];
-            
             generateButton.disabled = true;
             launchOverlay.classList.add('active');
             
@@ -485,8 +486,15 @@
                 const format = FORMATS[Math.floor(Math.random() * FORMATS.length)];
                 let kitUsed = new Set();
                 let intensities = [];
+                let rounds = 1;
 
-                wodFormatName.textContent = format.name;
+                if (format.name === "ROUNDS FOR TIME") {
+                    rounds = Math.floor(Math.random() * 3) + 3; // Generates 3, 4, or 5
+                    wodFormatName.textContent = `${rounds} ROUNDS FOR TIME`;
+                } else {
+                    wodFormatName.textContent = format.name;
+                }
+                
                 wodFormatDesc.textContent = format.style;
                 wodMovements.innerHTML = '';
 
@@ -507,24 +515,43 @@
                     }
                 });
 
-                // Intensity logic
                 const highCount = intensities.filter(i => i === 'high').length;
                 let finalIntensity = 'Moderate Effort';
                 let intensityColor = '#f59e0b';
+                let intensityFactor = 1.0;
                 
                 if (highCount >= 3) { 
                     finalIntensity = 'High Intensity'; 
                     intensityColor = '#ef4444';
+                    intensityFactor = 1.2;
                 } else if (highCount <= 1) { 
                     finalIntensity = 'Low Intensity'; 
                     intensityColor = '#10b981';
+                    intensityFactor = 0.8;
                 }
                 
                 intensityIndicator.textContent = finalIntensity;
                 intensityIndicator.style.backgroundColor = intensityColor;
                 intensityIndicator.style.color = '#fff';
 
-                // Kit Tags
+                // TIME CAP CALCULATION (Guarantee 15-30 mins)
+                let cap = "20:00";
+                if (format.name === "AMRAP") {
+                    cap = Math.random() > 0.5 ? "20:00" : "15:00";
+                } else if (format.name === "EMOM") {
+                    const moveCount = wodMovements.children.length;
+                    const emomRounds = Math.floor(20 / moveCount); 
+                    cap = `${emomRounds * moveCount}:00`;
+                } else if (format.name === "CHIPPER") {
+                    const mins = Math.round(24 * intensityFactor);
+                    cap = `${Math.min(30, Math.max(15, mins))}:00`;
+                } else if (format.name === "ROUNDS FOR TIME") {
+                    const minsPerRound = 5 * intensityFactor;
+                    const totalMins = Math.round(rounds * minsPerRound);
+                    cap = `${Math.min(30, Math.max(15, totalMins))}:00`;
+                }
+                timeCapValue.textContent = `${cap} CAP`;
+
                 kitContainer.innerHTML = '';
                 kitUsed.forEach(k => {
                     const l = k === 'kettlebell' ? 'KB' : k === 'run' ? 'Run' : k === 'pullup' ? 'Pull Up' : 'Body';
@@ -534,9 +561,6 @@
                     kitContainer.appendChild(tag);
                 });
 
-                wodTimeCap.textContent = format.name === "CHIPPER" ? "Task Completion" : "15-25 Min Cap";
-
-                // Instructions
                 instructionContent.innerHTML = '';
                 const focusBox = document.createElement('div');
                 focusBox.className = 'flex items-center gap-2 p-3 rounded-xl mb-3 text-[10px] font-black uppercase tracking-widest';
@@ -580,7 +604,7 @@
 
         copyButton.addEventListener('click', () => {
             const cleanMovements = Array.from(wodMovements.querySelectorAll('.movement-line')).map(l => l.innerText).join('\n');
-            const text = `WOD: ${wodFormatName.textContent}\n${cleanMovements}\n\nCOACH CHRIS`;
+            const text = `WOD: ${wodFormatName.textContent} (${timeCapValue.textContent})\n${cleanMovements}\n\nCOACH CHRIS`;
             const el = document.createElement('textarea');
             el.value = text;
             document.body.appendChild(el);
