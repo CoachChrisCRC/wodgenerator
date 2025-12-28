@@ -237,15 +237,15 @@
                     <ul class="space-y-3 list-none">
                         <li class="flex gap-3">
                             <i data-lucide="shield" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
-                            <span><strong>Always Included:</strong> Bodyweight fundamentals (pushups, lunges, burpees, etc.) are the base of every session to ensure you can train anywhere.</span>
+                            <span><strong>Always Included:</strong> Bodyweight fundamentals are the base of every session to ensure you can train anywhere.</span>
                         </li>
                         <li class="flex gap-3">
                             <i data-lucide="layers" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
-                            <span><strong>Select Gear:</strong> Tap the supplemental kit icons (Kettlebell, Run, Pullup) to mix those movements into the generator pool.</span>
+                            <span><strong>Select Gear:</strong> Tap supplemental kit icons to mix those movements into the pool.</span>
                         </li>
                         <li class="flex gap-3">
                             <i data-lucide="zap" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
-                            <span><strong>Unilateral Focus:</strong> Kettlebell reps are designed for a single bell. <em>(Switch Half)</em> means finish reps on one side then the other. <em>(Alt)</em> means switch every rep.</span>
+                            <span><strong>Loading Style:</strong> <em>(ALT)</em> means switch every rep. <em>(SWITCH HALF)</em> means finish one side then the other.</span>
                         </li>
                     </ul>
                 </div>
@@ -288,7 +288,6 @@
             <div class="rounded-3xl p-6 border border-dashed space-y-4" style="background-color: var(--bg-toggle); border-color: var(--border-color)">
                 
                 <div class="space-y-4">
-                    <!-- BODYWEIGHT DISPLAY -->
                     <div class="baseline-badge p-4 rounded-2xl flex items-center justify-between border-2 border-transparent">
                         <div class="flex flex-col items-start">
                             <span class="text-xs font-bold uppercase tracking-widest">Bodyweight Foundation</span>
@@ -374,26 +373,34 @@
 
         const PILLARS = {
             full_body: [
-                { name: "SA KB Thrusters", type: "power", unilateral: "switch", baseReps: 10, kit: "kettlebell" },
-                { name: "SA KB Cluster", type: "power", unilateral: "alt", baseReps: 6, kit: "kettlebell" },
+                { name: "SA KB Long Cycle", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", conflicts: ["press"] },
+                { name: "SA KB Thrusters", type: "power", unilateral: "switch", baseReps: 10, kit: "kettlebell", conflicts: ["press"] },
+                { name: "SA KB Cluster", type: "power", unilateral: "switch", baseReps: 6, kit: "kettlebell" },
                 { name: "Burpees", type: "cardio", unilateral: null, baseReps: 12, kit: "bodyweight" },
-                { name: "SA KB Clean & Press", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell" },
-                { name: "KB Turkish Get-Ups", type: "skill", unilateral: "switch", baseReps: 2, kit: "kettlebell" }
+                { name: "SA KB Clean & Press", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", conflicts: ["press"] },
+                { name: "SA KB Snatches", type: "power", unilateral: ["alt", "switch"], baseReps: 10, kit: "kettlebell" },
+                { name: "SA KB Cleans", type: "power", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
+                { name: "KB Turkish Get-Ups", type: "skill", unilateral: "switch", baseReps: 2, kit: "kettlebell", slowMovement: true }
             ],
             upper: [
-                { name: "SA KB Push Press", type: "strength", unilateral: "switch", baseReps: 10, kit: "kettlebell" },
+                { name: "SA KB Push Press", type: "strength", unilateral: "switch", baseReps: 10, kit: "kettlebell", conflicts: ["press"] },
+                { name: "SA KB Strict Press", type: "strength", unilateral: "switch", baseReps: 8, kit: "kettlebell", conflicts: ["press"] },
                 { name: "Push-ups", type: "strength", unilateral: null, baseReps: 15, kit: "bodyweight" },
                 { name: "SA KB Row", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
                 { name: "SA KB Floor Press", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
                 { name: "Pike Push-ups", type: "strength", unilateral: null, baseReps: 8, kit: "bodyweight" },
-                { name: "Pull Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup" }
+                { name: "Pull Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup", conflicts: ["vertical-pull"] },
+                { name: "Chin Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup", conflicts: ["vertical-pull"] }
             ],
             lower: [
                 { name: "KB Goblet Squats", type: "strength", unilateral: null, baseReps: 15, kit: "kettlebell" },
-                { name: "KB Swings", type: "power", unilateral: null, baseReps: 20, kit: "kettlebell" },
-                { name: "SA KB Lunges", type: "strength", unilateral: "alt", baseReps: 16, kit: "kettlebell" },
+                { name: "2H KB Swings", type: "power", unilateral: null, baseReps: 20, kit: "kettlebell" },
+                { name: "SA KB Swings", type: "power", unilateral: "switch", baseReps: 16, kit: "kettlebell" },
+                { name: "SA KB Cleans", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
+                { name: "KB Goblet Lunges", type: "strength", unilateral: "alt", baseReps: 16, kit: "kettlebell" },
+                { name: "KB Goblet Reverse Lunges", type: "strength", unilateral: "alt", baseReps: 16, kit: "kettlebell" },
+                { name: "Reverse Lunges", type: "strength", unilateral: "alt", baseReps: 20, kit: "bodyweight" },
                 { name: "SA KB Romanian Deadlift", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
-                { name: "KB Cossack Squats", type: "skill", unilateral: "alt", baseReps: 10, kit: "kettlebell" },
                 { name: "Air Squats", type: "strength", unilateral: null, baseReps: 25, kit: "bodyweight" }
             ],
             core: [
@@ -407,8 +414,9 @@
             conditioning: [
                 { name: "Run 400m", type: "distance", unilateral: null, baseReps: 1, kit: "run" },
                 { name: "Run 200m", type: "distance", unilateral: null, baseReps: 1, kit: "run" },
-                { name: "100m Jog", type: "distance", unilateral: null, baseReps: 1, kit: "run" },
-                { name: "SA KB Snatches", type: "power", unilateral: ["alt", "switch"], baseReps: 10, kit: "kettlebell" },
+                { name: "SA KB Snatches", type: "power", unilateral: ["alt", "switch"], baseReps: 12, kit: "kettlebell" },
+                { name: "H2H KB Swings", type: "power", unilateral: "alt", baseReps: 24, kit: "kettlebell" },
+                { name: "2H KB Swings", type: "power", unilateral: null, baseReps: 30, kit: "kettlebell" },
                 { name: "Mountain Climbers", type: "cardio", unilateral: "alt", baseReps: 40, kit: "bodyweight" },
                 { name: "Jump Squats", type: "power", unilateral: null, baseReps: 12, kit: "bodyweight" }
             ]
@@ -419,46 +427,45 @@
                 name: "AMRAP", 
                 description: "As Many Rounds As Possible", 
                 allowDistance: true,
-                instruction: "Set a timer and cycle through the list continuously. Maintain a pace that allows for consistent movement with minimal rest.",
+                allowSlow: true,
+                instruction: "Set a timer and cycle through the list continuously. Maintain a steady pace.",
                 generator: () => `TIME CAP: ${[15, 18, 20, 25, 30][Math.floor(Math.random() * 5)]} MINUTES` 
             }, 
             { 
                 name: "ROUNDS FOR TIME", 
                 description: "Fixed rounds for maximum intensity", 
                 allowDistance: true,
-                instruction: "Complete the designated number of rounds as quickly as possible without sacrificing form.",
+                allowSlow: true,
+                instruction: "Complete the designated rounds as quickly as possible. Maintain form quality over speed.",
                 generator: () => `${[3, 4, 5][Math.floor(Math.random() * 3)]} ROUNDS FOR TIME (${[15, 20, 25, 30][Math.floor(Math.random() * 4)]}m CAP)` 
             },
             { 
                 name: "EMOM", 
                 description: "Every Minute on the Minute", 
                 allowDistance: false,
-                instruction: "Perform one movement at the top of every minute. Use the remainder of the minute to recover.",
+                allowSlow: false,
+                instruction: "Perform one movement at the top of every minute. Recover for the remainder of the minute.",
                 generator: () => `DURATION: ${[15, 20, 25, 30][Math.floor(Math.random() * 4)]} MINUTES` 
             },
             { 
                 name: "CHIPPER", 
                 description: "Single long circuit for time", 
                 allowDistance: true,
-                instruction: "Finish all reps for a movement before proceeding to the next one. Break the reps into manageable sets.",
+                allowSlow: true,
+                instruction: "Finish all reps for a movement before proceeding. Break reps into manageable sets.",
                 generator: () => `COMPLETION TIME (${[20, 25, 30][Math.floor(Math.random() * 3)]}m CAP)` 
             },
             { 
                 name: "TABATA", 
                 description: "High-Intensity Interval Training", 
                 allowDistance: false,
-                instruction: "Perform 8 rounds of 20s work / 10s rest for each movement. Complete all rounds for one movement before proceeding to next.",
+                allowSlow: false,
+                instruction: "Perform 8 rounds of 20s work / 10s rest for each movement. Complete all 8 rounds before moving to next movement.",
                 generator: () => `DURATION: ${[16, 20, 24, 28][Math.floor(Math.random() * 4)]} MINUTES` 
             }
         ];
 
-        const COACH_PHRASES = [
-            "Calculating the stimulus...",
-            "Building the foundation...",
-            "Finding the limit...",
-            "Setting the intention...",
-            "Filtering the gear..."
-        ];
+        const COACH_PHRASES = ["Calculating the stimulus...", "Building the foundation...", "Finding the limit...", "Setting the intention..."];
 
         const body = document.body;
         const themeToggle = document.getElementById('theme-toggle');
@@ -490,8 +497,9 @@
 
         function calculateReps(move, formatName) {
             const { baseReps, type, unilateral } = move;
-            let activeUni = Array.isArray(unilateral) ? selectRandom(unilateral) : unilateral;
             let finalReps = baseReps;
+            
+            const activeUnilateral = Array.isArray(unilateral) ? selectRandom(unilateral) : unilateral;
 
             if (formatName === "EMOM") {
                 if (type === "distance") return "WORK FULL PERIOD";
@@ -501,14 +509,15 @@
             } else if (formatName === "CHIPPER") {
                 if (type === "distance") return "COMPLETE ONCE";
                 finalReps = type === "power" ? 30 : 50;
-            } else {
-                if (type === "distance") return "•";
-                finalReps = baseReps;
+                if (move.name.includes("Turkish")) finalReps = 10;
+                if (move.name.includes("Long Cycle")) finalReps = 40;
+            } else if (type === "distance") {
+                return "•";
             }
 
-            if (activeUni && typeof finalReps === 'number') {
+            if (activeUnilateral && typeof finalReps === 'number') {
                 if (finalReps % 2 !== 0) finalReps++; 
-                const tag = activeUni === 'alt' ? ' (ALT)' : activeUni === 'switch' ? ' (SWITCH HALF)' : '';
+                const tag = activeUnilateral === 'alt' ? ' (ALT)' : activeUnilateral === 'switch' ? ' (SWITCH HALF)' : '';
                 return `${finalReps}${tag}`;
             }
             return finalReps;
@@ -526,19 +535,26 @@
                 const format = selectRandom(FORMATS);
                 let list = [];
                 let kitActuallyUsed = new Set(); 
+                let activeConflicts = new Set();
                 
                 wodFormatName.textContent = format.name;
                 wodTimeCap.textContent = format.generator();
 
                 Object.keys(PILLARS).forEach(cat => {
                     const pool = PILLARS[cat].filter(m => {
+                        if (m.kit !== "bodyweight" && !activePoolKits.includes(m.kit)) return false;
                         if (!format.allowDistance && m.type === "distance") return false;
-                        return activePoolKits.includes(m.kit);
+                        if (!format.allowSlow && m.slowMovement) return false; 
+                        if (m.conflicts && m.conflicts.some(c => activeConflicts.has(c))) return false;
+                        return true;
                     });
                     
                     if (pool.length > 0) {
                         let moveObj = selectRandom(pool);
                         kitActuallyUsed.add(moveObj.kit);
+                        if (moveObj.conflicts) {
+                            moveObj.conflicts.forEach(c => activeConflicts.add(c));
+                        }
                         const displayReps = calculateReps(moveObj, format.name);
                         list.push(`${displayReps} ${moveObj.name.toUpperCase()}`.trim());
                     }
@@ -572,7 +588,7 @@
                     generateButton.disabled = false;
                     lucide.createIcons();
                 }, 50);
-            }, 1000);
+            }, 800);
         }
 
         function resetToSetup() {
