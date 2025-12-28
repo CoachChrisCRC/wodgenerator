@@ -143,9 +143,6 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
         }
 
-        .btn-generate:active { transform: scale(0.98) translateY(0); }
-        .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
-
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -155,7 +152,7 @@
             justify-content: center;
             padding: 1.5rem;
             background-color: var(--modal-overlay);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(8px);
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
@@ -169,10 +166,12 @@
             transform: scale(0.95);
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             width: 100%;
-            max-width: 24rem;
-            border-radius: 2rem;
-            padding: 2rem;
+            max-width: 30rem;
+            border-radius: 2.5rem;
+            padding: 2.5rem;
             position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         
         .modal-overlay.active .modal-content { transform: scale(1); }
@@ -193,36 +192,32 @@
 
         #launch-overlay.active { display: flex; opacity: 1; }
 
-        #launch-icon-container {
-            color: var(--text-heading);
-            animation: pulse-scale 1.2s infinite ease-in-out;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
         @keyframes pulse-scale {
             0% { transform: scale(0.85); opacity: 0.3; }
             50% { transform: scale(1.1); opacity: 1; }
             100% { transform: scale(0.85); opacity: 0.3; }
         }
 
+        #launch-icon-container { animation: pulse-scale 1.2s infinite ease-in-out; }
+
         .hidden-initial { display: none; }
 
-        .baseline-badge {
-            background-color: var(--bg-btn-primary);
-            color: var(--btn-text-primary);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .intensity-pill {
+            font-size: 9px;
+            font-weight: 900;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4" data-theme="light">
 
     <div id="launch-overlay">
-        <div id="launch-icon-container">
+        <div id="launch-icon-container" style="color: var(--text-heading)">
             <i data-lucide="zap" class="w-16 h-16"></i>
         </div>
-        <p id="loading-text" class="mt-4 font-brand font-bold text-xl uppercase tracking-widest text-center px-8" style="color: var(--text-heading)">Preparing Session</p>
+        <p id="loading-text" class="mt-4 font-brand font-bold text-xl uppercase tracking-widest text-center px-8" style="color: var(--text-heading)">Analyzing Systems</p>
     </div>
 
     <!-- HELP MODAL -->
@@ -231,25 +226,40 @@
             <button id="close-modal" class="absolute top-6 right-6 p-2 rounded-full hover:opacity-70 transition-opacity" style="color: var(--text-muted)">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
-            <div class="flex flex-col items-center text-center">
-                <div class="p-4 rounded-2xl mb-4" style="background-color: var(--bg-toggle)">
-                    <i data-lucide="help-circle" class="w-8 h-8" style="color: var(--text-heading)"></i>
+            <div class="flex flex-col">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="p-3 rounded-2xl" style="background-color: var(--bg-toggle)">
+                        <i data-lucide="info" class="w-6 h-6" style="color: var(--text-heading)"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-brand font-bold text-2xl uppercase leading-none" style="color: var(--text-heading)">The Framework</h3>
+                        <p class="text-[10px] font-bold uppercase tracking-widest opacity-60" style="color: var(--text-accent)">Modular Session Generation</p>
+                    </div>
                 </div>
-                <h3 class="font-brand font-bold text-2xl uppercase mb-3" style="color: var(--text-heading)">How it Works</h3>
-                <div class="space-y-4 text-sm leading-relaxed text-left" style="color: var(--text-accent)">
-                    <p>This tool generates custom workouts based on the equipment you have available right now.</p>
-                    <ul class="space-y-3 list-none">
-                        <li class="flex gap-3">
-                            <i data-lucide="shield" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
-                            <span><strong>Always Included:</strong> Bodyweight fundamentals are the base of every session.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <i data-lucide="layers" class="w-5 h-5 mt-0.5 flex-shrink-0" style="color: var(--text-heading)"></i>
-                            <span><strong>Select Gear:</strong> Choose supplemental kit to expand the movement pool.</span>
-                        </li>
-                    </ul>
+
+                <div class="space-y-6 text-xs leading-relaxed" style="color: var(--text-accent)">
+                    <section>
+                        <h4 class="font-black uppercase tracking-widest mb-2 text-[11px]" style="color: var(--text-heading)">1. Movement Pillars</h4>
+                        <p>Workouts are built across 5 specific pillars: Full Body Power, Upper Push/Pull, Lower Strength, Core Stability, and Metabolic Conditioning. This ensures balanced structural integrity in every session.</p>
+                    </section>
+
+                    <section>
+                        <h4 class="font-black uppercase tracking-widest mb-2 text-[11px]" style="color: var(--text-heading)">2. Dynamic Loading</h4>
+                        <p>The system intelligently adjusts repetitions based on the movement type and session format. Skill-based movements (like Turkish Get-ups) are capped at low volumes, while bodyweight movements scale to maintain high intensity.</p>
+                    </section>
+
+                    <section>
+                        <h4 class="font-black uppercase tracking-widest mb-2 text-[11px]" style="color: var(--text-heading)">3. Supplemental Gear</h4>
+                        <p>By selecting equipment, you unlock specific movement pools. If "Single Kettlebell" is unchecked, the system defaults to pure bodyweight alternatives to ensure you can always train anywhere.</p>
+                    </section>
+
+                    <section class="p-4 rounded-2xl border border-dashed" style="background-color: var(--bg-toggle); border-color: var(--border-color)">
+                        <h4 class="font-black uppercase tracking-widest mb-2 text-[11px]" style="color: var(--text-heading)">Coaching Advice</h4>
+                        <p class="italic text-[10px]">"Consistency beats intensity in the long run. If a session feels too heavy, reduce the reps by 20% and focus on the quality of movement. Breathe nasally during your rest periods."</p>
+                    </section>
                 </div>
-                <button id="modal-confirm" class="w-full mt-8 py-3 font-black uppercase tracking-widest rounded-xl text-xs" style="background-color: var(--bg-btn-primary); color: var(--btn-text-primary)">Understood</button>
+
+                <button id="modal-confirm" class="w-full mt-8 py-4 font-black uppercase tracking-widest rounded-2xl text-xs" style="background-color: var(--bg-btn-primary); color: var(--btn-text-primary)">Return to Training</button>
             </div>
         </div>
     </div>
@@ -270,14 +280,14 @@
                         <div class="theme-switch-circle"></div>
                     </div>
                 </div>
-                <button id="open-info" class="p-2 rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center" style="background-color: var(--bg-toggle); color: var(--text-heading)" title="How to use">
+                <button id="open-info" class="p-2 rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center" style="background-color: var(--bg-toggle); color: var(--text-heading)">
                     <i data-lucide="help-circle" class="w-5 h-5"></i>
                 </button>
             </div>
         </header>
 
         <!-- SETUP SCREEN -->
-        <div id="home-state" class="w-full text-center space-y-6 py-4 animate-in fade-in duration-700">
+        <div id="home-state" class="w-full text-center space-y-6 py-4">
             <div class="space-y-2">
                 <h2 class="font-brand font-bold text-4xl uppercase tracking-tight" style="color: var(--text-heading)">WOD Generator</h2>
                 <p class="text-xs font-bold uppercase tracking-widest px-4 py-2 flex items-center justify-center gap-2 rounded-full mx-auto w-fit" style="background-color: var(--bg-toggle); color: var(--text-accent)">
@@ -286,20 +296,19 @@
             </div>
             
             <div class="rounded-3xl p-6 border border-dashed space-y-4" style="background-color: var(--bg-toggle); border-color: var(--border-color)">
-                
                 <div class="space-y-4">
-                    <div class="baseline-badge p-4 rounded-2xl flex items-center justify-between border-2 border-transparent">
+                    <div class="p-4 rounded-2xl flex items-center justify-between" style="background-color: var(--bg-btn-primary); color: var(--btn-text-primary)">
                         <div class="flex flex-col items-start">
                             <span class="text-xs font-bold uppercase tracking-widest">Bodyweight Foundation</span>
-                            <span class="text-[9px] font-black opacity-60 uppercase tracking-tighter">Included in every session</span>
+                            <span class="text-[9px] font-black opacity-60 uppercase tracking-tighter">Essential movements included</span>
                         </div>
                         <i data-lucide="shield" class="w-5 h-5"></i>
                     </div>
 
                     <div class="flex items-center gap-3 pt-1">
-                        <div class="h-[1px] flex-1 bg-gray-300 dark:bg-gray-700"></div>
-                        <span class="text-[10px] font-black uppercase tracking-widest opacity-40">Add Supplemental Kit</span>
-                        <div class="h-[1px] flex-1 bg-gray-300 dark:bg-gray-700"></div>
+                        <div class="h-[1px] flex-1 bg-gray-300 dark:bg-gray-700 opacity-30"></div>
+                        <span class="text-[10px] font-black uppercase tracking-widest opacity-40">Supplemental Kit</span>
+                        <div class="h-[1px] flex-1 bg-gray-300 dark:bg-gray-700 opacity-30"></div>
                     </div>
 
                     <div class="grid grid-cols-1 gap-2">
@@ -324,10 +333,9 @@
 
         <!-- RESULT SCREEN -->
         <div id="wod-card" class="w-full space-y-5 hidden-initial opacity-0 transition-opacity duration-500">
-            
             <div class="flex items-center justify-between">
                 <div id="kit-section" class="space-y-2">
-                    <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-muted)">Kit Required For This Plan</span>
+                    <span class="text-[10px] font-black uppercase tracking-widest" style="color: var(--text-muted)">Kit Required</span>
                     <div id="kit-container" class="flex flex-wrap gap-2"></div>
                 </div>
                 <button id="reset-button" class="p-2.5 rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center border border-dashed" style="background-color: var(--bg-toggle); color: var(--text-accent); border-color: var(--border-color)">
@@ -335,22 +343,21 @@
                 </button>
             </div>
 
-            <div class="flex items-center justify-between border-b pb-2" style="border-color: var(--border-color)">
-                <h3 class="text-xs font-black uppercase tracking-widest" style="color: var(--text-muted)">Your Session Plan</h3>
-            </div>
-
             <div class="space-y-4">
-                <div class="flex flex-col gap-1">
-                    <span id="wod-format-name" class="text-3xl font-black uppercase tracking-tighter leading-none" style="color: var(--text-heading)"></span>
-                    <span id="wod-format-desc" class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-accent)"></span>
+                <div class="flex items-start justify-between">
+                    <div class="flex flex-col gap-1">
+                        <span id="wod-format-name" class="text-3xl font-black uppercase tracking-tighter leading-none" style="color: var(--text-heading)"></span>
+                        <span id="wod-format-desc" class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-accent)"></span>
+                    </div>
+                    <span id="intensity-indicator" class="intensity-pill"></span>
                 </div>
 
-                <div id="wod-movements" class="w-full p-5 rounded-3xl text-sm md:text-base"></div>
+                <div id="wod-movements" class="w-full p-5 rounded-3xl text-sm"></div>
 
                 <div class="flex items-center justify-between">
                     <div id="wod-time-cap" class="text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-full" style="background-color: var(--bg-toggle); color: var(--text-heading)"></div>
-                    <button id="copy-button" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:opacity-70 transition-opacity" style="color: var(--text-accent)">
-                        <i data-lucide="copy" class="w-3 h-3"></i> Share Effort
+                    <button id="copy-button" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:opacity-70" style="color: var(--text-accent)">
+                        <i data-lucide="copy" class="w-3 h-3"></i> Share
                     </button>
                 </div>
             </div>
@@ -371,121 +378,55 @@
 
         const PILLARS = {
             full_body: [
-                { name: "SA KB Long Cycle", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", conflicts: ["press"] },
-                { name: "SA KB Thrusters", type: "power", unilateral: "switch", baseReps: 10, kit: "kettlebell", conflicts: ["press"] },
-                { name: "SA KB Cluster", type: "power", unilateral: "switch", baseReps: 6, kit: "kettlebell" },
-                { name: "Burpees", type: "cardio", unilateral: null, baseReps: 12, kit: "bodyweight" },
-                { name: "SA KB Clean & Press", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", conflicts: ["press"] },
-                { name: "SA KB Snatches", type: "power", unilateral: ["alt", "switch"], baseReps: 10, kit: "kettlebell" },
-                { name: "SA KB Cleans", type: "power", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
-                { name: "KB Turkish Get-Ups", type: "skill", unilateral: "switch", baseReps: 2, kit: "kettlebell", slowMovement: true }
+                { name: "SA KB Long Cycle", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "high" },
+                { name: "SA KB Thrusters", type: "power", unilateral: "switch", baseReps: 10, kit: "kettlebell", intensity: "high" },
+                { name: "SA KB Cluster", type: "power", unilateral: "switch", baseReps: 6, kit: "kettlebell", intensity: "high" },
+                { name: "Burpees", type: "cardio", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "moderate" },
+                { name: "SA KB Clean & Press", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate" }
             ],
             upper: [
-                { name: "SA KB Push Press", type: "strength", unilateral: "switch", baseReps: 10, kit: "kettlebell", conflicts: ["press"] },
-                { name: "SA KB Strict Press", type: "strength", unilateral: "switch", baseReps: 8, kit: "kettlebell", conflicts: ["press"] },
-                { name: "Push-ups", type: "strength", unilateral: null, baseReps: 15, kit: "bodyweight" },
-                { name: "SA KB Row", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
-                { name: "SA KB Floor Press", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell" },
-                { name: "Pike Push-ups", type: "strength", unilateral: null, baseReps: 8, kit: "bodyweight" },
-                { name: "Pull Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup", conflicts: ["vertical-pull"] }
+                { name: "SA KB Strict Press", type: "strength", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate" },
+                { name: "Push-ups", type: "strength", unilateral: null, baseReps: 15, kit: "bodyweight", intensity: "moderate" },
+                { name: "SA KB Row", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "low" },
+                { name: "Pull Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup", intensity: "high" }
             ],
             lower: [
-                { name: "KB Goblet Squats", type: "strength", unilateral: null, baseReps: 15, kit: "kettlebell" },
-                { name: "2H KB Swings", type: "power", unilateral: null, baseReps: 20, kit: "kettlebell" },
-                { name: "SA KB Swings", type: "power", unilateral: "switch", baseReps: 16, kit: "kettlebell" },
-                { name: "KB Goblet Lunges", type: "strength", unilateral: "alt", baseReps: 16, kit: "kettlebell" },
-                { name: "Reverse Lunges", type: "strength", unilateral: "alt", baseReps: 20, kit: "bodyweight" },
-                { name: "Air Squats", type: "strength", unilateral: null, baseReps: 25, kit: "bodyweight" }
+                { name: "KB Goblet Squats", type: "strength", unilateral: null, baseReps: 15, kit: "kettlebell", intensity: "moderate" },
+                { name: "2H KB Swings", type: "power", unilateral: null, baseReps: 20, kit: "kettlebell", intensity: "moderate" },
+                { name: "KB Goblet Lunges", type: "strength", unilateral: "alt", baseReps: 16, kit: "kettlebell", intensity: "moderate" },
+                { name: "Air Squats", type: "strength", unilateral: null, baseReps: 25, kit: "bodyweight", intensity: "low" }
             ],
             core: [
-                { name: "SA KB Plank Drags", type: "stability", unilateral: "alt", baseReps: 12, kit: "kettlebell" },
-                { name: "KB Windmills", type: "skill", unilateral: "switch", baseReps: 5, kit: "kettlebell" },
-                { name: "Hanging Leg Raises", type: "stability", unilateral: null, baseReps: 12, kit: "pullup" },
-                { name: "Quadruped Shoulder Taps", type: "stability", unilateral: "alt", baseReps: 20, kit: "bodyweight" },
-                { name: "Plank Shoulder Taps", type: "stability", unilateral: "alt", baseReps: 30, kit: "bodyweight" },
-                { name: "Dead Bugs", type: "stability", unilateral: "alt", baseReps: 16, kit: "bodyweight" },
-                { name: "Sit-ups", type: "stability", unilateral: null, baseReps: 20, kit: "bodyweight" },
-                { name: "Hollow Body Holds", type: "stability", unilateral: null, baseReps: 30, kit: "bodyweight", isTimeBased: true }
+                { name: "SA KB Plank Drags", type: "stability", unilateral: "alt", baseReps: 12, kit: "kettlebell", intensity: "low" },
+                { name: "Hanging Leg Raises", type: "stability", unilateral: null, baseReps: 12, kit: "pullup", intensity: "moderate" },
+                { name: "Plank Shoulder Taps", type: "stability", unilateral: "alt", baseReps: 30, kit: "bodyweight", intensity: "low" },
+                { name: "Hollow Body Holds", type: "stability", unilateral: null, baseReps: 30, kit: "bodyweight", isTimeBased: true, intensity: "moderate" }
             ],
             conditioning: [
-                { name: "Run 400m", type: "distance", unilateral: null, baseReps: 1, kit: "run" },
-                { name: "SA KB Snatches", type: "power", unilateral: ["alt", "switch"], baseReps: 12, kit: "kettlebell" },
-                { name: "2H KB Swings", type: "power", unilateral: null, baseReps: 30, kit: "kettlebell" },
-                { name: "Mountain Climbers", type: "cardio", unilateral: "alt", baseReps: 40, kit: "bodyweight" },
-                { name: "Jump Squats", type: "power", unilateral: null, baseReps: 12, kit: "bodyweight" }
+                { name: "Run 400m", type: "distance", unilateral: null, baseReps: 1, kit: "run", intensity: "moderate" },
+                { name: "SA KB Snatches", type: "power", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "high" },
+                { name: "Mountain Climbers", type: "cardio", unilateral: "alt", baseReps: 40, kit: "bodyweight", intensity: "moderate" },
+                { name: "Jump Squats", type: "power", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "high" }
             ]
         };
 
         const FORMATS = [
-            { 
-                name: "AMRAP", 
-                style: "Aerobic Capacity & Pacing", 
-                howTo: [
-                    "Start your timer. Perform movement A, then B, then C, etc., for the prescribed reps.",
-                    "Once the final movement in the list is finished, immediately return to movement A.",
-                    "The goal is to complete as many full cycles as possible before the timer hits 0.",
-                    "Minimize transition time between exercises. Nasal breathe as long as you can."
-                ],
-                generator: () => `TIME CAP: ${[15, 18, 20, 25, 30][Math.floor(Math.random() * 5)]} MINUTES` 
-            }, 
-            { 
-                name: "ROUNDS FOR TIME", 
-                style: "High Intensity & Benchmark", 
-                howTo: [
-                    "Perform the entire list of movements in order. This equals ONE round.",
-                    "Repeat this cycle for the total number of rounds specified.",
-                    "Stop your clock once the final rep of the final round is complete.",
-                    "Rest only when required to maintain safe technique."
-                ],
-                generator: () => `${[3, 4, 5][Math.floor(Math.random() * 3)]} ROUNDS (${[15, 20, 25, 30][Math.floor(Math.random() * 4)]}m CAP)` 
-            },
-            { 
-                name: "EMOM", 
-                style: "Skill & Power", 
-                howTo: [
-                    "Minute 1: Perform Movement A. Rest for the remainder of that minute.",
-                    "Minute 2: Perform Movement B. Rest for the remainder.",
-                    "Continue rotating through the list on each subsequent minute.",
-                    "The prescribed reps should allow for roughly 15-20 seconds of rest per minute."
-                ],
-                generator: () => `DURATION: ${[15, 20, 25, 30][Math.floor(Math.random() * 4)]} MINUTES` 
-            },
-            { 
-                name: "CHIPPER", 
-                style: "Resilience", 
-                howTo: [
-                    "Complete all reps for Movement A before looking at Movement B.",
-                    "Once A is finished, move to B and complete all reps, then C, and so on.",
-                    "Work through the list until the very last rep of the last exercise is done.",
-                    "Break large sets into smaller blocks (e.g., sets of 5 or 10) with short rests."
-                ],
-                generator: () => `COMPLETION TIME (${[20, 25, 30][Math.floor(Math.random() * 3)]}m CAP)` 
-            },
-            { 
-                name: "TABATA", 
-                style: "Metabolic Threshold", 
-                howTo: [
-                    "Focus on Movement A: Work 20s, Rest 10s. Repeat for 8 total rounds (4 mins).",
-                    "Rest 1 minute, then repeat the same 8-round protocol for Movement B.",
-                    "Repeat for all movements in the plan.",
-                    "Effort should be maximal within the 20-second work windows."
-                ],
-                generator: () => `DURATION: ${[16, 20, 24, 28][Math.floor(Math.random() * 4)]} MINUTES` 
-            },
-            { 
-                name: "INTERVALS", 
-                style: "Aerobic Power & Recovery", 
-                howTo: [
-                    "Work for the specified duration (e.g. 60s) on Movement A, then rest for the same duration.",
-                    "Next, work on Movement B, then rest. Repeat through the list.",
-                    "The rest is as long as the work—maintain high power output during the work phase.",
-                    "Cycle through the exercises until the total duration is reached."
-                ],
-                generator: (randType) => { return `${randType} (${[16, 20, 24, 30][Math.floor(Math.random() * 4)]} MINS)`; } 
-            }
+            { name: "AMRAP", style: "Aerobic Capacity & Pacing", howTo: ["Start your timer. Perform movements A through E for prescribed reps.", "Once finished, immediately return to movement A.", "Complete as many full cycles as possible before time runs out.", "Pace so you can maintain nasal breathing as long as possible."] },
+            { name: "ROUNDS FOR TIME", style: "High Intensity Benchmark", howTo: ["Perform the entire list of movements in order. This equals ONE round.", "Repeat this cycle for the total number of rounds specified.", "Stop your clock once the final rep of the final round is complete.", "Technique over speed—don't let movement quality break down."] },
+            { name: "EMOM", style: "Skill & Power Output", howTo: ["Minute 1: Perform Movement A. Rest for the remainder of that minute.", "Minute 2: Perform Movement B. Rest for the remainder.", "Continue rotating through the list on each subsequent minute.", "If you fall behind the clock, reduce the reps slightly."] },
+            { name: "CHIPPER", style: "Mental Resilience", howTo: ["Complete all reps for Movement A before looking at Movement B.", "Work through the list until the very last rep of the last exercise is done.", "Break large sets into smaller chunks to maintain power.", "Stay moving—short rests are better than long ones."] }
         ];
 
-        const COACH_PHRASES = ["Calculating stimulus...", "Building foundation...", "Finding the limit...", "Setting intention..."];
+        const LOADING_PHRASES = [
+            "Analyzing Systems...",
+            "Preparing Session...",
+            "Calculating Stimulus...",
+            "Optimizing Movements...",
+            "Setting Intention...",
+            "Building Foundation...",
+            "Finding the Limit...",
+            "Drafting Strategy..."
+        ];
 
         const body = document.body;
         const themeToggle = document.getElementById('theme-toggle');
@@ -502,130 +443,111 @@
         const kitContainer = document.getElementById('kit-container');
         const launchOverlay = document.getElementById('launch-overlay');
         const loadingText = document.getElementById('loading-text');
+        const intensityIndicator = document.getElementById('intensity-indicator');
 
         themeToggle.addEventListener('click', () => {
             const isDark = body.getAttribute('data-theme') === 'dark';
             body.setAttribute('data-theme', isDark ? 'light' : 'dark');
         });
 
-        function calculateReps(move, formatName, intervalType = null) {
+        function calculateReps(move, formatName) {
             const { baseReps, type, unilateral, isTimeBased } = move;
             let finalReps = baseReps;
-            const activeUnilateral = Array.isArray(unilateral) ? activeUnilateralArr(unilateral) : unilateral;
+            const activeUni = Array.isArray(unilateral) ? unilateral[0] : unilateral;
 
-            // Specific Interval Format Rule (30/30 or 60/60)
-            if (formatName === "INTERVALS" && intervalType) {
-                const seconds = intervalType.includes("30s") ? "30" : "60";
-                const tag = activeUnilateral === 'alt' ? ' (Alt)' : activeUnilateral === 'switch' ? ' (Switch Half)' : '';
-                return `Reps for ${seconds}s${tag}`;
-            }
-
-            if (isTimeBased) {
-                if (formatName === "TABATA" || formatName === "INTERVALS") return "Hold Position";
-                if (formatName === "CHIPPER") return "60 Seconds";
-                return `${baseReps} Seconds`;
-            }
-
-            if (formatName === "EMOM") {
-                if (type === "distance") return "Full Period";
-                finalReps = Math.ceil(baseReps * 0.85);
-            } else if (formatName === "TABATA") {
-                return "Max Reps (20s)";
-            } else if (formatName === "CHIPPER") {
-                if (type === "distance") return "Complete Once";
+            if (isTimeBased) return `${baseReps} Seconds`;
+            if (formatName === "CHIPPER") {
+                if (type === "distance") return "Complete 1km";
                 finalReps = type === "power" ? 30 : 50;
-                if (move.name.includes("Turkish")) finalReps = 10;
-                if (move.name.includes("Long Cycle")) finalReps = 40;
-                if (move.name.includes("Dead Bug") || move.name.includes("Shoulder Tap")) finalReps = 60;
-                if (move.name.includes("Leg Raise")) finalReps = 30;
-            } else if (type === "distance") {
-                return "Distance Focus";
+            } else if (formatName === "EMOM") {
+                if (type === "distance") return "Run 1 Min";
+                finalReps = Math.ceil(baseReps * 0.85);
             }
 
-            if (activeUnilateral && typeof finalReps === 'number') {
-                if (finalReps % 2 !== 0) finalReps++; 
-                const tag = activeUnilateral === 'alt' ? ' (Alt)' : activeUnilateral === 'switch' ? ' (Switch Half)' : '';
+            if (activeUni) {
+                const tag = activeUni === 'alt' ? ' (Alt)' : ' (Switch Half)';
                 return `${finalReps}${tag}`;
             }
             return finalReps;
         }
 
-        function activeUnilateralArr(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-
         function generateWOD() {
             const selectedKit = Array.from(document.querySelectorAll('input[name="kit-select"]:checked')).map(cb => cb.value);
-            const activePoolKits = ["bodyweight", ...selectedKit];
+            const activeKits = ["bodyweight", ...selectedKit];
 
-            loadingText.textContent = COACH_PHRASES[Math.floor(Math.random() * COACH_PHRASES.length)];
+            // Set random phrase
+            loadingText.textContent = LOADING_PHRASES[Math.floor(Math.random() * LOADING_PHRASES.length)];
+            
             generateButton.disabled = true;
             launchOverlay.classList.add('active');
             
             setTimeout(() => {
                 const format = FORMATS[Math.floor(Math.random() * FORMATS.length)];
-                let kitActuallyUsed = new Set(); 
-                let activeConflicts = new Set();
-                
-                // Pre-calculate Interval Type if needed
-                let intervalType = null;
-                if (format.name === "INTERVALS") {
-                    intervalType = Math.random() > 0.5 ? "30s WORK / 30s REST" : "60s WORK / 60s REST";
-                }
+                let kitUsed = new Set();
+                let intensities = [];
 
                 wodFormatName.textContent = format.name;
-                wodTimeCap.textContent = format.name === "INTERVALS" ? format.generator(intervalType) : format.generator();
+                wodFormatDesc.textContent = format.style;
                 wodMovements.innerHTML = '';
 
                 let moveIndex = 0;
                 Object.keys(PILLARS).forEach(cat => {
-                    const pool = PILLARS[cat].filter(m => {
-                        if (m.kit !== "bodyweight" && !activePoolKits.includes(m.kit)) return false;
-                        if (!format.allowDistance && m.type === "distance") return false;
-                        if (!format.allowSlow && m.slowMovement) return false; 
-                        if (m.conflicts && m.conflicts.some(c => activeConflicts.has(c))) return false;
-                        return true;
-                    });
-                    
+                    const pool = PILLARS[cat].filter(m => activeKits.includes(m.kit));
                     if (pool.length > 0) {
-                        let moveObj = pool[Math.floor(Math.random() * pool.length)];
-                        kitActuallyUsed.add(moveObj.kit);
-                        if (moveObj.conflicts) moveObj.conflicts.forEach(c => activeConflicts.add(c));
+                        const move = pool[Math.floor(Math.random() * pool.length)];
+                        kitUsed.add(move.kit);
+                        intensities.push(move.intensity);
                         
-                        const displayReps = calculateReps(moveObj, format.name, intervalType);
-                        const label = String.fromCharCode(65 + moveIndex);
-                        
+                        const displayReps = calculateReps(move, format.name);
                         const line = document.createElement('div');
                         line.className = 'movement-line';
-                        line.innerHTML = `<span>${label})</span> <strong>${moveObj.name.toUpperCase()}</strong> : <em>${displayReps}</em>`;
+                        line.innerHTML = `<span>${String.fromCharCode(65 + moveIndex)})</span> <strong>${move.name.toUpperCase()}</strong> : <em>${displayReps}</em>`;
                         wodMovements.appendChild(line);
                         moveIndex++;
                     }
                 });
 
+                // Intensity logic
+                const highCount = intensities.filter(i => i === 'high').length;
+                let finalIntensity = 'Moderate Effort';
+                let intensityColor = '#f59e0b';
+                
+                if (highCount >= 3) { 
+                    finalIntensity = 'High Intensity'; 
+                    intensityColor = '#ef4444';
+                } else if (highCount <= 1) { 
+                    finalIntensity = 'Low Intensity'; 
+                    intensityColor = '#10b981';
+                }
+                
+                intensityIndicator.textContent = finalIntensity;
+                intensityIndicator.style.backgroundColor = intensityColor;
+                intensityIndicator.style.color = '#fff';
+
+                // Kit Tags
                 kitContainer.innerHTML = '';
-                kitActuallyUsed.forEach(k => {
-                    const l = k === 'kettlebell' ? 'Single KB' : k === 'run' ? 'Run Space' : k === 'pullup' ? 'Pull Up Bar' : 'Bodyweight';
+                kitUsed.forEach(k => {
+                    const l = k === 'kettlebell' ? 'KB' : k === 'run' ? 'Run' : k === 'pullup' ? 'Pull Up' : 'Body';
                     const tag = document.createElement('div');
                     tag.className = 'kit-tag';
-                    tag.innerHTML = `<i data-lucide="check-circle" class="w-3 h-3"></i> ${l}`;
+                    tag.innerHTML = `<i data-lucide="check" class="w-3 h-3"></i> ${l}`;
                     kitContainer.appendChild(tag);
                 });
 
-                wodFormatDesc.textContent = format.name === "ROUNDS FOR TIME" ? "Fixed volume task execution" : format.name === "AMRAP" ? "As Many Rounds As Possible" : format.name === "EMOM" ? "Every Minute on the Minute" : format.name === "CHIPPER" ? "Single circuit high volume" : format.name === "TABATA" ? "Interval conditioning" : "1:1 Work to Rest Ratio";
-                
-                instructionContent.innerHTML = '';
-                
-                // Focus Header Box
-                const styleBox = document.createElement('div');
-                styleBox.className = 'flex items-center gap-2 p-3 rounded-xl mb-3 text-[10px] font-black uppercase tracking-widest';
-                styleBox.style.backgroundColor = 'var(--bg-btn-primary)';
-                styleBox.style.color = 'var(--btn-text-primary)';
-                styleBox.innerHTML = `<i data-lucide="target" class="w-4 h-4"></i> Focus: ${format.style}`;
-                instructionContent.appendChild(styleBox);
+                wodTimeCap.textContent = format.name === "CHIPPER" ? "Task Completion" : "15-25 Min Cap";
 
-                // Step-by-Step Boxes (The Grey Boxes)
+                // Instructions
+                instructionContent.innerHTML = '';
+                const focusBox = document.createElement('div');
+                focusBox.className = 'flex items-center gap-2 p-3 rounded-xl mb-3 text-[10px] font-black uppercase tracking-widest';
+                focusBox.style.backgroundColor = 'var(--bg-btn-primary)';
+                focusBox.style.color = 'var(--btn-text-primary)';
+                focusBox.innerHTML = `<i data-lucide="target" class="w-4 h-4"></i> Focus: ${format.style}`;
+                instructionContent.appendChild(focusBox);
+
                 format.howTo.forEach(text => {
                     const p = document.createElement('p');
-                    p.className = 'p-3 rounded-xl text-[11px] leading-relaxed border border-dashed mb-2';
+                    p.className = 'p-3 rounded-xl text-[11px] border border-dashed';
                     p.style.backgroundColor = 'var(--bg-toggle)';
                     p.style.borderColor = 'var(--border-color)';
                     p.style.color = 'var(--text-accent)';
@@ -639,7 +561,7 @@
                 
                 setTimeout(() => {
                     wodCard.classList.remove('opacity-0');
-                    generateButton.textContent = "BUILD ANOTHER SESSION";
+                    generateButton.textContent = "Rebuild Session";
                     generateButton.disabled = false;
                     lucide.createIcons();
                 }, 50);
@@ -658,25 +580,20 @@
 
         copyButton.addEventListener('click', () => {
             const cleanMovements = Array.from(wodMovements.querySelectorAll('.movement-line')).map(l => l.innerText).join('\n');
-            const text = `WOD: ${wodFormatName.textContent}\n${cleanMovements}\n\n${wodTimeCap.textContent}\n\nCOACH CHRIS`;
+            const text = `WOD: ${wodFormatName.textContent}\n${cleanMovements}\n\nCOACH CHRIS`;
             const el = document.createElement('textarea');
             el.value = text;
             document.body.appendChild(el);
             el.select();
             document.execCommand('copy');
             document.body.removeChild(el);
-            copyButton.innerHTML = `<i data-lucide="check" class="w-3 h-3"></i> COPIED`;
-            setTimeout(() => { copyButton.innerHTML = `<i data-lucide="copy" class="w-3 h-3"></i> Share Effort`; lucide.createIcons(); }, 1500);
+            copyButton.textContent = 'Copied!';
+            setTimeout(() => copyButton.textContent = 'Share', 1500);
         });
 
-        const openModal = document.getElementById('open-info');
-        const closeModal = document.getElementById('close-modal');
-        const modalConfirm = document.getElementById('modal-confirm');
-        const modalOverlay = document.getElementById('modal-overlay');
-
-        openModal.addEventListener('click', () => modalOverlay.classList.add('active'));
-        closeModal.addEventListener('click', () => modalOverlay.classList.remove('active'));
-        modalConfirm.addEventListener('click', () => modalOverlay.classList.remove('active'));
+        document.getElementById('open-info').addEventListener('click', () => document.getElementById('modal-overlay').classList.add('active'));
+        document.getElementById('close-modal').addEventListener('click', () => document.getElementById('modal-overlay').classList.remove('active'));
+        document.getElementById('modal-confirm').addEventListener('click', () => document.getElementById('modal-overlay').classList.remove('active'));
     </script>
 </body>
 </html>
