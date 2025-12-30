@@ -58,6 +58,7 @@
             background-color: var(--bg-page);
             color: var(--text-main);
             transition: background-color 0.3s ease, color 0.3s ease;
+            scroll-behavior: smooth;
         }
 
         .font-brand { font-family: 'Oswald', sans-serif; }
@@ -727,6 +728,9 @@
                 wodCard.classList.remove('hidden-initial');
                 launchOverlay.classList.remove('active');
                 
+                // Smooth scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
                 setTimeout(() => {
                     wodCard.classList.remove('opacity-0');
                     generateButton.textContent = "Rebuild Session";
@@ -743,6 +747,7 @@
                 wodCard.classList.add('hidden-initial');
                 homeState.classList.remove('hidden');
                 generateButton.textContent = "Build My Session";
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }, 300);
         });
 
