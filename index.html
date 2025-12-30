@@ -531,12 +531,12 @@
         }
 
         function getTrainingZoneInfo(label, formatName) {
-            if (formatName.includes("TABATA")) return { zone: "Lactate Threshold [Red Zone]", benefit: "elevated metabolic rate, buffering capacity, and VO2 Max development." };
-            if (formatName.includes("EMOM")) return { zone: "Mixed Oxidative [Workhorse]", benefit: "consistent power output, skill density, and mechanical quality under fatigue." };
-            if (formatName.includes("INTERVALS")) return { zone: "Lactate Threshold [Red Zone]", benefit: "repeatable explosive power and nervous system sharpening." };
-            if (label === 'High Intensity') return { zone: "Lactate Threshold [Red Zone]", benefit: "anaerobic power development and significant EPOC afterburn." };
-            if (label === 'Low Intensity') return { zone: "Aerobic Base [Foundation]", benefit: "mitochondrial biogenesis, fat oxidation, and structural resilience." };
-            return { zone: "Mixed Oxidative [Workhorse]", benefit: "versatile fitness, hypertrophy, and heart rate recovery efficiency." };
+            if (formatName.includes("TABATA")) return { zone: "Maximum Effort", benefit: "designed to maximize caloric burn while training your nervous system to maintain control under high-pressure metabolic stress." };
+            if (formatName.includes("EMOM")) return { zone: "Steady-State Strength", benefit: "designed to prioritize movement efficiency and consistent heart rate management by alternating work and fixed rest periods." };
+            if (formatName.includes("INTERVALS")) return { zone: "High-Intensity Repeatability", benefit: "focused on developing anaerobic speed and structural strength by pushing through high-output windows and prioritizing active recovery." };
+            if (label === 'High Intensity') return { zone: "Maximum Effort", benefit: "designed to target your metabolic ceiling, building the physiological engine required to sustain high-demand physical challenges." };
+            if (label === 'Low Intensity') return { zone: "Aerobic Base Building", benefit: "focused on developing your aerobic base and fat-oxidation efficiency, which are foundational for long-term health and recovery." };
+            return { zone: "Threshold Management", benefit: "a balanced stimulus that promotes both hypertrophic growth and aerobic efficiency, improving how quickly you can return to a resting state after effort." };
         }
 
         function generateWOD() {
@@ -647,7 +647,7 @@
                         <i data-lucide="zap" class="w-5 h-5 mt-0.5 shrink-0"></i> 
                         <div>
                             <div class="font-black uppercase tracking-wider text-[10px] mb-1 opacity-80">Session Focus</div>
-                            <div class="leading-relaxed">Targeting <strong>${format.style}</strong> in the <strong>${zoneData.zone}</strong> zone. Expect ${zoneData.benefit}</div>
+                            <div class="leading-relaxed">This <strong>${format.style}</strong> session is programmed for the <strong>${zoneData.zone}</strong> intensity zone and is ${zoneData.benefit}</div>
                         </div>
                     </div>
                 `;
