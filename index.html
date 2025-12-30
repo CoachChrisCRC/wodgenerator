@@ -542,6 +542,19 @@
             { id: "INTERVALS", name: "INTERVALS", style: "Mixed Power Output", howTo: [], isInternalSwitch: true }
         ];
 
+        const LOADING_PHRASES = [
+            "Optimizing Session",
+            "Analyzing Work Capacity",
+            "Drafting Protocol",
+            "Calculating Thresholds",
+            "Building Endurance",
+            "Calibrating Power",
+            "Ready to Train?",
+            "Focus. Execute.",
+            "Structuring Growth",
+            "Setting the Standard"
+        ];
+
         const body = document.body;
         const themeToggle = document.getElementById('theme-toggle');
         const generateButton = document.getElementById('generate-button');
@@ -556,8 +569,11 @@
         const instructionContent = document.getElementById('instruction-content');
         const kitContainer = document.getElementById('kit-container');
         const launchOverlay = document.getElementById('launch-overlay');
+        const loadingText = document.getElementById('loading-text');
         const intensityIndicator = document.getElementById('intensity-indicator');
         const modalOverlay = document.getElementById('modal-overlay');
+
+        let phraseIndex = 0;
 
         themeToggle.addEventListener('click', () => {
             const isDark = body.getAttribute('data-theme') === 'dark';
@@ -609,6 +625,11 @@
             const activeKits = ["bodyweight", ...selectedKit];
 
             generateButton.disabled = true;
+            
+            // Cycle through phrases
+            loadingText.textContent = LOADING_PHRASES[phraseIndex];
+            phraseIndex = (phraseIndex + 1) % LOADING_PHRASES.length;
+            
             launchOverlay.classList.add('active');
             
             setTimeout(() => {
