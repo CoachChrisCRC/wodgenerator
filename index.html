@@ -496,6 +496,7 @@
             ],
             upper: [
                 { name: "SA KB Strict Press", type: "strength", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate" },
+                { name: "SA KB Push Press", type: "power", unilateral: "switch", baseReps: 10, kit: "kettlebell", intensity: "high" },
                 { name: "Push-ups", type: "strength", unilateral: null, baseReps: 15, kit: "bodyweight", intensity: "moderate" },
                 { name: "SA KB Row", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "low" },
                 { name: "Pull Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup", intensity: "high" },
@@ -503,8 +504,10 @@
             ],
             lower: [
                 { name: "KB Goblet Squats", type: "strength", unilateral: null, baseReps: 15, kit: "kettlebell", intensity: "moderate" },
-                { name: "2H KB Swings", type: "power", unilateral: null, baseReps: 20, kit: "kettlebell", intensity: "moderate" },
+                { name: "2H KB Swings", type: "power", unilateral: null, baseReps: 20, kit: "kettlebell", intensity: "moderate", isSwingVariation: true },
+                { name: "SA KB Swings", type: "power", unilateral: "switch", baseReps: 16, kit: "kettlebell", intensity: "high", isSwingVariation: true },
                 { name: "KB Goblet Lunges", type: "strength", unilateral: "alt", baseReps: 16, kit: "kettlebell", intensity: "moderate" },
+                { name: "KB Goblet Reverse Lunges", type: "strength", unilateral: "alt", baseReps: 16, kit: "kettlebell", intensity: "moderate" },
                 { name: "Air Squats", type: "strength", unilateral: null, baseReps: 25, kit: "bodyweight", intensity: "low" },
                 { name: "KB Staggered Stance Deadlift", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "moderate" }
             ],
@@ -520,7 +523,7 @@
                 { name: "SA KB Snatches", type: "power", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "high" },
                 { name: "Mountain Climbers", type: "cardio", unilateral: "alt", baseReps: 40, kit: "bodyweight", intensity: "moderate" },
                 { name: "Jump Squats", type: "power", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "high" },
-                { name: "KB Hand to Hand Swings", type: "power", unilateral: "alt", baseReps: 20, kit: "kettlebell", intensity: "high" }
+                { name: "KB Hand to Hand Swings", type: "power", unilateral: "alt", baseReps: 20, kit: "kettlebell", intensity: "high", isSwingVariation: true }
             ]
         };
 
@@ -564,6 +567,7 @@
             const { baseReps, type, unilateral, isTimeBased } = move;
             const tag = unilateral === 'alt' ? ' (Alt)' : unilateral === 'switch' ? ' (Switch Half)' : '';
             
+            // RUNNING DISTANCE LOGIC
             if (type === "distance") {
                 if (formatName.includes("TABATA") || formatName.includes("INTERVALS")) return "Max Distance";
                 if (formatName.includes("AMRAP")) return "200m Run";
@@ -588,7 +592,6 @@
             return `${finalReps}${tag}`;
         }
 
-        // UPDATED: Session Focus logic synced with generated Intensity Zone
         function getTrainingZoneInfo(label, formatName) {
             if (formatName.includes("TABATA")) return { zone: "Maximum Effort", benefit: "designed to maximize caloric burn while training your nervous system to maintain control under high-pressure metabolic stress." };
             if (formatName.includes("EMOM") && label === 'Moderate Effort') return { zone: "Steady-State Strength", benefit: "designed to prioritize movement efficiency and consistent heart rate management by alternating work and fixed rest periods." };
@@ -616,13 +619,22 @@
                 let movementsSelected = [];
                 let intensityLabel = 'Moderate Effort';
                 let color = '#f59e0b';
+                let hasSwingInSession = false;
 
                 Object.keys(PILLARS).forEach(cat => {
-                    const pool = PILLARS[cat].filter(m => activeKits.includes(m.kit));
-                    if (pool.length > 0) movementsSelected.push(pool[Math.floor(Math.random() * pool.length)]);
+                    let pool = PILLARS[cat].filter(m => activeKits.includes(m.kit));
+                    
+                    if (hasSwingInSession) {
+                        pool = pool.filter(m => !m.isSwingVariation);
+                    }
+
+                    if (pool.length > 0) {
+                        const selected = pool[Math.floor(Math.random() * pool.length)];
+                        movementsSelected.push(selected);
+                        if (selected.isSwingVariation) hasSwingInSession = true;
+                    }
                 });
 
-                // RESTORED: Fully dynamic format and intensity mapping
                 if (format.id === "AMRAP") {
                     const durations = [15, 18, 20, 25, 30];
                     const duration = durations[Math.floor(Math.random() * durations.length)];
@@ -658,7 +670,7 @@
                     intensityLabel = 'High Intensity'; color = '#ef4444';
                     capStr = `${movementsSelected.length * 4}:00`;
                 }
-                else if (format.isInternalSwitch) { // INTERVALS
+                else if (format.isInternalSwitch) {
                     const isThirty = Math.random() > 0.5;
                     const workTime = isThirty ? 30 : 60;
                     const restTime = isThirty ? 30 : 60;
