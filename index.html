@@ -501,6 +501,7 @@
                 { name: "Push-ups", type: "strength", unilateral: null, baseReps: 15, kit: "bodyweight", intensity: "moderate" },
                 { name: "SA KB Row", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "low" },
                 { name: "Pull Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup", intensity: "high" },
+                { name: "Chin Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup", intensity: "high" },
                 { name: "KB Half Kneeling Press", type: "strength", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate" },
                 { name: "Pike Push-ups", type: "strength", unilateral: null, baseReps: 10, kit: "bodyweight", intensity: "high" },
                 { name: "Diamond Push-ups", type: "strength", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "moderate" }
@@ -521,6 +522,7 @@
             core: [
                 { name: "SA KB Plank Drags", type: "stability", unilateral: "alt", baseReps: 12, kit: "kettlebell", intensity: "low" },
                 { name: "Hanging Leg Raises", type: "stability", unilateral: null, baseReps: 12, kit: "pullup", intensity: "moderate" },
+                { name: "Push Up Shoulder Taps", type: "stability", unilateral: "alt", baseReps: 24, kit: "bodyweight", intensity: "moderate" },
                 { name: "Plank Shoulder Taps", type: "stability", unilateral: "alt", baseReps: 30, kit: "bodyweight", intensity: "low" },
                 { name: "Quadruped Shoulder Taps", type: "stability", unilateral: "alt", baseReps: 20, kit: "bodyweight", intensity: "moderate" },
                 { name: "Hollow Body Holds", type: "stability", unilateral: null, baseReps: 30, kit: "bodyweight", isTimeBased: true, intensity: "moderate" },
@@ -699,8 +701,6 @@
                     displayTitle = `${workTime}/${workTime} INTERVALS`;
                     format.style = workTime === 30 ? "Sustainable Power Output" : "Aerobic Power Development";
                     
-                    // Logic to calculate exact X rounds for the 20min cap
-                    // Time per circuit: Movements (5) * (Work + Rest)
                     const timePerCircuitSec = movementsSelected.length * (workTime * 2);
                     const totalRoundsTo20 = Math.floor(1200 / timePerCircuitSec);
 
