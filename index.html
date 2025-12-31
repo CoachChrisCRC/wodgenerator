@@ -577,7 +577,10 @@
             }
             
             if (type === "distance") {
-                if (isRapidInterval) return "Max Distance";
+                if (isRapidInterval) {
+                    if (intensityLabel === 'High Intensity') return "Best Effort";
+                    return "Moderate Pace";
+                }
                 if (formatName.includes("AMRAP")) return "200m Run";
                 if (formatName.includes("ROUNDS")) return "400m Run";
                 if (formatName.includes("EMOM")) return "150m Run (Shuttle)";
