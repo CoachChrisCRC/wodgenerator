@@ -226,7 +226,7 @@
             align-items: flex-start;
             gap: 14px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            margin-bottom: 12px;
+            margin-bottom: 20px;
         }
 
         .strategy-step {
@@ -726,13 +726,33 @@
                 });
 
                 const zoneData = getTrainingZoneInfo(intensityLabel, displayTitle);
-                instructionContent.innerHTML = `<div class="focus-pill"><i data-lucide="zap" class="w-5 h-5 mt-0.5 shrink-0"></i><div><div class="font-black uppercase tracking-wider text-[10px] mb-1 opacity-80">Session Focus</div><div class="leading-relaxed">This <strong>${format.style}</strong> session is programmed for the <strong>${zoneData.zone}</strong> intensity zone and is ${zoneData.benefit}</div></div></div>`;
+                
+                // Construct instruction content
+                let instructionsHTML = `
+                    <div class="focus-pill">
+                        <i data-lucide="zap" class="w-5 h-5 mt-0.5 shrink-0"></i>
+                        <div>
+                            <div class="font-black uppercase tracking-wider text-[10px] mb-1 opacity-80">Session Focus</div>
+                            <div class="leading-relaxed">This <strong>${format.style}</strong> session is programmed for the <strong>${zoneData.zone}</strong> intensity zone and is ${zoneData.benefit}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h4 class="text-[10px] font-black uppercase tracking-widest mb-3" style="color: var(--text-muted)">How to Perform this Session</h4>
+                        <div class="space-y-2">
+                `;
+
                 format.howTo.forEach(text => {
-                    const div = document.createElement('div');
-                    div.className = 'strategy-step';
-                    div.innerHTML = `<i data-lucide="arrow-right-circle" class="w-3 h-3 mt-0.5 opacity-40 shrink-0"></i> <span>${text}</span>`;
-                    instructionContent.appendChild(div);
+                    instructionsHTML += `
+                        <div class="strategy-step">
+                            <i data-lucide="arrow-right-circle" class="w-3 h-3 mt-0.5 opacity-40 shrink-0"></i>
+                            <span>${text}</span>
+                        </div>
+                    `;
                 });
+
+                instructionsHTML += `</div></div>`;
+                instructionContent.innerHTML = instructionsHTML;
 
                 homeState.classList.add('hidden');
                 wodCard.classList.remove('hidden-initial');
