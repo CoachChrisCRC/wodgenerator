@@ -13,7 +13,7 @@
             --bg-page: #f3f4f6;
             --bg-card: #ffffff;
             --border-color: #e5e7eb;
-            --text-main: #1f2937;
+            --text-main: #1f2927;
             --text-heading: #000000;
             --text-muted: #9ca3af;
             --text-accent: #6b7280;
@@ -529,11 +529,11 @@
         };
 
         const FORMATS = [
-            { id: "AMRAP", name: "AMRAP", style: "Aerobic Capacity & Pacing", howTo: ["Start your timer. Perform movements A through E for prescribed reps.", "Immediately cycle back to movement A.", "Goal is maximum quality volume over total time."] },
-            { id: "RFT", name: "ROUNDS FOR TIME", style: "Movement Density & Pace", howTo: ["Perform the list in order for the specified rounds.", "Stop your clock once the final rep of the final round is complete."] },
-            { id: "EMOM", name: "EMOM", style: "Skill & Power Output", howTo: ["Perform Movement A in minute 1, Movement B in minute 2, etc.", "Rest for the remainder of each minute."] },
-            { id: "CHIPPER", name: "CHIPPER", style: "Mental Resilience", howTo: ["Complete all reps for Movement A before starting Movement B.", "Stay moving—rest should be short and controlled."] },
-            { id: "TABATA", name: "TABATA", style: "Metabolic Threshold", howTo: ["20s Work / 10s Rest.", "Perform 8 rounds of Movement A, then move to B.", "Maximum quality output in every 20s window."] },
+            { id: "AMRAP", name: "AMRAP", style: "Aerobic Capacity & Pacing", howTo: ["Start your timer and complete all reps for movements A through E in sequence.", "Immediately return to A after finishing E, keeping transitions under 10 seconds.", "Maintain a 'talk-test' pace where you can speak but prefer not to, maximizing quality reps until time expires."] },
+            { id: "RFT", name: "ROUNDS FOR TIME", style: "Movement Density & Pace", howTo: ["Perform the prescribed movements A-E for the designated number of rounds as fast as technically possible.", "Stop your clock only when the final rep of the final round is complete.", "Track your total time to establish a benchmark for future performance and power output."] },
+            { id: "EMOM", name: "EMOM", style: "Skill & Power Output", howTo: ["Perform Movement A when the clock starts (0:00). Rest for the remaining time in that minute.", "At the 1:00 mark, perform Movement B. Repeat this pattern through the list.", "Focus on explosive execution during work and controlled nasal breathing during the rest windows."] },
+            { id: "CHIPPER", name: "CHIPPER", style: "Mental Resilience", howTo: ["Complete all prescribed reps for Movement A before advancing to Movement B.", "Break large sets into manageable 'mini-sets' (e.g., 5 sets of 10) to keep moving without hitting muscular failure.", "The objective is a steady, relentless grind with minimal total downtime."] },
+            { id: "TABATA", name: "TABATA", style: "Metabolic Threshold", howTo: ["Work with maximum intensity for 20 seconds, then rest completely for 10 seconds.", "Perform all 8 intervals of Movement A before moving to Movement B.", "Prioritize maximum quality output in every 20s window, blending explosive power with technical precision to drive the metabolic stimulus."] },
             { id: "INTERVALS", name: "INTERVALS", style: "Mixed Power Output", howTo: [], isInternalSwitch: true }
         ];
 
@@ -694,7 +694,7 @@
                     
                     displayTitle = `${workTime}/${restTime} INTERVALS`;
                     format.style = isThirty ? "Sustainable Power Output" : "Aerobic Power Development";
-                    format.howTo = [`Work for ${workTime}s / Rest for ${restTime}s.`, `Move through the list sequentially.`, `Complete ${totalRounds} total rounds (Exactly 20 Minutes).`];
+                    format.howTo = [`Set your timer for repeating ${workTime}s work / ${restTime}s rest intervals.`, `Perform Movement A during the first work window, then rest for ${restTime}s. Perform B next.`, `Maintain a consistent pace across all ${totalRounds} rounds. If output drops significantly, focus on deep recovery breaths during rest.`];
                     capStr = `20:00`; 
                     if (Math.random() > 0.5) { intensityLabel = 'High Intensity'; color = '#ef4444'; } 
                     else { intensityLabel = 'Moderate Effort'; color = '#f59e0b'; }
