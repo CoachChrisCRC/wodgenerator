@@ -290,20 +290,9 @@
             gap: 6px;
             line-height: 1.4;
         }
-        .copyright-line-1 {
-            color: var(--text-heading);
-            opacity: 0.9;
-        }
-        .copyright-line-2 {
-            color: var(--text-heading);
-            opacity: 0.9;
-        }
-        .copyright-line-3 {
-            color: var(--text-muted);
-            font-size: 10px;
-            font-weight: 500;
-            letter-spacing: 0.12em;
-        }
+        .copyright-line-1 { color: var(--text-heading); opacity: 0.9; }
+        .copyright-line-2 { color: var(--text-heading); opacity: 0.9; }
+        .copyright-line-3 { color: var(--text-muted); font-size: 10px; font-weight: 500; letter-spacing: 0.12em; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4" data-theme="light">
@@ -370,7 +359,6 @@
     </div>
 
     <div class="app-card w-full max-w-md rounded-[2.5rem] overflow-hidden flex flex-col items-center p-8 space-y-8">
-        
         <header class="w-full flex justify-between items-start">
             <div class="flex flex-col select-none text-left">
                 <h1 class="font-brand font-bold text-4xl leading-none tracking-wide mb-1" style="color: var(--text-heading)">COACH CHRIS</h1>
@@ -496,7 +484,6 @@
 
     <script type="module">
         lucide.createIcons();
-
         document.getElementById('year').textContent = new Date().getFullYear();
 
         const PILLARS = {
@@ -505,31 +492,36 @@
                 { name: "SA KB Thrusters", type: "power", unilateral: "switch", baseReps: 10, kit: "kettlebell", intensity: "high" },
                 { name: "SA KB Cluster", type: "power", unilateral: "switch", baseReps: 6, kit: "kettlebell", intensity: "high" },
                 { name: "Burpees", type: "cardio", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "moderate" },
-                { name: "SA KB Clean & Press", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate" }
+                { name: "SA KB Clean & Press", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate" },
+                { name: "KB Goblet Thrusters", type: "power", unilateral: null, baseReps: 12, kit: "kettlebell", intensity: "high" }
             ],
             upper: [
                 { name: "SA KB Strict Press", type: "strength", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate" },
                 { name: "Push-ups", type: "strength", unilateral: null, baseReps: 15, kit: "bodyweight", intensity: "moderate" },
                 { name: "SA KB Row", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "low" },
-                { name: "Pull Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup", intensity: "high" }
+                { name: "Pull Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup", intensity: "high" },
+                { name: "KB Half Kneeling Press", type: "strength", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate" }
             ],
             lower: [
                 { name: "KB Goblet Squats", type: "strength", unilateral: null, baseReps: 15, kit: "kettlebell", intensity: "moderate" },
                 { name: "2H KB Swings", type: "power", unilateral: null, baseReps: 20, kit: "kettlebell", intensity: "moderate" },
                 { name: "KB Goblet Lunges", type: "strength", unilateral: "alt", baseReps: 16, kit: "kettlebell", intensity: "moderate" },
-                { name: "Air Squats", type: "strength", unilateral: null, baseReps: 25, kit: "bodyweight", intensity: "low" }
+                { name: "Air Squats", type: "strength", unilateral: null, baseReps: 25, kit: "bodyweight", intensity: "low" },
+                { name: "KB Staggered Stance Deadlift", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "moderate" }
             ],
             core: [
                 { name: "SA KB Plank Drags", type: "stability", unilateral: "alt", baseReps: 12, kit: "kettlebell", intensity: "low" },
                 { name: "Hanging Leg Raises", type: "stability", unilateral: null, baseReps: 12, kit: "pullup", intensity: "moderate" },
                 { name: "Plank Shoulder Taps", type: "stability", unilateral: "alt", baseReps: 30, kit: "bodyweight", intensity: "low" },
-                { name: "Hollow Body Holds", type: "stability", unilateral: null, baseReps: 30, kit: "bodyweight", isTimeBased: true, intensity: "moderate" }
+                { name: "Hollow Body Holds", type: "stability", unilateral: null, baseReps: 30, kit: "bodyweight", isTimeBased: true, intensity: "moderate" },
+                { name: "KB Russian Twists", type: "stability", unilateral: "alt", baseReps: 24, kit: "kettlebell", intensity: "moderate" }
             ],
             conditioning: [
                 { name: "Run", type: "distance", unilateral: null, baseReps: 1, kit: "run", intensity: "moderate" },
                 { name: "SA KB Snatches", type: "power", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "high" },
                 { name: "Mountain Climbers", type: "cardio", unilateral: "alt", baseReps: 40, kit: "bodyweight", intensity: "moderate" },
-                { name: "Jump Squats", type: "power", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "high" }
+                { name: "Jump Squats", type: "power", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "high" },
+                { name: "KB Hand to Hand Swings", type: "power", unilateral: "alt", baseReps: 20, kit: "kettlebell", intensity: "high" }
             ]
         };
 
@@ -542,18 +534,7 @@
             { id: "INTERVALS", name: "INTERVALS", style: "Mixed Power Output", howTo: [], isInternalSwitch: true }
         ];
 
-        const LOADING_PHRASES = [
-            "Optimizing Session",
-            "Analyzing Work Capacity",
-            "Drafting Protocol",
-            "Calculating Thresholds",
-            "Building Endurance",
-            "Calibrating Power",
-            "Ready to Train?",
-            "Focus. Execute.",
-            "Structuring Growth",
-            "Setting the Standard"
-        ];
+        const LOADING_PHRASES = ["Optimizing Session", "Analyzing Work Capacity", "Drafting Protocol", "Calculating Thresholds", "Building Endurance", "Calibrating Power", "Ready to Train?", "Focus. Execute.", "Structuring Growth", "Setting the Standard"];
 
         const body = document.body;
         const themeToggle = document.getElementById('theme-toggle');
@@ -582,9 +563,7 @@
 
         function calculateReps(move, formatName) {
             const { baseReps, type, unilateral, isTimeBased } = move;
-            const isUnilateral = unilateral === 'alt' || unilateral === 'switch';
             const tag = unilateral === 'alt' ? ' (Alt)' : unilateral === 'switch' ? ' (Switch Half)' : '';
-
             if (type === "distance") {
                 if (formatName.includes("TABATA") || formatName.includes("INTERVALS")) return "Max Distance";
                 if (formatName.includes("AMRAP")) return "200m Run";
@@ -593,21 +572,12 @@
                 if (formatName.includes("CHIPPER")) return "1km Run";
                 return "400m Run";
             }
-
-            if (formatName.includes("TABATA") || formatName.includes("INTERVALS")) {
-                return `Max Quality Reps${tag}`;
-            }
+            if (formatName.includes("TABATA") || formatName.includes("INTERVALS")) return `Max Quality Reps${tag}`;
             if (isTimeBased) return `${baseReps} Seconds`;
-            
             let finalReps = baseReps;
-            if (formatName.includes("CHIPPER")) {
-                finalReps = move.intensity === "high" ? 30 : 50;
-            } else if (formatName.includes("EMOM")) {
-                finalReps = Math.ceil(baseReps * 0.85);
-            }
-
-            if (isUnilateral && finalReps % 2 !== 0) finalReps += 1;
-
+            if (formatName.includes("CHIPPER")) finalReps = move.intensity === "high" ? 30 : 50;
+            else if (formatName.includes("EMOM")) finalReps = Math.ceil(baseReps * 0.85);
+            if ((unilateral === 'alt' || unilateral === 'switch') && finalReps % 2 !== 0) finalReps += 1;
             return `${finalReps}${tag}`;
         }
 
@@ -623,13 +593,9 @@
         function generateWOD() {
             const selectedKit = Array.from(document.querySelectorAll('input[name="kit-select"]:checked')).map(cb => cb.value);
             const activeKits = ["bodyweight", ...selectedKit];
-
             generateButton.disabled = true;
-            
-            // Cycle through phrases
             loadingText.textContent = LOADING_PHRASES[phraseIndex];
             phraseIndex = (phraseIndex + 1) % LOADING_PHRASES.length;
-            
             launchOverlay.classList.add('active');
             
             setTimeout(() => {
@@ -637,7 +603,6 @@
                 let displayTitle = format.name;
                 let capStr = "20:00";
                 let movementsSelected = [];
-                
                 Object.keys(PILLARS).forEach(cat => {
                     const pool = PILLARS[cat].filter(m => activeKits.includes(m.kit));
                     if (pool.length > 0) movementsSelected.push(pool[Math.floor(Math.random() * pool.length)]);
@@ -648,48 +613,35 @@
                     const workTime = isThirty ? 30 : 60;
                     const restTime = isThirty ? 30 : 60;
                     const roundCount = isThirty ? (Math.floor(Math.random() * 3) + 4) : (Math.floor(Math.random() * 2) + 2); 
-                    
                     displayTitle = `${workTime}/${restTime} INTERVALS`;
                     format.style = isThirty ? "Sustainable Power Output" : "Aerobic Power Development";
-                    format.howTo = [
-                        `Work for ${workTime}s / Rest for ${restTime}s.`,
-                        `Move through the list sequentially (A → B → C → D → E).`,
-                        `Complete ${roundCount} total rounds of the full list.`
-                    ];
+                    format.howTo = [`Work for ${workTime}s / Rest for ${restTime}s.`, `Move through the list sequentially (A → B → C → D → E).`, `Complete ${roundCount} total rounds of the full list.`];
                     const totalSecs = (workTime + restTime) * movementsSelected.length * roundCount;
                     capStr = `${Math.floor(totalSecs / 60)}:00`;
-
                 } else if (format.id === "RFT") {
                     const rounds = Math.floor(Math.random() * 3) + 3; 
                     displayTitle = `${rounds} ROUNDS FOR TIME`;
-                    let perRoundTime = 0;
-                    movementsSelected.forEach(m => perRoundTime += (m.intensity === 'high' ? 1.2 : 0.8));
-                    let totalMin = Math.ceil(rounds * perRoundTime);
-                    totalMin = Math.max(15, Math.min(30, totalMin));
+                    let perRoundTime = 0; movementsSelected.forEach(m => perRoundTime += (m.intensity === 'high' ? 1.2 : 0.8));
+                    let totalMin = Math.ceil(rounds * perRoundTime); totalMin = Math.max(15, Math.min(30, totalMin));
                     capStr = `${totalMin}:00`;
-
                 } else if (format.id === "AMRAP") {
                     const durations = [15, 18, 20, 25, 30];
                     const duration = durations[Math.floor(Math.random() * durations.length)];
                     displayTitle = `AMRAP ${duration}`;
                     capStr = `${duration}:00`;
-
                 } else if (format.id === "EMOM") {
                     const moveCount = movementsSelected.length;
                     const rounds = Math.max(3, Math.min(6, Math.floor(22 / moveCount)));
                     const totalMins = moveCount * rounds;
                     displayTitle = `EMOM ${totalMins}`;
                     capStr = `${totalMins}:00`;
-
                 } else if (format.id === "CHIPPER") {
                     displayTitle = "CHIPPER";
                     const duration = Math.floor(Math.random() * 6) + 25; 
                     capStr = `${duration}:00`;
-
-                } else if (format.id === "TABATA") {
-                    capStr = `20:00`;
                 }
 
+                // Restore original sophisticated intensity logic
                 let intensityLabel = 'Moderate Effort';
                 let color = '#f59e0b';
                 if (format.id === "TABATA" || format.id === "INTERVALS") {
@@ -728,16 +680,7 @@
                 });
 
                 const zoneData = getTrainingZoneInfo(intensityLabel, displayTitle);
-                instructionContent.innerHTML = `
-                    <div class="focus-pill">
-                        <i data-lucide="zap" class="w-5 h-5 mt-0.5 shrink-0"></i> 
-                        <div>
-                            <div class="font-black uppercase tracking-wider text-[10px] mb-1 opacity-80">Session Focus</div>
-                            <div class="leading-relaxed">This <strong>${format.style}</strong> session is programmed for the <strong>${zoneData.zone}</strong> intensity zone and is ${zoneData.benefit}</div>
-                        </div>
-                    </div>
-                `;
-
+                instructionContent.innerHTML = `<div class="focus-pill"><i data-lucide="zap" class="w-5 h-5 mt-0.5 shrink-0"></i><div><div class="font-black uppercase tracking-wider text-[10px] mb-1 opacity-80">Session Focus</div><div class="leading-relaxed">This <strong>${format.style}</strong> session is programmed for the <strong>${zoneData.zone}</strong> intensity zone and is ${zoneData.benefit}</div></div></div>`;
                 format.howTo.forEach(text => {
                     const div = document.createElement('div');
                     div.className = 'strategy-step';
@@ -748,10 +691,7 @@
                 homeState.classList.add('hidden');
                 wodCard.classList.remove('hidden-initial');
                 launchOverlay.classList.remove('active');
-                
-                // Smooth scroll to top
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                
                 setTimeout(() => {
                     wodCard.classList.remove('opacity-0');
                     generateButton.textContent = "Rebuild Session";
@@ -768,16 +708,13 @@
                 wodCard.classList.add('hidden-initial');
                 homeState.classList.remove('hidden');
                 generateButton.textContent = "Build My Session";
-                window.scrollTo({ top: 0, behavior: 'smooth' });
             }, 300);
         });
-
         copyButton.addEventListener('click', () => {
             const text = `WOD: ${wodFormatName.textContent}\n${Array.from(wodMovements.querySelectorAll('.movement-line')).map(l => l.innerText).join('\n')}\n\nCOACH CHRIS`;
             const el = document.createElement('textarea'); el.value = text; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
             copyButton.textContent = 'Copied!'; setTimeout(() => copyButton.textContent = 'Share', 1500);
         });
-
         document.getElementById('open-info').addEventListener('click', () => modalOverlay.classList.add('active'));
         document.getElementById('close-modal').addEventListener('click', () => modalOverlay.classList.remove('active'));
         document.getElementById('modal-confirm').addEventListener('click', () => modalOverlay.classList.remove('active'));
