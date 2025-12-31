@@ -567,7 +567,6 @@
             const { baseReps, type, unilateral, isTimeBased } = move;
             const tag = unilateral === 'alt' ? ' (Alt)' : unilateral === 'switch' ? ' (Switch Half)' : '';
             
-            // RUNNING DISTANCE LOGIC
             if (type === "distance") {
                 if (formatName.includes("TABATA") || formatName.includes("INTERVALS")) return "Max Distance";
                 if (formatName.includes("AMRAP")) return "200m Run";
@@ -598,7 +597,7 @@
             if (formatName.includes("INTERVALS")) return { zone: "High-Intensity Repeatability", benefit: "focused on developing anaerobic speed and structural strength by pushing through high-output windows and prioritizing active recovery." };
             
             if (label === 'High Intensity') return { zone: "Maximum Effort", benefit: "designed to target your metabolic ceiling, building the physiological engine required to sustain high-demand physical challenges." };
-            if (label === 'Low Intensity') return { zone: "Aerobic Base Building", benefit: "focused on developing your aerobic base and fat-oxidation efficiency, which are foundational for long-term health and recovery." };
+            if (label === 'Low Intensity') return { zone: "Aerobic Base Building", benefit: "focused on enhancing cardiovascular endurance, muscular endurance, cardiac health, and fat-oxidation efficiency, which are foundational for long-term health and recovery." };
             if (label === 'Moderate Effort') return { zone: "Threshold Management", benefit: "a balanced stimulus that promotes both hypertrophic growth and aerobic efficiency, improving how quickly you can return to a resting state after effort." };
             
             return { zone: "Hybrid Threshold", benefit: "a versatile approach that shifts between aerobic maintenance and anaerobic power depending on movement complexity." };
