@@ -522,6 +522,7 @@
                 { name: "SA KB Plank Drags", type: "stability", unilateral: "alt", baseReps: 12, kit: "kettlebell", intensity: "low" },
                 { name: "Hanging Leg Raises", type: "stability", unilateral: null, baseReps: 12, kit: "pullup", intensity: "moderate" },
                 { name: "Plank Shoulder Taps", type: "stability", unilateral: "alt", baseReps: 30, kit: "bodyweight", intensity: "low" },
+                { name: "Quadruped Shoulder Taps", type: "stability", unilateral: "alt", baseReps: 20, kit: "bodyweight", intensity: "moderate" },
                 { name: "Hollow Body Holds", type: "stability", unilateral: null, baseReps: 30, kit: "bodyweight", isTimeBased: true, intensity: "moderate" },
                 { name: "KB Russian Twists", type: "stability", unilateral: "alt", baseReps: 24, kit: "kettlebell", intensity: "moderate" },
                 { name: "Dead Bugs", type: "stability", unilateral: "alt", baseReps: 20, kit: "bodyweight", intensity: "low" },
@@ -697,7 +698,17 @@
                     const workTime = Math.random() > 0.5 ? 30 : 60;
                     displayTitle = `${workTime}/${workTime} INTERVALS`;
                     format.style = workTime === 30 ? "Sustainable Power Output" : "Aerobic Power Development";
-                    format.howTo = [`Set timer for ${workTime}s work / ${workTime}s rest intervals.`, `Perform Movement A during the first work window, then rest. Perform B next.`, `Maintain consistent quality across all rounds.`];
+                    
+                    // Logic to calculate exact X rounds for the 20min cap
+                    // Time per circuit: Movements (5) * (Work + Rest)
+                    const timePerCircuitSec = movementsSelected.length * (workTime * 2);
+                    const totalRoundsTo20 = Math.floor(1200 / timePerCircuitSec);
+
+                    format.howTo = [
+                        `Set timer for ${workTime}s work / ${workTime}s rest intervals.`, 
+                        `Perform Movement A during the first work window, then rest. Perform B next.`, 
+                        `Maintain consistent quality across all ${totalRoundsTo20} rounds.`
+                    ];
                     capStr = `20:00`; 
                     intensityLabel = Math.random() > 0.5 ? 'High Intensity' : 'Moderate Effort';
                     color = intensityLabel === 'High Intensity' ? '#ef4444' : '#f59e0b';
