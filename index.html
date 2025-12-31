@@ -303,7 +303,7 @@
         <p id="loading-text" class="mt-4 font-brand font-bold text-xl uppercase tracking-widest text-center px-8" style="color: var(--text-heading)">Optimizing Session</p>
     </div>
 
-    <!-- HELP MODAL -->
+    <!-- MAIN HELP MODAL -->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal-content shadow-2xl">
             <button id="close-modal" class="absolute top-6 right-6 p-2 rounded-full hover:opacity-70 transition-opacity" style="color: var(--text-muted)">
@@ -353,6 +353,32 @@
                 </div>
 
                 <button id="modal-confirm" class="w-full mt-10 py-4 font-black uppercase tracking-widest rounded-2xl text-xs" style="background-color: var(--bg-btn-primary); color: var(--btn-text-primary)">Understood. Let's Train.</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TYPE INFO MODAL -->
+    <div id="type-modal-overlay" class="modal-overlay">
+        <div class="modal-content shadow-2xl">
+            <button id="close-type-modal" class="absolute top-6 right-6 p-2 rounded-full hover:opacity-70 transition-opacity" style="color: var(--text-muted)">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="flex flex-col">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="p-3 rounded-2xl" style="background-color: var(--bg-btn-primary); color: var(--btn-text-primary)">
+                        <i data-lucide="info" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 id="type-modal-title" class="font-brand font-bold text-2xl uppercase leading-none" style="color: var(--text-heading)">Format Logic</h3>
+                        <p class="text-[10px] font-bold uppercase tracking-widest opacity-60" style="color: var(--text-accent)">Methodology breakdown</p>
+                    </div>
+                </div>
+
+                <div id="type-modal-content" class="text-xs leading-relaxed space-y-4" style="color: var(--text-accent)">
+                    <!-- Dynamic Content -->
+                </div>
+
+                <button id="type-modal-close-btn" class="w-full mt-10 py-4 font-black uppercase tracking-widest rounded-2xl text-xs" style="background-color: var(--bg-btn-primary); color: var(--btn-text-primary)">Got it</button>
             </div>
         </div>
     </div>
@@ -437,7 +463,12 @@
 
             <div class="space-y-4">
                 <div class="flex flex-col gap-1 text-left">
-                    <span id="wod-format-name" class="text-4xl font-black uppercase tracking-tighter leading-[0.9]" style="color: var(--text-heading)"></span>
+                    <div class="flex items-center justify-between">
+                        <span id="wod-format-name" class="text-4xl font-black uppercase tracking-tighter leading-[0.9]" style="color: var(--text-heading)"></span>
+                        <button id="open-type-info" class="p-1.5 rounded-lg opacity-40 hover:opacity-100 transition-opacity" style="color: var(--text-heading)">
+                            <i data-lucide="info" class="w-5 h-5"></i>
+                        </button>
+                    </div>
                     
                     <div class="flex items-center justify-between mt-1">
                         <span id="wod-format-desc" class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-accent)"></span>
@@ -544,12 +575,12 @@
         };
 
         const FORMATS = [
-            { id: "AMRAP", name: "AMRAP", style: "Aerobic Capacity & Pacing", howTo: ["Start your timer and complete all reps for movements A through E in sequence.", "Immediately return to A after finishing E, keeping transitions under 10 seconds.", "Maintain a 'talk-test' pace where you can speak but prefer not to, maximizing quality reps until time expires."] },
-            { id: "RFT", name: "ROUNDS FOR TIME", style: "Movement Density & Pace", howTo: ["Perform the prescribed movements A-E for the designated number of rounds as fast as technically possible.", "Stop your clock only when the final rep of the final round is complete.", "Maintain a high movement standard throughout; speed must never come at the expense of structural integrity or technique."] },
-            { id: "EMOM", name: "EMOM", style: "Skill & Power Output", howTo: ["Perform Movement A when the clock starts (0:00). Rest for the remaining time in that minute.", "At the 1:00 mark, perform Movement B. Repeat this pattern through the list.", "Focus on explosive execution during work and controlled nasal breathing during the rest windows."] },
-            { id: "CHIPPER", name: "CHIPPER", style: "Mental Resilience", howTo: ["Complete all prescribed reps for Movement A before advancing to Movement B.", "Break large sets into manageable 'mini-sets' (e.g., 5 sets of 10) to keep moving without hitting muscular failure.", "The objective is a steady, relentless grind with minimal total downtime."] },
-            { id: "TABATA", name: "TABATA", style: "Metabolic Threshold", howTo: ["Work with maximum intensity for 20 seconds, then rest completely for 10 seconds.", "Perform all 8 intervals of Movement A before moving to Movement B.", "Prioritize maximum quality output in every 20s window, blending explosive power with technical precision to drive the metabolic stimulus."] },
-            { id: "INTERVALS", name: "INTERVALS", style: "Mixed Power Output", howTo: [], isInternalSwitch: true }
+            { id: "AMRAP", name: "AMRAP", style: "Aerobic Capacity & Pacing", howTo: ["Start your timer and complete all reps for movements A through E in sequence.", "Immediately return to A after finishing E, keeping transitions under 10 seconds.", "Maintain a 'talk-test' pace where you can speak but prefer not to, maximizing quality reps until time expires."], explanation: "<b>As Many Rounds As Possible</b>. This is an aerobic test. The goal is to find a consistent pace you can maintain for the entire duration without burning out early. It's about movement efficiency and short transitions." },
+            { id: "RFT", name: "ROUNDS FOR TIME", style: "Movement Density & Pace", howTo: ["Perform the prescribed movements A-E for the designated number of rounds as fast as technically possible.", "Stop your clock only when the final rep of the final round is complete.", "Maintain a high movement standard throughout; speed must never come at the expense of structural integrity or technique."], explanation: "<b>Rounds For Time</b>. This is a task-priority workout. The volume is fixed, and your goal is to finish the work as fast as possible. It tests your ability to maintain technique under the pressure of the clock." },
+            { id: "EMOM", name: "EMOM", style: "Skill & Power Output", howTo: ["Perform Movement A when the clock starts (0:00). Rest for the remaining time in that minute.", "At the 1:00 mark, perform Movement B. Repeat this pattern through the list.", "Focus on explosive execution during work and controlled nasal breathing during the rest windows."], explanation: "<b>Every Minute On the Minute</b>. This is a skill and density tool. By forcing a specific work-to-rest ratio, it allows you to perform higher-quality reps with more power than a continuous circuit would allow." },
+            { id: "CHIPPER", name: "CHIPPER", style: "Mental Resilience", howTo: ["Complete all prescribed reps for Movement A before advancing to Movement B.", "Break large sets into manageable 'mini-sets' (e.g., 5 sets of 10) to keep moving without hitting muscular failure.", "The objective is a steady, relentless grind with minimal total downtime."], explanation: "<b>The Chipper</b>. A long, linear list of movements. This format tests mental endurance and strategic pacing. You 'chip away' at one movement at a time until the entire list is cleared." },
+            { id: "TABATA", name: "TABATA", style: "Metabolic Threshold", howTo: ["Work with maximum intensity for 20 seconds, then rest completely for 10 seconds.", "Perform all 8 intervals of Movement A before moving to Movement B.", "Prioritize maximum quality output in every 20s window, blending explosive power with technical precision to drive the metabolic stimulus."], explanation: "<b>The Tabata Protocol</b>. 20 seconds of work followed by 10 seconds of rest. This is a high-intensity interval format designed to improve both aerobic and anaerobic systems simultaneously through extreme intensity." },
+            { id: "INTERVALS", name: "INTERVALS", style: "Mixed Power Output", howTo: [], isInternalSwitch: true, explanation: "<b>Work/Rest Intervals</b>. This format focuses on repeatability. By resting as long as you work, you can maintain a much higher intensity in the work windows than you could in a continuous AMRAP." }
         ];
 
         const LOADING_PHRASES = ["Optimizing Session", "Analyzing Work Capacity", "Drafting Protocol", "Calculating Thresholds", "Building Endurance", "Calibrating Power", "Ready to Train?", "Focus. Execute.", "Structuring Growth", "Setting the Standard"];
@@ -571,7 +602,12 @@
         const loadingText = document.getElementById('loading-text');
         const intensityIndicator = document.getElementById('intensity-indicator');
         const modalOverlay = document.getElementById('modal-overlay');
+        
+        const typeModalOverlay = document.getElementById('type-modal-overlay');
+        const typeModalTitle = document.getElementById('type-modal-title');
+        const typeModalContent = document.getElementById('type-modal-content');
 
+        let currentWodFormat = null;
         let phraseIndex = 0;
 
         themeToggle.addEventListener('click', () => {
@@ -629,6 +665,8 @@
             
             setTimeout(() => {
                 let format = {...FORMATS[Math.floor(Math.random() * FORMATS.length)]};
+                currentWodFormat = format; // Store for the info modal
+                
                 let displayTitle = format.name;
                 let capStr = "20:00";
                 let movementsSelected = [];
@@ -787,11 +825,34 @@
                 generateButton.textContent = "Build My Session";
             }, 300);
         });
+        
         copyButton.addEventListener('click', () => {
             const text = `WOD: ${wodFormatName.textContent}\n${Array.from(wodMovements.querySelectorAll('.movement-line')).map(l => l.innerText).join('\n')}\n\nCOACH CHRIS`;
             const el = document.createElement('textarea'); el.value = text; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
             copyButton.textContent = 'Copied!'; setTimeout(() => copyButton.textContent = 'Share', 1500);
         });
+
+        // Type Info Modal Logic
+        document.getElementById('open-type-info').addEventListener('click', () => {
+            if (!currentWodFormat) return;
+            typeModalTitle.textContent = currentWodFormat.name + " Protocol";
+            typeModalContent.innerHTML = `
+                <p>${currentWodFormat.explanation}</p>
+                <div class="p-4 rounded-xl" style="background-color: var(--bg-toggle)">
+                    <p class="font-bold uppercase tracking-widest text-[10px] mb-2" style="color: var(--text-heading)">Primary Stimulus</p>
+                    <p>${currentWodFormat.style}</p>
+                </div>
+            `;
+            typeModalOverlay.classList.add('active');
+            lucide.createIcons();
+        });
+
+        const closeTypeModal = () => typeModalOverlay.classList.remove('active');
+        document.getElementById('close-type-modal').addEventListener('click', closeTypeModal);
+        document.getElementById('type-modal-close-btn').addEventListener('click', closeTypeModal);
+        typeModalOverlay.addEventListener('click', (e) => { if(e.target === typeModalOverlay) closeTypeModal(); });
+
+        // Main Help Modal Logic
         document.getElementById('open-info').addEventListener('click', () => modalOverlay.classList.add('active'));
         document.getElementById('close-modal').addEventListener('click', () => modalOverlay.classList.remove('active'));
         document.getElementById('modal-confirm').addEventListener('click', () => modalOverlay.classList.remove('active'));
