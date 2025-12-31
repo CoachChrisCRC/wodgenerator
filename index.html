@@ -492,7 +492,8 @@
                 { name: "SA KB Cluster", type: "power", unilateral: "switch", baseReps: 6, kit: "kettlebell", intensity: "high" },
                 { name: "Burpees", type: "cardio", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "moderate" },
                 { name: "SA KB Clean & Press", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate" },
-                { name: "KB Goblet Thrusters", type: "power", unilateral: null, baseReps: 12, kit: "kettlebell", intensity: "high" }
+                { name: "KB Goblet Thrusters", type: "power", unilateral: null, baseReps: 12, kit: "kettlebell", intensity: "high" },
+                { name: "Sprawls", type: "cardio", unilateral: null, baseReps: 15, kit: "bodyweight", intensity: "moderate" }
             ],
             upper: [
                 { name: "SA KB Strict Press", type: "strength", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate" },
@@ -500,7 +501,9 @@
                 { name: "Push-ups", type: "strength", unilateral: null, baseReps: 15, kit: "bodyweight", intensity: "moderate" },
                 { name: "SA KB Row", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "low" },
                 { name: "Pull Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup", intensity: "high" },
-                { name: "KB Half Kneeling Press", type: "strength", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate" }
+                { name: "KB Half Kneeling Press", type: "strength", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate" },
+                { name: "Pike Push-ups", type: "strength", unilateral: null, baseReps: 10, kit: "bodyweight", intensity: "high" },
+                { name: "Diamond Push-ups", type: "strength", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "moderate" }
             ],
             lower: [
                 { name: "KB Goblet Squats", type: "strength", unilateral: null, baseReps: 15, kit: "kettlebell", intensity: "moderate" },
@@ -509,14 +512,22 @@
                 { name: "KB Goblet Lunges", type: "strength", unilateral: "alt", baseReps: 16, kit: "kettlebell", intensity: "moderate" },
                 { name: "KB Goblet Reverse Lunges", type: "strength", unilateral: "alt", baseReps: 16, kit: "kettlebell", intensity: "moderate" },
                 { name: "Air Squats", type: "strength", unilateral: null, baseReps: 25, kit: "bodyweight", intensity: "low" },
-                { name: "KB Staggered Stance Deadlift", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "moderate" }
+                { name: "KB Staggered Stance Deadlift", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "moderate" },
+                { name: "Split Squats", type: "strength", unilateral: "switch", baseReps: 10, kit: "bodyweight", intensity: "moderate" },
+                { name: "Bulgarian Split Squats", type: "strength", unilateral: "switch", baseReps: 8, kit: "bodyweight", intensity: "high" },
+                { name: "Glute Bridges", type: "strength", unilateral: null, baseReps: 20, kit: "bodyweight", intensity: "low" },
+                { name: "Single Leg Glute Bridge", type: "strength", unilateral: "switch", baseReps: 12, kit: "bodyweight", intensity: "moderate" }
             ],
             core: [
                 { name: "SA KB Plank Drags", type: "stability", unilateral: "alt", baseReps: 12, kit: "kettlebell", intensity: "low" },
                 { name: "Hanging Leg Raises", type: "stability", unilateral: null, baseReps: 12, kit: "pullup", intensity: "moderate" },
                 { name: "Plank Shoulder Taps", type: "stability", unilateral: "alt", baseReps: 30, kit: "bodyweight", intensity: "low" },
                 { name: "Hollow Body Holds", type: "stability", unilateral: null, baseReps: 30, kit: "bodyweight", isTimeBased: true, intensity: "moderate" },
-                { name: "KB Russian Twists", type: "stability", unilateral: "alt", baseReps: 24, kit: "kettlebell", intensity: "moderate" }
+                { name: "KB Russian Twists", type: "stability", unilateral: "alt", baseReps: 24, kit: "kettlebell", intensity: "moderate" },
+                { name: "Dead Bugs", type: "stability", unilateral: "alt", baseReps: 20, kit: "bodyweight", intensity: "low" },
+                { name: "Plank Hold", type: "stability", unilateral: null, baseReps: 45, kit: "bodyweight", isTimeBased: true, intensity: "moderate" },
+                { name: "Hi Plank Hold", type: "stability", unilateral: null, baseReps: 45, kit: "bodyweight", isTimeBased: true, intensity: "low" },
+                { name: "Plank Hip Taps", type: "stability", unilateral: "alt", baseReps: 20, kit: "bodyweight", intensity: "moderate" }
             ],
             conditioning: [
                 { name: "Run", type: "distance", unilateral: null, baseReps: 1, kit: "run", intensity: "moderate" },
@@ -524,7 +535,8 @@
                 { name: "Mountain Climbers", type: "cardio", unilateral: "alt", baseReps: 40, kit: "bodyweight", intensity: "moderate" },
                 { name: "Jump Squats", type: "power", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "high" },
                 { name: "Jump Lunges", type: "power", unilateral: "alt", baseReps: 16, kit: "bodyweight", intensity: "high" },
-                { name: "KB Hand to Hand Swings", type: "power", unilateral: "alt", baseReps: 20, kit: "kettlebell", intensity: "high", isSwingVariation: true }
+                { name: "KB Hand to Hand Swings", type: "power", unilateral: "alt", baseReps: 20, kit: "kettlebell", intensity: "high", isSwingVariation: true },
+                { name: "Broad Jumps", type: "power", unilateral: null, baseReps: 8, kit: "bodyweight", intensity: "high" }
             ]
         };
 
@@ -566,22 +578,14 @@
 
         function calculateReps(move, formatName, intensityLabel) {
             const { baseReps, type, unilateral, isTimeBased } = move;
-            
-            // Check for specific interval/rapid-switch formats
             const isRapidInterval = formatName.includes("TABATA") || formatName.includes("INTERVALS");
             
             let tag = '';
-            if (unilateral === 'alt') {
-                tag = ' (Alt)';
-            } else if (unilateral === 'switch') {
-                tag = isRapidInterval ? ' (Switch Sides Each Round)' : ' (Switch Half)';
-            }
+            if (unilateral === 'alt') tag = ' (Alt)';
+            else if (unilateral === 'switch') tag = isRapidInterval ? ' (Switch Sides Each Round)' : ' (Switch Half)';
             
             if (type === "distance") {
-                if (isRapidInterval) {
-                    if (intensityLabel === 'High Intensity') return "Best Effort";
-                    return "Moderate Pace";
-                }
+                if (isRapidInterval) return intensityLabel === 'High Intensity' ? "Best Effort" : "Moderate Pace";
                 if (formatName.includes("AMRAP")) return "200m Run";
                 if (formatName.includes("ROUNDS")) return "400m Run";
                 if (formatName.includes("EMOM")) return "150m Run (Shuttle)";
@@ -589,11 +593,7 @@
                 return "400m Run";
             }
 
-            if (isRapidInterval) {
-                if (intensityLabel === 'High Intensity') return `Max Quality Reps${tag}`;
-                return `Moderate Pace${tag}`;
-            }
-
+            if (isRapidInterval) return intensityLabel === 'High Intensity' ? `Max Quality Reps${tag}` : `Moderate Pace${tag}`;
             if (isTimeBased) return `${baseReps} Seconds`;
 
             let finalReps = baseReps;
@@ -608,17 +608,17 @@
             if (formatName.includes("TABATA")) return { zone: "Maximum Effort", benefit: "designed to maximize caloric burn while training your nervous system to maintain control under high-pressure metabolic stress." };
             if (formatName.includes("EMOM") && label === 'Moderate Effort') return { zone: "Steady-State Strength", benefit: "designed to prioritize movement efficiency and consistent heart rate management by alternating work and fixed rest periods." };
             if (formatName.includes("INTERVALS")) return { zone: "High-Intensity Repeatability", benefit: "focused on developing anaerobic speed and structural strength by pushing through high-output windows and prioritizing active recovery." };
-            
             if (label === 'High Intensity') return { zone: "Maximum Effort", benefit: "designed to target your metabolic ceiling, building the physiological engine required to sustain high-demand physical challenges." };
             if (label === 'Low Intensity') return { zone: "Aerobic Base Building", benefit: "focused on enhancing cardiovascular endurance, muscular endurance, cardiac health, and fat-oxidation efficiency, which are foundational for long-term health and recovery." };
             if (label === 'Moderate Effort') return { zone: "Threshold Management", benefit: "a balanced stimulus that promotes both hypertrophic growth and aerobic efficiency, improving how quickly you can return to a resting state after effort." };
-            
             return { zone: "Hybrid Threshold", benefit: "a versatile approach that shifts between aerobic maintenance and anaerobic power depending on movement complexity." };
         }
 
         function generateWOD() {
             const selectedKit = Array.from(document.querySelectorAll('input[name="kit-select"]:checked')).map(cb => cb.value);
+            const supplementalActive = selectedKit.length > 0;
             const activeKits = ["bodyweight", ...selectedKit];
+            
             generateButton.disabled = true;
             loadingText.textContent = LOADING_PHRASES[phraseIndex];
             phraseIndex = (phraseIndex + 1) % LOADING_PHRASES.length;
@@ -633,71 +633,74 @@
                 let color = '#f59e0b';
                 let hasSwingInSession = false;
 
-                Object.keys(PILLARS).forEach(cat => {
-                    let pool = PILLARS[cat].filter(m => activeKits.includes(m.kit));
-                    
-                    if (hasSwingInSession) {
-                        pool = pool.filter(m => !m.isSwingVariation);
-                    }
+                const categoryKeys = Object.keys(PILLARS);
+                let bwCountTarget = 0;
 
-                    if (pool.length > 0) {
-                        const selected = pool[Math.floor(Math.random() * pool.length)];
-                        movementsSelected.push(selected);
-                        if (selected.isSwingVariation) hasSwingInSession = true;
+                if (!supplementalActive) {
+                    bwCountTarget = 5;
+                } else {
+                    bwCountTarget = Math.floor(Math.random() * 3) + 1;
+                }
+
+                let indices = [0, 1, 2, 3, 4].sort(() => Math.random() - 0.5);
+                let bwIndices = indices.slice(0, bwCountTarget);
+
+                categoryKeys.forEach((cat, i) => {
+                    let pool = PILLARS[cat].filter(m => activeKits.includes(m.kit));
+                    if (hasSwingInSession) pool = pool.filter(m => !m.isSwingVariation);
+
+                    let finalPick;
+                    if (bwIndices.includes(i)) {
+                        let bwPool = pool.filter(m => m.kit === "bodyweight");
+                        finalPick = (bwPool.length > 0) ? bwPool[Math.floor(Math.random() * bwPool.length)] : pool[Math.floor(Math.random() * pool.length)];
+                    } else {
+                        let kitPool = pool.filter(m => m.kit !== "bodyweight");
+                        finalPick = (kitPool.length > 0) ? kitPool[Math.floor(Math.random() * kitPool.length)] : pool[Math.floor(Math.random() * pool.length)];
                     }
+                    
+                    movementsSelected.push(finalPick);
+                    if (finalPick.isSwingVariation) hasSwingInSession = true;
                 });
 
                 if (format.id === "AMRAP") {
-                    const durations = [15, 18, 20, 25, 30];
-                    const duration = durations[Math.floor(Math.random() * durations.length)];
+                    const duration = [15, 18, 20, 25, 30][Math.floor(Math.random() * 5)];
                     displayTitle = `AMRAP ${duration}`;
                     capStr = `${duration}:00`;
                     intensityLabel = 'Low Intensity'; color = '#10b981';
                 } 
                 else if (format.id === "CHIPPER") {
                     displayTitle = "CHIPPER";
-                    const duration = Math.random() > 0.5 ? 25 : 30; 
-                    capStr = `${duration}:00`;
-                    if (Math.random() > 0.5) { intensityLabel = 'Low Intensity'; color = '#10b981'; } 
-                    else { intensityLabel = 'Moderate Effort'; color = '#f59e0b'; }
+                    capStr = `${Math.random() > 0.5 ? 25 : 30}:00`;
+                    intensityLabel = Math.random() > 0.5 ? 'Low Intensity' : 'Moderate Effort';
+                    color = intensityLabel === 'Low Intensity' ? '#10b981' : '#f59e0b';
                 }
                 else if (format.id === "EMOM") {
-                    const moveCount = movementsSelected.length;
-                    const rounds = Math.max(3, Math.min(6, Math.floor(22 / moveCount)));
-                    const totalMins = moveCount * rounds;
+                    const rounds = Math.max(3, Math.min(6, Math.floor(22 / movementsSelected.length)));
+                    const totalMins = movementsSelected.length * rounds;
                     displayTitle = `EMOM ${totalMins}`;
                     capStr = `${totalMins}:00`;
-                    if (Math.random() > 0.7) { intensityLabel = 'High Intensity'; color = '#ef4444'; } 
-                    else { intensityLabel = 'Moderate Effort'; color = '#f59e0b'; }
+                    intensityLabel = Math.random() > 0.7 ? 'High Intensity' : 'Moderate Effort';
+                    color = intensityLabel === 'High Intensity' ? '#ef4444' : '#f59e0b';
                 }
                 else if (format.id === "RFT") {
                     const rounds = Math.floor(Math.random() * 3) + 3; 
                     displayTitle = `${rounds} ROUNDS FOR TIME`;
-                    let totalMin = Math.ceil(rounds * 4); totalMin = Math.max(15, Math.min(30, totalMin));
-                    capStr = `${totalMin}:00`;
-                    if (Math.random() > 0.5) { intensityLabel = 'High Intensity'; color = '#ef4444'; } 
-                    else { intensityLabel = 'Moderate Effort'; color = '#f59e0b'; }
+                    capStr = `${Math.max(15, Math.min(30, Math.ceil(rounds * 4)))}:00`;
+                    intensityLabel = Math.random() > 0.5 ? 'High Intensity' : 'Moderate Effort';
+                    color = intensityLabel === 'High Intensity' ? '#ef4444' : '#f59e0b';
                 }
                 else if (format.id === "TABATA") {
                     intensityLabel = 'High Intensity'; color = '#ef4444';
                     capStr = `20:00`; 
                 }
                 else if (format.isInternalSwitch) {
-                    const isThirty = Math.random() > 0.5;
-                    const workTime = isThirty ? 30 : 60;
-                    const restTime = isThirty ? 30 : 60;
-                    const cycleTime = workTime + restTime;
-                    const moveCount = movementsSelected.length;
-                    const roundTime = moveCount * cycleTime;
-                    
-                    const totalRounds = Math.floor(1200 / roundTime);
-                    
-                    displayTitle = `${workTime}/${restTime} INTERVALS`;
-                    format.style = isThirty ? "Sustainable Power Output" : "Aerobic Power Development";
-                    format.howTo = [`Set your timer for repeating ${workTime}s work / ${restTime}s rest intervals.`, `Perform Movement A during the first work window, then rest for ${restTime}s. Perform B next.`, `Maintain a consistent pace across all ${totalRounds} rounds. If output drops significantly, focus on deep recovery breaths during rest.`];
+                    const workTime = Math.random() > 0.5 ? 30 : 60;
+                    displayTitle = `${workTime}/${workTime} INTERVALS`;
+                    format.style = workTime === 30 ? "Sustainable Power Output" : "Aerobic Power Development";
+                    format.howTo = [`Set timer for ${workTime}s work / ${workTime}s rest intervals.`, `Perform Movement A during the first work window, then rest. Perform B next.`, `Maintain consistent quality across all rounds.`];
                     capStr = `20:00`; 
-                    if (Math.random() > 0.5) { intensityLabel = 'High Intensity'; color = '#ef4444'; } 
-                    else { intensityLabel = 'Moderate Effort'; color = '#f59e0b'; }
+                    intensityLabel = Math.random() > 0.5 ? 'High Intensity' : 'Moderate Effort';
+                    color = intensityLabel === 'High Intensity' ? '#ef4444' : '#f59e0b';
                 }
 
                 wodFormatName.textContent = displayTitle;
@@ -726,8 +729,6 @@
                 });
 
                 const zoneData = getTrainingZoneInfo(intensityLabel, displayTitle);
-                
-                // Construct instruction content
                 let instructionsHTML = `
                     <div class="focus-pill">
                         <i data-lucide="zap" class="w-5 h-5 mt-0.5 shrink-0"></i>
@@ -736,7 +737,6 @@
                             <div class="leading-relaxed">This <strong>${format.style}</strong> session is programmed for the <strong>${zoneData.zone}</strong> intensity zone and is ${zoneData.benefit}</div>
                         </div>
                     </div>
-                    
                     <div class="mb-3">
                         <h4 class="text-[10px] font-black uppercase tracking-widest mb-3" style="color: var(--text-muted)">How to Perform this Session</h4>
                         <div class="space-y-2">
