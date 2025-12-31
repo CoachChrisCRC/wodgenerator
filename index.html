@@ -575,12 +575,61 @@
         };
 
         const FORMATS = [
-            { id: "AMRAP", name: "AMRAP", style: "Aerobic Capacity & Pacing", howTo: ["Start your timer and complete all reps for movements A through E in sequence.", "Immediately return to A after finishing E, keeping transitions under 10 seconds.", "Maintain a 'talk-test' pace where you can speak but prefer not to, maximizing quality reps until time expires."], explanation: "<b>As Many Rounds As Possible</b>. This is an aerobic test. The goal is to find a consistent pace you can maintain for the entire duration without burning out early. It's about movement efficiency and short transitions." },
-            { id: "RFT", name: "ROUNDS FOR TIME", style: "Movement Density & Pace", howTo: ["Perform the prescribed movements A-E for the designated number of rounds as fast as technically possible.", "Stop your clock only when the final rep of the final round is complete.", "Maintain a high movement standard throughout; speed must never come at the expense of structural integrity or technique."], explanation: "<b>Rounds For Time</b>. This is a task-priority workout. The volume is fixed, and your goal is to finish the work as fast as possible. It tests your ability to maintain technique under the pressure of the clock." },
-            { id: "EMOM", name: "EMOM", style: "Skill & Power Output", howTo: ["Perform Movement A when the clock starts (0:00). Rest for the remaining time in that minute.", "At the 1:00 mark, perform Movement B. Repeat this pattern through the list.", "Focus on explosive execution during work and controlled nasal breathing during the rest windows."], explanation: "<b>Every Minute On the Minute</b>. This is a skill and density tool. By forcing a specific work-to-rest ratio, it allows you to perform higher-quality reps with more power than a continuous circuit would allow." },
-            { id: "CHIPPER", name: "CHIPPER", style: "Mental Resilience", howTo: ["Complete all prescribed reps for Movement A before advancing to Movement B.", "Break large sets into manageable 'mini-sets' (e.g., 5 sets of 10) to keep moving without hitting muscular failure.", "The objective is a steady, relentless grind with minimal total downtime."], explanation: "<b>The Chipper</b>. A long, linear list of movements. This format tests mental endurance and strategic pacing. You 'chip away' at one movement at a time until the entire list is cleared." },
-            { id: "TABATA", name: "TABATA", style: "Metabolic Threshold", howTo: ["Work with maximum intensity for 20 seconds, then rest completely for 10 seconds.", "Perform all 8 intervals of Movement A before moving to Movement B.", "Prioritize maximum quality output in every 20s window, blending explosive power with technical precision to drive the metabolic stimulus."], explanation: "<b>The Tabata Protocol</b>. 20 seconds of work followed by 10 seconds of rest. This is a high-intensity interval format designed to improve both aerobic and anaerobic systems simultaneously through extreme intensity." },
-            { id: "INTERVALS", name: "INTERVALS", style: "Mixed Power Output", howTo: [], isInternalSwitch: true, explanation: "<b>Work/Rest Intervals</b>. This format focuses on repeatability. By resting as long as you work, you can maintain a much higher intensity in the work windows than you could in a continuous AMRAP." }
+            { 
+                id: "AMRAP", 
+                name: "AMRAP", 
+                style: "Aerobic Capacity & Pacing", 
+                howTo: ["Start your timer and complete all reps for movements A through E in sequence.", "Immediately return to A after finishing E, keeping transitions under 10 seconds.", "Maintain a 'talk-test' pace where you can speak but prefer not to, maximizing quality reps until time expires."], 
+                explanation: "<b>As Many Rounds As Possible</b>. This is an aerobic test. The goal is to find a consistent pace you can maintain for the entire duration without burning out early.", 
+                stimulus_expanded: "Targets <b>Cardiovascular Endurance</b> and <b>Metabolic Flexibility</b>. By working continuously, you force the body to optimize oxygen delivery and waste clearance at a steady state, building a robust aerobic engine.",
+                objective: "The objective of an AMRAP is <b>Pacing Management</b>—the goal is to find the highest speed you can sustain for the full duration without requiring mid-set breaks."
+            },
+            { 
+                id: "RFT", 
+                name: "ROUNDS FOR TIME", 
+                style: "Movement Density & Pace", 
+                howTo: ["Perform the prescribed movements A-E for the designated number of rounds as fast as technically possible.", "Stop your clock only when the final rep of the final round is complete.", "Maintain a high movement standard throughout; speed must never come at the expense of structural integrity or technique."], 
+                explanation: "<b>Rounds For Time</b>. This is a task-priority workout. The volume is fixed, and your goal is to finish the work as fast as possible.", 
+                stimulus_expanded: "Targets <b>Lactate Threshold</b> and <b>Mental Grit</b>. Forcing a fixed amount of work into a minimum time window drives your heart rate toward its ceiling, training the body to manage high-intensity fatigue while maintaining technical precision.",
+                objective: "The objective of RFT is <b>Task Density</b>—the goal is to complete the fixed volume of work as quickly as possible while maintaining perfect technical standards."
+            },
+            { 
+                id: "EMOM", 
+                name: "EMOM", 
+                style: "Skill & Power Output", 
+                howTo: ["Perform Movement A when the clock starts (0:00). Rest for the remaining time in that minute.", "At the 1:00 mark, perform Movement B. Repeat this pattern through the list.", "Focus on explosive execution during work and controlled nasal breathing during the rest windows."], 
+                explanation: "<b>Every Minute On the Minute</b>. This is a skill and density tool. By forcing a specific work-to-rest ratio, it allows for higher-quality reps with more power.", 
+                stimulus_expanded: "Targets <b>Mechanical Consistency</b> and <b>Aerobic Recovery</b>. Fixed rest intervals allow for higher power output per rep compared to continuous formats. It effectively trains 'repeatable power'—the ability to perform explosively even as the clock ticks down.",
+                objective: "The objective of an EMOM is <b>Consistent Output</b>—the goal is to maintain the same level of power and precision in the final round as you did in the first."
+            },
+            { 
+                id: "CHIPPER", 
+                name: "CHIPPER", 
+                style: "Mental Resilience", 
+                howTo: ["Complete all prescribed reps for Movement A before advancing to Movement B.", "Break large sets into manageable 'mini-sets' (e.g., 5 sets of 10) to keep moving without hitting muscular failure.", "The objective is a steady, relentless grind with minimal total downtime."], 
+                explanation: "<b>The Chipper</b>. A long, linear list of movements. This format tests mental endurance and strategic pacing.", 
+                stimulus_expanded: "Targets <b>Muscular Stamina</b> and <b>Cognitive Pacing</b>. By exhausting one movement pattern before moving to the next, you challenge localized muscular endurance. It requires extreme focus to manage rep counts without reaching complete muscular failure early.",
+                objective: "The objective of a Chipper is <b>Linear Persistence</b>—the goal is to methodically 'chip' away at large volumes of work without allowing mental fatigue to slow your transition between movements."
+            },
+            { 
+                id: "TABATA", 
+                name: "TABATA", 
+                style: "Metabolic Threshold", 
+                howTo: ["Work with maximum intensity for 20 seconds, then rest completely for 10 seconds.", "Perform all 8 intervals of Movement A before moving to Movement B.", "Prioritize maximum quality output in every 20s window, blending explosive power with technical precision."], 
+                explanation: "<b>The Tabata Protocol</b>. 20 seconds of work followed by 10 seconds of rest. This is a high-intensity interval format.", 
+                stimulus_expanded: "Targets <b>Anaerobic Power</b> and <b>EPOC (Excess Post-exercise Oxygen Consumption)</b>. Short, brutal bursts of effort followed by micro-rests create a massive metabolic disturbance, significantly improving both aerobic and anaerobic systems in a fraction of the time.",
+                objective: "The objective of Tabata is <b>Maximal Intensity</b>—the goal is to achieve the highest possible power output in every 20-second window, intentionally inducing a high state of metabolic fatigue."
+            },
+            { 
+                id: "INTERVALS", 
+                name: "INTERVALS", 
+                style: "Mixed Power Output", 
+                howTo: [], 
+                isInternalSwitch: true, 
+                explanation: "<b>Work/Rest Intervals</b>. This format focuses on repeatability.", 
+                stimulus_expanded: "Targets <b>Peak Power Sustainability</b> and <b>V02 Max</b>. By allowing rest equal to work time, you can push harder in the work windows than any other format. This drives adaptation in top-end cardiovascular performance and strength-speed.",
+                objective: "The objective of Intervals is <b>Work Sustainability</b>—the goal is to push your intensity ceiling during the work period and utilize the rest to recover efficiently for the next high-effort burst."
+            }
         ];
 
         const LOADING_PHRASES = ["Optimizing Session", "Analyzing Work Capacity", "Drafting Protocol", "Calculating Thresholds", "Building Endurance", "Calibrating Power", "Ready to Train?", "Focus. Execute.", "Structuring Growth", "Setting the Standard"];
@@ -665,7 +714,6 @@
             
             setTimeout(() => {
                 let format = {...FORMATS[Math.floor(Math.random() * FORMATS.length)]};
-                currentWodFormat = format; // Store for the info modal
                 
                 let displayTitle = format.name;
                 let capStr = "20:00";
@@ -752,6 +800,8 @@
                     color = intensityLabel === 'High Intensity' ? '#ef4444' : '#f59e0b';
                 }
 
+                currentWodFormat = {...format, currentTitle: displayTitle};
+
                 wodFormatName.textContent = displayTitle;
                 wodFormatDesc.textContent = format.style;
                 wodMovements.innerHTML = '';
@@ -835,12 +885,24 @@
         // Type Info Modal Logic
         document.getElementById('open-type-info').addEventListener('click', () => {
             if (!currentWodFormat) return;
-            typeModalTitle.textContent = currentWodFormat.name + " Protocol";
+            typeModalTitle.textContent = currentWodFormat.id + " Protocol";
             typeModalContent.innerHTML = `
-                <p>${currentWodFormat.explanation}</p>
-                <div class="p-4 rounded-xl" style="background-color: var(--bg-toggle)">
-                    <p class="font-bold uppercase tracking-widest text-[10px] mb-2" style="color: var(--text-heading)">Primary Stimulus</p>
-                    <p>${currentWodFormat.style}</p>
+                <div class="space-y-4">
+                    <p class="text-sm font-medium" style="color: var(--text-heading)">${currentWodFormat.explanation}</p>
+                    
+                    <div class="p-5 rounded-3xl space-y-3" style="background-color: var(--bg-toggle)">
+                        <div class="flex items-center gap-2">
+                             <i data-lucide="activity" class="w-4 h-4" style="color: var(--text-heading)"></i>
+                             <p class="font-black uppercase tracking-widest text-[10px]" style="color: var(--text-heading)">Primary Stimulus</p>
+                        </div>
+                        <p class="text-[11px] leading-relaxed font-semibold italic opacity-80">${currentWodFormat.style}</p>
+                        <p class="text-[11px] leading-relaxed">${currentWodFormat.stimulus_expanded}</p>
+                    </div>
+
+                    <div class="p-5 border border-dashed rounded-3xl" style="border-color: var(--border-color)">
+                         <p class="font-black uppercase tracking-widest text-[10px] mb-2" style="color: var(--text-muted)">The Objective</p>
+                         <p class="text-[11px] leading-relaxed">${currentWodFormat.objective || 'The goal of this format is to maximize movement quality under specific time constraints.'}</p>
+                    </div>
                 </div>
             `;
             typeModalOverlay.classList.add('active');
