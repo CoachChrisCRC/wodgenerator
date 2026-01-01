@@ -518,12 +518,14 @@
 
         const PILLARS = {
             full_body: [
-                { name: "SA KB Long Cycle", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "high" },
+                { name: "SA KB Long Cycle", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "high", isLongCycle: true },
                 { name: "SA KB Thrusters", type: "power", unilateral: "switch", baseReps: 10, kit: "kettlebell", intensity: "high" },
                 { name: "SA KB Cluster", type: "power", unilateral: "switch", baseReps: 6, kit: "kettlebell", intensity: "high" },
                 { name: "Burpees", type: "cardio", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "moderate" },
-                { name: "SA KB Clean & Press", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate" },
+                { name: "SA KB Clean & Press", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate", isCleanAndPress: true },
                 { name: "KB Goblet Thrusters", type: "power", unilateral: null, baseReps: 12, kit: "kettlebell", intensity: "high" },
+                { name: "SA KB Cleans", type: "power", unilateral: "switch", baseReps: 10, kit: "kettlebell", intensity: "moderate", isCleanVariation: true },
+                { name: "Half Kneeling Cleans", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate", isCleanVariation: true },
                 { name: "Sprawls", type: "cardio", unilateral: null, baseReps: 15, kit: "bodyweight", intensity: "moderate" }
             ],
             upper: [
@@ -534,6 +536,7 @@
                 { name: "Pull Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup", intensity: "high" },
                 { name: "Chin Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup", intensity: "high" },
                 { name: "KB Half Kneeling Press", type: "strength", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate" },
+                { name: "Half Kneeling Clean & Press", type: "power", unilateral: "switch", baseReps: 6, kit: "kettlebell", intensity: "high", isCleanAndPress: true },
                 { name: "Pike Push-ups", type: "strength", unilateral: null, baseReps: 10, kit: "bodyweight", intensity: "high" },
                 { name: "Diamond Push-ups", type: "strength", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "moderate" }
             ],
@@ -569,10 +572,12 @@
             conditioning: [
                 { name: "Run", type: "distance", unilateral: null, baseReps: 1, kit: "run", intensity: "moderate" },
                 { name: "SA KB Snatches", type: "power", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "high" },
+                { name: "SA KB Cleans", type: "power", unilateral: "switch", baseReps: 16, kit: "kettlebell", intensity: "high", isCleanVariation: true },
                 { name: "Mountain Climbers", type: "cardio", unilateral: "alt", baseReps: 40, kit: "bodyweight", intensity: "moderate" },
                 { name: "Jump Squats", type: "power", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "high" },
                 { name: "Jump Lunges", type: "power", unilateral: "alt", baseReps: 16, kit: "bodyweight", intensity: "high" },
                 { name: "KB Hand to Hand Swings", type: "power", unilateral: "alt", baseReps: 20, kit: "kettlebell", intensity: "high", isSwingVariation: true },
+                { name: "2H KB Swings", type: "power", unilateral: null, baseReps: 24, kit: "kettlebell", intensity: "high", isSwingVariation: true },
                 { name: "Broad Jumps", type: "power", unilateral: null, baseReps: 8, kit: "bodyweight", intensity: "high" }
             ]
         };
@@ -724,6 +729,9 @@
                 let intensityLabel = 'Moderate Effort';
                 let color = '#f59e0b';
                 let hasSwingInSession = false;
+                let hasCleanInSession = false;
+                let hasLongCycleInSession = false;
+                let hasCleanAndPressInSession = false;
 
                 const categoryKeys = Object.keys(PILLARS);
                 let bwCountTarget = 0;
@@ -739,7 +747,14 @@
 
                 categoryKeys.forEach((cat, i) => {
                     let pool = PILLARS[cat].filter(m => activeKits.includes(m.kit));
+                    
+                    // Filters for avoiding specific overlaps
                     if (hasSwingInSession) pool = pool.filter(m => !m.isSwingVariation);
+                    if (hasCleanInSession) pool = pool.filter(m => !m.isCleanVariation);
+                    
+                    // EXCLUSIVE LOCK: Long Cycle vs Clean & Press
+                    if (hasLongCycleInSession) pool = pool.filter(m => !m.isCleanAndPress);
+                    if (hasCleanAndPressInSession) pool = pool.filter(m => !m.isLongCycle);
 
                     let finalPick;
                     if (bwIndices.includes(i)) {
@@ -750,8 +765,13 @@
                         finalPick = (kitPool.length > 0) ? kitPool[Math.floor(Math.random() * kitPool.length)] : pool[Math.floor(Math.random() * pool.length)];
                     }
                     
-                    movementsSelected.push(finalPick);
-                    if (finalPick.isSwingVariation) hasSwingInSession = true;
+                    if (finalPick) {
+                        movementsSelected.push(finalPick);
+                        if (finalPick.isSwingVariation) hasSwingInSession = true;
+                        if (finalPick.isCleanVariation) hasCleanInSession = true;
+                        if (finalPick.isLongCycle) hasLongCycleInSession = true;
+                        if (finalPick.isCleanAndPress) hasCleanAndPressInSession = true;
+                    }
                 });
 
                 if (format.id === "AMRAP") {
@@ -885,7 +905,6 @@
             copyButton.textContent = 'Copied!'; setTimeout(() => copyButton.textContent = 'Share', 1500);
         });
 
-        // Type Info Modal Logic
         document.getElementById('open-type-info').addEventListener('click', () => {
             if (!currentWodFormat) return;
             typeModalTitle.textContent = currentWodFormat.id + " Protocol";
@@ -917,7 +936,6 @@
         document.getElementById('type-modal-close-btn').addEventListener('click', closeTypeModal);
         typeModalOverlay.addEventListener('click', (e) => { if(e.target === typeModalOverlay) closeTypeModal(); });
 
-        // Main Help Modal Logic
         document.getElementById('open-info').addEventListener('click', () => modalOverlay.classList.add('active'));
         document.getElementById('close-modal').addEventListener('click', () => modalOverlay.classList.remove('active'));
         document.getElementById('modal-confirm').addEventListener('click', () => modalOverlay.classList.remove('active'));
