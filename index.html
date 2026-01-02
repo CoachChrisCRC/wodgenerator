@@ -195,7 +195,6 @@
 
         #launch-overlay.active { display: flex; opacity: 1; }
 
-        /* HEART RATE MONITOR ANIMATION */
         .ekg-svg {
             width: 150px;
             height: 60px;
@@ -305,11 +304,16 @@
         .copyright-line-1 { color: var(--text-heading); opacity: 0.9; }
         .copyright-line-2 { color: var(--text-heading); opacity: 0.9; }
         .copyright-line-3 { color: var(--text-muted); font-size: 10px; font-weight: 500; letter-spacing: 0.12em; }
+
+        /* Hidden canvas for image generation */
+        #render-canvas { display: none; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4" data-theme="light">
 
-    <!-- HEART RATE MONITOR LOADING SCREEN -->
+    <!-- CANVAS FOR GENERATING SHAREABLE IMAGE -->
+    <canvas id="render-canvas"></canvas>
+
     <div id="launch-overlay">
         <div id="launch-icon-container">
             <svg class="ekg-svg" viewBox="0 0 150 60">
@@ -319,7 +323,6 @@
         <p id="loading-text" class="mt-4 font-brand font-bold text-xl uppercase tracking-widest text-center px-8" style="color: var(--text-heading)">Optimizing Session</p>
     </div>
 
-    <!-- MAIN HELP MODAL -->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal-content shadow-2xl">
             <button id="close-modal" class="absolute top-6 right-6 p-2 rounded-full hover:opacity-70 transition-opacity" style="color: var(--text-muted)">
@@ -373,7 +376,6 @@
         </div>
     </div>
 
-    <!-- TYPE INFO MODAL -->
     <div id="type-modal-overlay" class="modal-overlay">
         <div class="modal-content shadow-2xl">
             <button id="close-type-modal" class="absolute top-6 right-6 p-2 rounded-full hover:opacity-70 transition-opacity" style="color: var(--text-muted)">
@@ -420,7 +422,6 @@
             </div>
         </header>
 
-        <!-- SETUP SCREEN -->
         <div id="home-state" class="w-full text-center space-y-6 py-4">
             <div class="space-y-1">
                 <h2 class="font-brand font-bold text-4xl uppercase tracking-tight" style="color: var(--text-heading)">WOD Generator</h2>
@@ -466,7 +467,6 @@
             </div>
         </div>
 
-        <!-- RESULT SCREEN -->
         <div id="wod-card" class="w-full space-y-5 hidden-initial opacity-0 transition-opacity duration-500">
             <div class="flex items-center justify-between">
                 <div id="kit-section" class="space-y-2">
@@ -500,9 +500,15 @@
                         <i data-lucide="timer" class="w-3 h-3"></i>
                         <span id="time-cap-value"></span>
                     </div>
-                    <button id="copy-button" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:opacity-70" style="color: var(--text-accent)">
-                        <i data-lucide="copy" class="w-3 h-3"></i> Share
-                    </button>
+                    
+                    <div class="flex items-center gap-4">
+                        <button id="download-graphic-button" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:opacity-70" style="color: var(--text-accent)">
+                            <i data-lucide="image" class="w-3 h-3"></i> Graphic
+                        </button>
+                        <button id="copy-button" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:opacity-70" style="color: var(--text-accent)">
+                            <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -666,6 +672,7 @@
         const generateButton = document.getElementById('generate-button');
         const resetButton = document.getElementById('reset-button');
         const copyButton = document.getElementById('copy-button');
+        const downloadGraphicButton = document.getElementById('download-graphic-button');
         const wodCard = document.getElementById('wod-card');
         const homeState = document.getElementById('home-state');
         const wodFormatName = document.getElementById('wod-format-name');
@@ -684,6 +691,9 @@
         const typeModalContent = document.getElementById('type-modal-content');
 
         let currentWodFormat = null;
+        let currentMovements = [];
+        let currentIntensity = '';
+        let currentIntensityColor = '';
         let phraseIndex = 0;
 
         themeToggle.addEventListener('click', () => {
@@ -844,6 +854,12 @@
                 }
 
                 currentWodFormat = {...format, currentTitle: displayTitle};
+                currentIntensity = intensityLabel;
+                currentIntensityColor = color;
+                currentMovements = movementsSelected.map(m => ({
+                    ...m,
+                    displayReps: calculateReps(m, displayTitle, intensityLabel)
+                }));
 
                 wodFormatName.textContent = displayTitle;
                 wodFormatDesc.textContent = format.style;
@@ -854,11 +870,11 @@
                 intensityIndicator.style.color = '#fff';
 
                 let kitUsed = new Set();
-                movementsSelected.forEach((move, i) => {
+                currentMovements.forEach((move, i) => {
                     kitUsed.add(move.kit);
                     const line = document.createElement('div');
                     line.className = 'movement-line';
-                    line.innerHTML = `<span class="opacity-50">${String.fromCharCode(65 + i)})</span> <strong>${move.name.toUpperCase()}</strong> : <em>${calculateReps(move, displayTitle, intensityLabel)}</em>`;
+                    line.innerHTML = `<span class="opacity-50">${String.fromCharCode(65 + i)})</span> <strong>${move.name.toUpperCase()}</strong> : <em>${move.displayReps}</em>`;
                     wodMovements.appendChild(line);
                 });
 
@@ -909,6 +925,132 @@
             }, 800);
         }
 
+        // --- GRAPHIC GENERATION ENGINE ---
+        function generateShareableGraphic() {
+            if (!currentWodFormat) return;
+
+            const canvas = document.getElementById('render-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Story Format Ratio (9:16)
+            canvas.width = 1080;
+            canvas.height = 1920;
+
+            // Background
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Subtle Grid or Grain
+            ctx.globalAlpha = 0.05;
+            ctx.strokeStyle = '#ffffff';
+            for(let i=0; i<canvas.width; i+=40) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+            }
+            ctx.globalAlpha = 1.0;
+
+            // Header - Brand
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '900 80px Oswald';
+            ctx.fillText('COACH CHRIS', 80, 160);
+            
+            ctx.font = '500 40px Oswald';
+            ctx.fillStyle = '#a3a3a3';
+            ctx.fillText('CIRCULAR ROOTS COACHING', 80, 215);
+            
+            ctx.font = '900 35px Inter';
+            ctx.fillStyle = '#525252';
+            ctx.fillText('TRAIN UNCNVNTNL.', 80, 260);
+
+            // WOD Title Area
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '900 130px Oswald';
+            ctx.fillText(currentWodFormat.currentTitle, 80, 480);
+            
+            ctx.font = '700 45px Inter';
+            ctx.fillStyle = '#a3a3a3';
+            ctx.fillText(currentWodFormat.style.toUpperCase(), 80, 540);
+
+            // Intensity Indicator
+            ctx.fillStyle = currentIntensityColor;
+            ctx.roundRect = function(x, y, w, h, r) {
+                this.beginPath(); this.moveTo(x+r, y); this.arcTo(x+w, y, x+w, y+h, r);
+                this.arcTo(x+w, y+h, x, y+h, r); this.arcTo(x, y+h, x, y, r);
+                this.arcTo(x, y, x+w, y, r); this.closePath(); return this;
+            };
+            ctx.roundRect(80, 580, 350, 70, 15).fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '900 30px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText(currentIntensity.toUpperCase(), 255, 625);
+            ctx.textAlign = 'left';
+
+            // Movements Section
+            ctx.fillStyle = '#1a1a1a';
+            ctx.roundRect(60, 720, 960, 850, 40).fill();
+            
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#262626';
+            ctx.stroke();
+
+            currentMovements.forEach((move, i) => {
+                const yPos = 820 + (i * 130);
+                
+                // Letter index
+                ctx.fillStyle = '#525252';
+                ctx.font = '700 40px Inter';
+                ctx.fillText(`${String.fromCharCode(65 + i)})`, 100, yPos);
+                
+                // Movement Name
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '900 48px Oswald';
+                ctx.fillText(move.name.toUpperCase(), 160, yPos);
+                
+                // Reps
+                ctx.fillStyle = '#a3a3a3';
+                ctx.font = '500 36px Inter';
+                ctx.fillText(`: ${move.displayReps}`, 160, yPos + 50);
+
+                if (i < currentMovements.length - 1) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#262626';
+                    ctx.moveTo(100, yPos + 80);
+                    ctx.lineTo(920, yPos + 80);
+                    ctx.stroke();
+                }
+            });
+
+            // Time Cap
+            ctx.fillStyle = '#ffffff';
+            ctx.roundRect(80, 1620, 320, 80, 40).fill();
+            ctx.fillStyle = '#000000';
+            ctx.font = '900 32px Inter';
+            ctx.fillText(timeCapValue.textContent, 120, 1672);
+
+            // Footer / CTA
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '700 35px Oswald';
+            ctx.textAlign = 'right';
+            ctx.fillText('JOIN THE TRIBE', 1000, 1780);
+            ctx.font = '400 30px Inter';
+            ctx.fillStyle = '#a3a3a3';
+            ctx.fillText('circularrootscoaching.com', 1000, 1830);
+
+            // Decorative Accent
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 10;
+            ctx.beginPath();
+            ctx.moveTo(80, 1850);
+            ctx.lineTo(180, 1850);
+            ctx.stroke();
+
+            // Export
+            const dataURL = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = `WOD_${currentWodFormat.currentTitle.replace(/\s+/g, '_')}.png`;
+            link.href = dataURL;
+            link.click();
+        }
+
         generateButton.addEventListener('click', generateWOD);
         resetButton.addEventListener('click', () => {
             wodCard.classList.add('opacity-0');
@@ -922,7 +1064,16 @@
         copyButton.addEventListener('click', () => {
             const text = `WOD: ${wodFormatName.textContent}\n${Array.from(wodMovements.querySelectorAll('.movement-line')).map(l => l.innerText).join('\n')}\n\nCOACH CHRIS`;
             const el = document.createElement('textarea'); el.value = text; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
-            copyButton.textContent = 'Copied!'; setTimeout(() => copyButton.textContent = 'Share', 1500);
+            copyButton.textContent = 'Copied!'; setTimeout(() => copyButton.textContent = 'Copy', 1500);
+        });
+
+        downloadGraphicButton.addEventListener('click', () => {
+            downloadGraphicButton.textContent = 'Generating...';
+            // Small timeout to allow UI to update before heavy canvas work
+            setTimeout(() => {
+                generateShareableGraphic();
+                downloadGraphicButton.textContent = 'Graphic';
+            }, 100);
         });
 
         document.getElementById('open-type-info').addEventListener('click', () => {
