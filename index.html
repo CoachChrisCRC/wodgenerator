@@ -195,13 +195,26 @@
 
         #launch-overlay.active { display: flex; opacity: 1; }
 
-        @keyframes pulse-scale {
-            0% { transform: scale(0.85); opacity: 0.3; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(0.85); opacity: 0.3; }
+        /* HEART RATE MONITOR ANIMATION */
+        .ekg-svg {
+            width: 150px;
+            height: 60px;
         }
-
-        #launch-icon-container { animation: pulse-scale 1.2s infinite ease-in-out; }
+        .ekg-path {
+            fill: none;
+            stroke: var(--text-heading);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 500;
+            stroke-dashoffset: 500;
+            animation: heart-beat 1.5s linear infinite;
+        }
+        @keyframes heart-beat {
+            0% { stroke-dashoffset: 500; }
+            50% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -500; }
+        }
 
         .hidden-initial { display: none; }
 
@@ -296,9 +309,12 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4" data-theme="light">
 
+    <!-- HEART RATE MONITOR LOADING SCREEN -->
     <div id="launch-overlay">
-        <div id="launch-icon-container" style="color: var(--text-heading)">
-            <i data-lucide="zap" class="w-16 h-16"></i>
+        <div id="launch-icon-container">
+            <svg class="ekg-svg" viewBox="0 0 150 60">
+                <path class="ekg-path" d="M0,30 L40,30 L45,20 L55,45 L65,5 L75,55 L85,30 L150,30" />
+            </svg>
         </div>
         <p id="loading-text" class="mt-4 font-brand font-bold text-xl uppercase tracking-widest text-center px-8" style="color: var(--text-heading)">Optimizing Session</p>
     </div>
