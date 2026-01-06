@@ -2,18 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WOD Generator | COACH CHRIS</title>
     
-    <!-- PWA Meta Tags -->
+    <!-- PWA Primary Meta Tags -->
     <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="WOD Gen">
+    <meta name="description" content="Professional WOD Generator for Circular Roots Coaching.">
     
-    <!-- Manifest Data URI (Self-Contained PWA) -->
-    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22WOD%20Generator%20Coach%20Chris%22,%22short_name%22:%22WOD%20Gen%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23000000%22,%22theme_color%22:%22%23000000%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20512%20512'%3E%3Crect%20width='512'%20height='512'%20fill='black'/%3E%3Ctext%20x='50%25'%20y='50%25'%20font-family='sans-serif'%20font-weight='900'%20font-size='160'%20fill='white'%20text-anchor='middle'%20dy='.3em'%3ECC%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22,%22purpose%22:%22any%20maskable%22}]} " />
+    <!-- Open Graph for Social Sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="WOD Generator | COACH CHRIS">
+    <meta property="og:description" content="Optimized training sessions and protocols.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/YourGitHubUsername/YourRepoName/main/WodGenerator-AppIcon.png">
 
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/YourGitHubUsername/YourRepoName/main/WodGenerator-AppIcon.png">
+    
+    <!-- Manifest Data URI (Embedded for zero-config GitHub Pages deployment) -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"WOD Generator Coach Chris","short_name":"WOD Gen","start_url":"./index.html","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"https://raw.githubusercontent.com/YourGitHubUsername/YourRepoName/main/WodGenerator-AppIcon.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}' />
+
+    <!-- External Assets -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
@@ -69,6 +81,7 @@
             color: var(--text-main);
             transition: background-color 0.3s ease, color 0.3s ease;
             scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .font-brand { font-family: 'Oswald', sans-serif; }
@@ -333,6 +346,7 @@
         <p id="loading-text" class="mt-4 font-brand font-bold text-xl uppercase tracking-widest text-center px-8" style="color: var(--text-heading)">Optimizing Session</p>
     </div>
 
+    <!-- MAIN APP INTERFACE -->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal-content shadow-2xl">
             <button id="close-modal" class="absolute top-6 right-6 p-2 rounded-full hover:opacity-70 transition-opacity" style="color: var(--text-muted)">
@@ -386,6 +400,7 @@
         </div>
     </div>
 
+    <!-- FORMAT INFO MODAL -->
     <div id="type-modal-overlay" class="modal-overlay">
         <div class="modal-content shadow-2xl">
             <button id="close-type-modal" class="absolute top-6 right-6 p-2 rounded-full hover:opacity-70 transition-opacity" style="color: var(--text-muted)">
@@ -432,6 +447,7 @@
             </div>
         </header>
 
+        <!-- SETUP VIEW -->
         <div id="home-state" class="w-full text-center space-y-6 py-4">
             <div class="space-y-1">
                 <h2 class="font-brand font-bold text-4xl uppercase tracking-tight" style="color: var(--text-heading)">WOD Generator</h2>
@@ -477,6 +493,7 @@
             </div>
         </div>
 
+        <!-- GENERATED WOD VIEW -->
         <div id="wod-card" class="w-full space-y-5 hidden-initial opacity-0 transition-opacity duration-500">
             <div class="flex items-center justify-between">
                 <div id="kit-section" class="space-y-2">
@@ -546,24 +563,31 @@
     </footer>
 
     <script type="module">
-        // --- SERVICE WORKER REGISTRATION (PWA) ---
+        /** * SERVICE WORKER REGISTRATION 
+         * In-memory Service Worker script to enable PWA features on GitHub Pages 
+         */
+        const swScript = `
+        const CACHE_NAME = 'coach-chris-wod-v1';
+        const ASSETS = ['./', './index.html'];
+
+        self.addEventListener('install', (e) => {
+            e.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(ASSETS)));
+        });
+
+        self.addEventListener('fetch', (e) => {
+            e.respondWith(
+                caches.match(e.request).then((res) => res || fetch(e.request))
+            );
+        });
+        `;
+
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                const swCode = `
-                    const CACHE_NAME = 'coach-chris-wod-v1';
-                    self.addEventListener('install', (event) => {
-                        event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./'])));
-                    });
-                    self.addEventListener('fetch', (event) => {
-                        event.respondWith(caches.match(event.request).then((response) => response || fetch(event.request)));
-                    });
-                `;
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                const workerUrl = URL.createObjectURL(blob);
-                navigator.serviceWorker.register(workerUrl).catch(err => console.log('SW failed', err));
-            });
+            const blob = new Blob([swScript], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl).catch(err => console.error("SW Registration Failed", err));
         }
 
+        // Logic begins here
         lucide.createIcons();
         document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -994,12 +1018,20 @@
             ctx.fillText(currentWodFormat.style.toUpperCase(), 80, 540);
 
             ctx.fillStyle = currentIntensityColor;
-            ctx.roundRect = function(x, y, w, h, r) {
-                this.beginPath(); this.moveTo(x+r, y); this.arcTo(x+w, y, x+w, y+h, r);
-                this.arcTo(x+w, y+h, x, y+h, r); this.arcTo(x, y+h, x, y, r);
-                this.arcTo(x, y, x+w, y, r); this.closePath(); return this;
-            };
-            ctx.roundRect(80, 580, 350, 70, 15).fill();
+            
+            // Helper for rounded rect on canvas
+            const drawRoundedRect = (x, y, w, h, r) => {
+                ctx.beginPath();
+                ctx.moveTo(x + r, y);
+                ctx.arcTo(x + w, y, x + w, y + h, r);
+                ctx.arcTo(x + w, y + h, x, y + h, r);
+                ctx.arcTo(x, y + h, x, y, r);
+                ctx.arcTo(x, y, x + w, y, r);
+                ctx.closePath();
+                ctx.fill();
+            }
+            
+            drawRoundedRect(80, 580, 350, 70, 15);
             ctx.fillStyle = '#ffffff';
             ctx.font = '900 30px Inter';
             ctx.textAlign = 'center';
@@ -1007,7 +1039,7 @@
             ctx.textAlign = 'left';
 
             ctx.fillStyle = '#1a1a1a';
-            ctx.roundRect(60, 720, 960, 850, 40).fill();
+            drawRoundedRect(60, 720, 960, 850, 40);
             
             ctx.lineWidth = 2;
             ctx.strokeStyle = '#262626';
@@ -1038,7 +1070,7 @@
             });
 
             ctx.fillStyle = '#ffffff';
-            ctx.roundRect(80, 1620, 320, 80, 40).fill();
+            drawRoundedRect(80, 1620, 320, 80, 40);
             ctx.fillStyle = '#000000';
             ctx.font = '900 32px Inter';
             ctx.fillText(timeCapValue.textContent, 120, 1672);
@@ -1081,8 +1113,14 @@
         
         copyButton.addEventListener('click', () => {
             const text = `WOD: ${wodFormatName.textContent}\n${Array.from(wodMovements.querySelectorAll('.movement-line')).map(l => l.innerText).join('\n')}\n\nCOACH CHRIS`;
-            const el = document.createElement('textarea'); el.value = text; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
-            copyButton.textContent = 'Copied!'; setTimeout(() => copyButton.textContent = 'Copy', 1500);
+            const el = document.createElement('textarea'); 
+            el.value = text; 
+            document.body.appendChild(el); 
+            el.select(); 
+            document.execCommand('copy'); 
+            document.body.removeChild(el);
+            copyButton.textContent = 'Copied!'; 
+            setTimeout(() => copyButton.textContent = 'Copy', 1500);
         });
 
         downloadGraphicButton.addEventListener('click', () => {
@@ -1129,3 +1167,4 @@
     </script>
 </body>
 </html>
+
