@@ -526,6 +526,15 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Baseline Button -->
+            <button id="baseline-button" class="w-full flex items-center justify-center gap-3 p-4 rounded-2xl border transition-all duration-300 hover:scale-[1.02] active:scale-95" style="background-color: var(--bg-card); border-color: var(--border-color); color: var(--text-heading)">
+                <i data-lucide="gauge" class="w-5 h-5"></i>
+                <div class="flex flex-col items-start">
+                    <span class="text-xs font-black uppercase tracking-widest">Benchmark Baseline</span>
+                    <span class="text-[9px] opacity-60 font-bold uppercase">Test your work capacity</span>
+                </div>
+            </button>
         </div>
 
         <div id="wod-card" class="w-full space-y-5 hidden-initial opacity-0 transition-opacity duration-500">
@@ -749,6 +758,7 @@
         const body = document.body;
         const themeToggle = document.getElementById('theme-toggle');
         const generateButton = document.getElementById('generate-button');
+        const baselineButton = document.getElementById('baseline-button');
         const resetButton = document.getElementById('reset-button');
         const copyButton = document.getElementById('copy-button');
         const downloadGraphicButton = document.getElementById('download-graphic-button');
@@ -850,6 +860,85 @@
             lucide.createIcons();
         }
 
+        function generateBaselineWOD() {
+            generateButton.disabled = true;
+            loadingText.textContent = "Loading Benchmark";
+            launchOverlay.classList.add('active');
+
+            setTimeout(() => {
+                const baselineFormat = FORMATS.find(f => f.id === "AMRAP");
+                const moves = [
+                    { name: "Push Ups", displayReps: "10", kit: "bodyweight", scaling: { easier: "Knee Push Ups", harder: "Diamond Push Ups" } },
+                    { name: "Goblet Squat", displayReps: "15", kit: "kettlebell", scaling: { easier: "Air Squat", harder: "Pause Squat" } },
+                    { name: "KB Swing", displayReps: "25", kit: "kettlebell", scaling: { easier: "Wall Hinge", harder: "Heavier KB" } }
+                ];
+
+                currentWodFormat = { ...baselineFormat, currentTitle: "BASELINE AMRAP 10", id: "BASELINE" };
+                currentIntensity = "Benchmark Effort";
+                currentIntensityColor = "#000000";
+                currentMovements = moves;
+
+                renderWOD("BASELINE AMRAP 10", "Benchmark Work Capacity", moves, "10:00 CAP", "Benchmark Effort", "#000000");
+                
+                instructionContent.innerHTML = `
+                    <div class="focus-pill">
+                        <i data-lucide="gauge" class="w-5 h-5 mt-0.5 shrink-0"></i>
+                        <div class="leading-relaxed">This <strong>Baseline Test</strong> is designed to measure your raw work capacity. Perform this every 4-6 weeks to track progress.</div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="strategy-step"><i data-lucide="arrow-right-circle" class="w-3 h-3 mt-0.5 opacity-40 shrink-0"></i><span>Goal: 10 Minutes - As many rounds as possible.</span></div>
+                        <div class="strategy-step"><i data-lucide="arrow-right-circle" class="w-3 h-3 mt-0.5 opacity-40 shrink-0"></i><span>Keep movement quality high even as fatigue sets in.</span></div>
+                        <div class="strategy-step"><i data-lucide="arrow-right-circle" class="w-3 h-3 mt-0.5 opacity-40 shrink-0"></i><span>Note your score: (Rounds + Reps + KB Weight) to monitor progress</span></div>
+                    </div>
+                `;
+
+                launchOverlay.classList.remove('active');
+                homeState.classList.add('hidden');
+                wodCard.classList.remove('hidden-initial');
+                setTimeout(() => {
+                    wodCard.classList.remove('opacity-0');
+                    generateButton.textContent = "Rebuild Session";
+                    generateButton.disabled = false;
+                    lucide.createIcons();
+                }, 50);
+            }, 600);
+        }
+
+        function renderWOD(title, desc, moves, capText, intensity, color) {
+            wodFormatName.textContent = title;
+            wodFormatDesc.textContent = desc;
+            wodMovements.innerHTML = '';
+            timeCapValue.textContent = capText;
+            intensityIndicator.textContent = intensity;
+            intensityIndicator.style.backgroundColor = color;
+            intensityIndicator.style.color = '#fff';
+
+            moves.forEach((move, i) => {
+                const line = document.createElement('div');
+                line.className = 'movement-line';
+                line.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="opacity-30 text-[10px] font-black">${String.fromCharCode(65 + i)}</span>
+                        <span class="font-bold text-[13px] uppercase tracking-tighter">${move.name}</span>
+                        <span class="opacity-50 text-[11px] font-medium tracking-wide">— ${move.displayReps}</span>
+                    </div>
+                    <button class="scaling-btn" onclick="window.openScaling('${move.name}')">
+                        <i data-lucide="chevrons-down" class="w-3 h-3"></i> Scale
+                    </button>
+                `;
+                wodMovements.appendChild(line);
+            });
+
+            kitContainer.innerHTML = '';
+            let kitUsed = new Set(moves.map(m => m.kit));
+            kitUsed.forEach(k => {
+                const tag = document.createElement('div');
+                tag.className = 'kit-tag';
+                tag.innerHTML = `<i data-lucide="check" class="w-3 h-3"></i> ${k === 'kettlebell' ? 'KB' : k === 'run' ? 'Run' : k === 'pullup' ? 'Bar' : 'Body'}`;
+                kitContainer.appendChild(tag);
+            });
+        }
+
         function generateWOD() {
             const selectedKit = Array.from(document.querySelectorAll('input[name="kit-select"]:checked')).map(cb => cb.value);
             const supplementalActive = selectedKit.length > 0;
@@ -938,38 +1027,7 @@
                     displayReps: calculateReps(m, displayTitle, intensityLabel)
                 }));
 
-                wodFormatName.textContent = displayTitle;
-                wodFormatDesc.textContent = format.style;
-                wodMovements.innerHTML = '';
-                timeCapValue.textContent = `${capStr} CAP`;
-                intensityIndicator.textContent = intensityLabel;
-                intensityIndicator.style.backgroundColor = color;
-                intensityIndicator.style.color = '#fff';
-
-                currentMovements.forEach((move, i) => {
-                    const line = document.createElement('div');
-                    line.className = 'movement-line';
-                    line.innerHTML = `
-                        <div class="flex items-center gap-2">
-                            <span class="opacity-30 text-[10px] font-black">${String.fromCharCode(65 + i)}</span>
-                            <span class="font-bold text-[13px] uppercase tracking-tighter">${move.name}</span>
-                            <span class="opacity-50 text-[11px] font-medium tracking-wide">— ${move.displayReps}</span>
-                        </div>
-                        <button class="scaling-btn" onclick="window.openScaling('${move.name}')">
-                            <i data-lucide="chevrons-down" class="w-3 h-3"></i> Scale
-                        </button>
-                    `;
-                    wodMovements.appendChild(line);
-                });
-
-                kitContainer.innerHTML = '';
-                let kitUsed = new Set(currentMovements.map(m => m.kit));
-                kitUsed.forEach(k => {
-                    const tag = document.createElement('div');
-                    tag.className = 'kit-tag';
-                    tag.innerHTML = `<i data-lucide="check" class="w-3 h-3"></i> ${k === 'kettlebell' ? 'KB' : k === 'run' ? 'Run' : k === 'pullup' ? 'Bar' : 'Body'}`;
-                    kitContainer.appendChild(tag);
-                });
+                renderWOD(displayTitle, format.style, currentMovements, `${capStr} CAP`, intensityLabel, color);
 
                 const zoneData = getTrainingZoneInfo(intensityLabel, displayTitle);
                 let instructionsHTML = `
@@ -1010,7 +1068,7 @@
             ctx.fillStyle = '#ffffff'; ctx.font = '900 80px Oswald'; ctx.fillText('COACH CHRIS', 80, 160);
             ctx.font = '500 40px Oswald'; ctx.fillStyle = '#a3a3a3'; ctx.fillText('CIRCULAR ROOTS COACHING', 80, 215);
             ctx.fillStyle = '#ffffff'; ctx.font = '900 130px Oswald'; ctx.fillText(currentWodFormat.currentTitle, 80, 480);
-            ctx.font = '700 45px Inter'; ctx.fillStyle = '#a3a3a3'; ctx.fillText(currentWodFormat.style.toUpperCase(), 80, 540);
+            ctx.font = '700 45px Inter'; ctx.fillStyle = '#a3a3a3'; ctx.fillText(currentWodFormat.style?.toUpperCase() || 'BENCHMARK', 80, 540);
             ctx.fillStyle = '#1a1a1a'; ctx.fillRect(60, 720, 960, 850);
             currentMovements.forEach((move, i) => {
                 const yPos = 820 + (i * 130);
@@ -1024,6 +1082,7 @@
         }
 
         generateButton.addEventListener('click', generateWOD);
+        baselineButton.addEventListener('click', generateBaselineWOD);
         resetButton.addEventListener('click', () => {
             wodCard.classList.add('opacity-0');
             setTimeout(() => { wodCard.classList.add('hidden-initial'); homeState.classList.remove('hidden'); generateButton.textContent = "Build My Session"; }, 300);
@@ -1047,10 +1106,10 @@
             typeModalIcon.innerHTML = `<i data-lucide="info" class="w-6 h-6"></i>`;
             typeModalContent.innerHTML = `
                 <div class="space-y-4">
-                    <p class="text-sm font-medium" style="color: var(--text-heading)">${currentWodFormat.explanation}</p>
+                    <p class="text-sm font-medium" style="color: var(--text-heading)">${currentWodFormat.explanation || "Benchmark testing for capacity."}</p>
                     <div class="p-5 rounded-3xl space-y-3" style="background-color: var(--bg-toggle)">
-                        <p class="text-[11px] leading-relaxed font-semibold italic opacity-80">${currentWodFormat.style}</p>
-                        <p class="text-[11px] leading-relaxed">${currentWodFormat.stimulus_expanded}</p>
+                        <p class="text-[11px] leading-relaxed font-semibold italic opacity-80">${currentWodFormat.style || 'Progress Tracking'}</p>
+                        <p class="text-[11px] leading-relaxed">${currentWodFormat.stimulus_expanded || 'Benchmark tests are essential for objective progress tracking.'}</p>
                     </div>
                 </div>
             `;
