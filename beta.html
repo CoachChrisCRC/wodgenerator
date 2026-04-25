@@ -43,6 +43,7 @@
             --launch-overlay: rgba(255, 255, 255, 0.9);
             --bg-focus: #000000;
             --text-focus: #ffffff;
+            --accent-glow: rgba(0, 0, 0, 0.05);
         }
 
         [data-theme="dark"] {
@@ -65,6 +66,7 @@
             --launch-overlay: rgba(10, 10, 10, 0.95);
             --bg-focus: #ffffff;
             --text-focus: #000000;
+            --accent-glow: rgba(255, 255, 255, 0.1);
         }
 
         body {
@@ -356,6 +358,65 @@
         }
 
         #render-canvas { display: none; }
+
+        /* Smart Timer Styles */
+        .smart-timer-container {
+            background-color: var(--bg-toggle);
+            border: 1px solid var(--border-color);
+            border-radius: 2rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            margin-top: 1.25rem;
+        }
+
+        #timer-display {
+            font-family: 'Oswald', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--text-heading);
+            letter-spacing: -0.02em;
+            transition: all 0.2s ease;
+        }
+
+        #timer-interval-info {
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-accent);
+        }
+
+        .timer-btn {
+            background-color: var(--bg-btn-primary);
+            color: var(--btn-text-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 1rem;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.2s;
+        }
+
+        .timer-btn:active { transform: scale(0.95); }
+
+        .pulse-timer {
+            animation: timer-pulse 1s infinite alternate;
+        }
+
+        @keyframes timer-pulse {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0.8; transform: scale(1.03); }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4" data-theme="light">
@@ -580,6 +641,27 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Smart Timer Integration (Moved below movements) -->
+                <div class="smart-timer-container">
+                    <div class="flex w-full justify-between items-center px-2">
+                        <span class="text-[9px] font-black uppercase tracking-[0.2em] opacity-40" style="color: var(--text-heading)">Session Clock</span>
+                        <div id="timer-status" class="flex items-center gap-2">
+                            <div id="status-dot" class="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
+                            <span id="status-text" class="text-[9px] font-black uppercase tracking-widest opacity-60">Ready</span>
+                        </div>
+                    </div>
+                    <div id="timer-display">00:00</div>
+                    <div id="timer-interval-info" class="mb-1"></div>
+                    <div class="flex gap-3">
+                        <button id="timer-start-btn" class="timer-btn">
+                            <i data-lucide="play" class="w-3 h-3"></i> Start
+                        </button>
+                        <button id="timer-reset-btn" class="timer-btn" style="background-color: var(--bg-toggle); color: var(--text-heading); border: 1px solid var(--border-color);">
+                            <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div id="instructional-section" class="pt-6 border-t space-y-4 text-left" style="border-color: var(--border-color)">
@@ -617,11 +699,11 @@
     </footer>
 
     <script type="module">
-        // --- SERVICE WORKER REGISTRATION (PWA) ---
+        // --- SERVICE WORKER REGISTRATION ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const swCode = `
-                    const CACHE_NAME = 'coach-chris-wod-v1';
+                    const CACHE_NAME = 'coach-chris-wod-v2';
                     self.addEventListener('install', (event) => {
                         event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./'])));
                     });
@@ -638,6 +720,7 @@
         lucide.createIcons();
         document.getElementById('year').textContent = new Date().getFullYear();
 
+        // --- PILLARS DATA ---
         const PILLARS = {
             full_body: [
                 { name: "SA KB Long Cycle", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "high", isLongCycle: true, scaling: { easier: "SA KB Clean + Push Press", harder: "Faster Tempo / More Explosive" } },
@@ -707,65 +790,17 @@
         };
 
         const FORMATS = [
-            { 
-                id: "AMRAP", 
-                name: "AMRAP", 
-                style: "Aerobic Capacity & Pacing", 
-                howTo: ["Start your timer and complete all reps for movements A through E in sequence.", "Immediately return to A after finishing E, keeping transitions under 10 seconds.", "Maintain a 'talk-test' pace where you can speak but prefer not to, maximizing quality reps until time expires."], 
-                explanation: "<b>As Many Rounds As Possible</b>. This is an aerobic test. The goal is to find a consistent pace you can maintain for the entire duration without burning out early.", 
-                stimulus_expanded: "Targets <b>Cardiovascular Endurance</b> and <b>Metabolic Flexibility</b>. By working continuously, you force the body to optimize oxygen delivery and waste clearance at a steady state, building a robust aerobic engine.",
-                objective: "The objective of an AMRAP is <b>Pacing Management</b>—the goal is to find the highest speed you can sustain for the full duration without requiring mid-set breaks."
-            },
-            { 
-                id: "RFT", 
-                name: "ROUNDS FOR TIME", 
-                style: "Movement Density & Pace", 
-                howTo: ["Perform the prescribed movements A-E for the designated number of rounds as fast as technically possible.", "Stop your clock only when the final rep of the final round is complete.", "Maintain a high movement standard throughout; speed must never come at the expense of structural integrity or technique."], 
-                explanation: "<b>Rounds For Time</b>. This is a task-priority workout. The volume is fixed, and your goal is to finish the work as fast as possible.", 
-                stimulus_expanded: "Targets <b>Lactate Threshold</b> and <b>Mental Grit</b>. Forcing a fixed amount of work into a minimum time window drives your heart rate toward its ceiling, training the body to manage high-intensity fatigue while maintaining technical precision.",
-                objective: "The objective of RFT is <b>Task Density</b>—the goal is to complete the fixed volume of work as quickly as possible while maintaining perfect technical standards."
-            },
-            { 
-                id: "EMOM", 
-                name: "EMOM", 
-                style: "Skill & Power Output", 
-                howTo: ["Perform Movement A when the clock starts (0:00). Rest for the remaining time in that minute.", "At the 1:00 mark, perform Movement B. Repeat this pattern through the list.", "Focus on explosive execution during work and controlled nasal breathing during the rest windows."], 
-                explanation: "<b>Every Minute On the Minute</b>. This is a skill and density tool. By forcing a specific work-to-rest ratio, it allows for higher-quality reps with more power.", 
-                stimulus_expanded: "Targets <b>Mechanical Consistency</b> and <b>Aerobic Recovery</b>. Fixed rest intervals allow for higher power output per rep compared to continuous formats. It effectively trains 'repeatable power'—the ability to perform explosively even as the clock ticks down.",
-                objective: "The objective of an EMOM is <b>Consistent Output</b>—the goal is to maintain the same level of power and precision in the first round as you did in the last."
-            },
-            { 
-                id: "CHIPPER", 
-                name: "CHIPPER", 
-                style: "Mental Resilience", 
-                howTo: ["Complete all prescribed reps for Movement A before advancing to Movement B.", "Break large sets into manageable 'mini-sets' (e.g., 5 sets of 10) to keep moving without hitting muscular failure.", "The objective is a steady, relentless grind with minimal total downtime."], 
-                explanation: "<b>The Chipper</b>. A long, linear list of movements. This format tests mental endurance and strategic pacing.", 
-                stimulus_expanded: "Targets <b>Muscular Stamina</b> and <b>Cognitive Pacing</b>. By exhausting one movement pattern before moving to the next, you challenge localized muscular endurance.",
-                objective: "The objective of a Chipper is <b>Linear Persistence</b>—the goal is to methodically 'chip' away at large volumes of work without allowing mental fatigue to slow your transition."
-            },
-            { 
-                id: "TABATA", 
-                name: "TABATA", 
-                style: "Metabolic Threshold", 
-                howTo: ["Work with maximum intensity for 20 seconds, then rest completely for 10 seconds.", "Perform all 8 intervals of Movement A before moving to Movement B.", "Prioritize maximum quality output in every 20s window."], 
-                explanation: "<b>The Tabata Protocol</b>. 20 seconds of work followed by 10 seconds of rest. This is a high-intensity interval format.", 
-                stimulus_expanded: "Targets <b>Anaerobic Power</b> and improved recovery. Short, brutal bursts of effort create a massive metabolic disturbance.",
-                objective: "The objective of Tabata is <b>Maximal Intensity</b>—the goal is to achieve the highest possible power output in every window."
-            },
-            { 
-                id: "INTERVALS", 
-                name: "INTERVALS", 
-                style: "Mixed Power Output", 
-                howTo: [], 
-                isInternalSwitch: true, 
-                explanation: "<b>Work/Rest Intervals</b>. This format focuses on repeatability.", 
-                stimulus_expanded: "Targets <b>Peak Power Sustainability</b> and <b>V02 Max</b>. By allowing rest, you can push harder in the work windows than any other format.",
-                objective: "The objective of Intervals is <b>Work Sustainability</b>—the goal is to push your intensity ceiling during the work period and recover efficiently."
-            }
+            { id: "AMRAP", name: "AMRAP", style: "Aerobic Capacity & Pacing", howTo: ["Start your timer and complete all reps for movements A through E in sequence.", "Immediately return to A after finishing E, keeping transitions under 10 seconds.", "Maintain a 'talk-test' pace where you can speak but prefer not to, maximizing quality reps until time expires."], explanation: "<b>As Many Rounds As Possible</b>. This is an aerobic test. The goal is to find a consistent pace you can maintain for the entire duration without burning out early.", stimulus_expanded: "Targets <b>Cardiovascular Endurance</b> and <b>Metabolic Flexibility</b>. By working continuously, you force the body to optimize oxygen delivery and waste clearance at a steady state, building a robust aerobic engine.", objective: "The objective of an AMRAP is <b>Pacing Management</b>—the goal is to find the highest speed you can sustain for the full duration without requiring mid-set breaks." },
+            { id: "RFT", name: "ROUNDS FOR TIME", style: "Movement Density & Pace", howTo: ["Perform the prescribed movements A-E for the designated number of rounds as fast as technically possible.", "Stop your clock only when the final rep of the final round is complete.", "Maintain a high movement standard throughout; speed must never come at the expense of structural integrity or technique."], explanation: "<b>Rounds For Time</b>. This is a task-priority workout. The volume is fixed, and your goal is to finish the work as fast as possible.", stimulus_expanded: "Targets <b>Lactate Threshold</b> and <b>Mental Grit</b>. Forcing a fixed amount of work into a minimum time window drives your heart rate toward its ceiling, training the body to manage high-intensity fatigue while maintaining technical precision.", objective: "The objective of RFT is <b>Task Density</b>—the goal is to complete the fixed volume of work as quickly as possible while maintaining perfect technical standards." },
+            { id: "EMOM", name: "EMOM", style: "Skill & Power Output", howTo: ["Perform Movement A when the clock starts (0:00). Rest for the remaining time in that minute.", "At the 1:00 mark, perform Movement B. Repeat this pattern through the list.", "Focus on explosive execution during work and controlled nasal breathing during the rest windows."], explanation: "<b>Every Minute On the Minute</b>. This is a skill and density tool. By forcing a specific work-to-rest ratio, it allows for higher-quality reps with more power.", stimulus_expanded: "Targets <b>Mechanical Consistency</b> and <b>Aerobic Recovery</b>. Fixed rest intervals allow for higher power output per rep compared to continuous formats. It effectively trains 'repeatable power'—the ability to perform explosively even as the clock ticks down.", objective: "The objective of an EMOM is <b>Consistent Output</b>—the goal is to maintain the same level of power and precision in the first round as you did in the last." },
+            { id: "CHIPPER", name: "CHIPPER", style: "Mental Resilience", howTo: ["Complete all prescribed reps for Movement A before advancing to Movement B.", "Break large sets into manageable 'mini-sets' (e.g., 5 sets of 10) to keep moving without hitting muscular failure.", "The objective is a steady, relentless grind with minimal total downtime."], explanation: "<b>The Chipper</b>. A long, linear list of movements. This format tests mental endurance and strategic pacing.", stimulus_expanded: "Targets <b>Muscular Stamina</b> and <b>Cognitive Pacing</b>. By exhausting one movement pattern before moving to the next, you challenge localized muscular endurance.", objective: "The objective of a Chipper is <b>Linear Persistence</b>—the goal is to methodically 'chip' away at large volumes of work without allowing mental fatigue to slow your transition." },
+            { id: "TABATA", name: "TABATA", style: "Metabolic Threshold", howTo: ["Work with maximum intensity for 20 seconds, then rest completely for 10 seconds.", "Perform all 8 intervals of Movement A before moving to Movement B.", "Prioritize maximum quality output in every 20s window."], explanation: "<b>The Tabata Protocol</b>. 20 seconds of work followed by 10 seconds of rest. This is a high-intensity interval format.", stimulus_expanded: "Targets <b>Anaerobic Power</b> and improved recovery. Short, brutal bursts of effort create a massive metabolic disturbance.", objective: "The objective of Tabata is <b>Maximal Intensity</b>—the goal is to achieve the highest possible power output in every window." },
+            { id: "INTERVALS", name: "INTERVALS", style: "Mixed Power Output", howTo: [], isInternalSwitch: true, explanation: "<b>Work/Rest Intervals</b>. This format focuses on repeatability.", stimulus_expanded: "Targets <b>Peak Power Sustainability</b> and <b>V02 Max</b>. By allowing rest, you can push harder in the work windows than any other format.", objective: "The objective of Intervals is <b>Work Sustainability</b>—the goal is to push your intensity ceiling during the work period and recover efficiently." }
         ];
 
         const LOADING_PHRASES = ["Optimizing Session", "Analyzing Work Capacity", "Drafting Protocol", "Calculating Thresholds", "Building Endurance", "Calibrating Power", "Ready to Train?", "Focus. Execute.", "Structuring Growth", "Setting the Standard"];
 
+        // --- ELEMENTS ---
         const body = document.body;
         const themeToggle = document.getElementById('theme-toggle');
         const generateButton = document.getElementById('generate-button');
@@ -785,19 +820,159 @@
         const loadingText = document.getElementById('loading-text');
         const intensityIndicator = document.getElementById('intensity-indicator');
         const modalOverlay = document.getElementById('modal-overlay');
-        
         const typeModalOverlay = document.getElementById('type-modal-overlay');
         const typeModalTitle = document.getElementById('type-modal-title');
         const typeModalSubtitle = document.getElementById('type-modal-subtitle');
         const typeModalContent = document.getElementById('type-modal-content');
         const typeModalIcon = document.getElementById('type-modal-icon');
 
+        // --- TIMER ELEMENTS ---
+        const timerDisplay = document.getElementById('timer-display');
+        const timerStartBtn = document.getElementById('timer-start-btn');
+        const timerResetBtn = document.getElementById('timer-reset-btn');
+        const timerStatusText = document.getElementById('status-text');
+        const timerIntervalInfo = document.getElementById('timer-interval-info');
+        const statusDot = document.getElementById('status-dot');
+
         let currentWodFormat = null;
         let currentMovements = [];
         let currentIntensity = '';
         let currentIntensityColor = '';
         let phraseIndex = 0;
+        let currentWodCapSeconds = 0;
 
+        // --- TIMER LOGIC ---
+        let timerInterval = null;
+        let timerSeconds = 0;
+        let isTimerRunning = false;
+        let timerMode = 'UP'; // UP, DOWN, EMOM, TABATA, INTERVAL
+        let currentTabataRound = 0; // for 8 rounds per move
+        let currentTabataMovementIdx = 0;
+        let isIntervalRest = false;
+
+        function formatTime(totalSeconds) {
+            const mins = Math.floor(Math.abs(totalSeconds) / 60);
+            const secs = Math.abs(totalSeconds) % 60;
+            const sign = totalSeconds < 0 ? "-" : "";
+            return `${sign}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimerUI() {
+            if (timerMode === 'DOWN' || timerMode === 'AMRAP' || timerMode === 'BASELINE') {
+                timerDisplay.textContent = formatTime(currentWodCapSeconds - timerSeconds);
+            } else if (timerMode === 'EMOM') {
+                const elapsedInMinute = timerSeconds % 60;
+                timerDisplay.textContent = formatTime(60 - elapsedInMinute);
+                const currentMin = Math.floor(timerSeconds / 60) + 1;
+                const moveIdx = (currentMin - 1) % currentMovements.length;
+                const moveLetter = String.fromCharCode(65 + moveIdx);
+                timerIntervalInfo.textContent = `Round ${currentMin} | Movement ${moveLetter}`;
+            } else if (timerMode === 'TABATA') {
+                const totalMoveTime = 30; // 20 work + 10 rest
+                const moveTime = timerSeconds % totalMoveTime;
+                if (moveTime < 20) {
+                    timerDisplay.textContent = formatTime(20 - moveTime);
+                    timerIntervalInfo.textContent = `TABATA: WORK | ROUND ${Math.floor(timerSeconds/30) + 1}`;
+                    timerDisplay.style.color = '#ef4444';
+                } else {
+                    timerDisplay.textContent = formatTime(30 - moveTime);
+                    timerIntervalInfo.textContent = `TABATA: REST`;
+                    timerDisplay.style.color = 'var(--text-heading)';
+                }
+            } else if (timerMode === 'INTERVALS') {
+                const intervalDur = currentWodFormat.currentTitle.includes('30/30') ? 30 : 60;
+                const cycleTime = timerSeconds % (intervalDur * 2);
+                if (cycleTime < intervalDur) {
+                    timerDisplay.textContent = formatTime(intervalDur - cycleTime);
+                    timerIntervalInfo.textContent = `INTERVAL: WORK`;
+                    timerDisplay.style.color = '#ef4444';
+                } else {
+                    timerDisplay.textContent = formatTime((intervalDur * 2) - cycleTime);
+                    timerIntervalInfo.textContent = `INTERVAL: REST`;
+                    timerDisplay.style.color = 'var(--text-heading)';
+                }
+            } else {
+                timerDisplay.textContent = formatTime(timerSeconds);
+                timerIntervalInfo.textContent = "";
+            }
+        }
+
+        function toggleTimer() {
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                timerStartBtn.innerHTML = `<i data-lucide="play" class="w-3 h-3"></i> Resume`;
+                timerStatusText.textContent = "Paused";
+                statusDot.className = "w-1.5 h-1.5 rounded-full bg-yellow-500";
+                timerDisplay.classList.remove('pulse-timer');
+            } else {
+                if (timerSeconds === 0) {
+                    let countdown = 3;
+                    timerStartBtn.disabled = true;
+                    timerStatusText.textContent = "Get Ready";
+                    statusDot.className = "w-1.5 h-1.5 rounded-full bg-red-500";
+                    
+                    const countInterval = setInterval(() => {
+                        timerDisplay.textContent = countdown;
+                        countdown--;
+                        if (countdown < 0) {
+                            clearInterval(countInterval);
+                            startMainTimer();
+                        }
+                    }, 1000);
+                } else {
+                    startMainTimer();
+                }
+            }
+            lucide.createIcons();
+        }
+
+        function startMainTimer() {
+            isTimerRunning = true;
+            timerStartBtn.disabled = false;
+            timerStartBtn.innerHTML = `<i data-lucide="pause" class="w-3 h-3"></i> Pause`;
+            timerStatusText.textContent = "Active";
+            statusDot.className = "w-1.5 h-1.5 rounded-full bg-green-500";
+            timerDisplay.classList.add('pulse-timer');
+            
+            // Set Timer Mode based on WOD
+            if (currentWodFormat.id === 'AMRAP' || currentWodFormat.id === 'BASELINE') timerMode = 'DOWN';
+            else if (currentWodFormat.id === 'EMOM') timerMode = 'EMOM';
+            else if (currentWodFormat.id === 'TABATA') timerMode = 'TABATA';
+            else if (currentWodFormat.id === 'INTERVALS') timerMode = 'INTERVALS';
+            else timerMode = 'UP';
+
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                updateTimerUI();
+                
+                // End conditions
+                if (timerMode === 'DOWN' && timerSeconds >= currentWodCapSeconds) {
+                    resetTimer();
+                    timerStatusText.textContent = "Finished";
+                }
+            }, 1000);
+            lucide.createIcons();
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerSeconds = 0;
+            isTimerRunning = false;
+            timerDisplay.style.color = 'var(--text-heading)';
+            updateTimerUI();
+            timerStartBtn.disabled = false;
+            timerStartBtn.innerHTML = `<i data-lucide="play" class="w-3 h-3"></i> Start`;
+            timerStatusText.textContent = "Ready";
+            statusDot.className = "w-1.5 h-1.5 rounded-full bg-gray-400";
+            timerDisplay.classList.remove('pulse-timer');
+            lucide.createIcons();
+        }
+
+        timerStartBtn.addEventListener('click', toggleTimer);
+        timerResetBtn.addEventListener('click', resetTimer);
+
+        // --- CORE FUNCTIONS ---
         themeToggle.addEventListener('click', () => {
             const isDark = body.getAttribute('data-theme') === 'dark';
             body.setAttribute('data-theme', isDark ? 'light' : 'dark');
@@ -806,11 +981,9 @@
         function calculateReps(move, formatName, intensityLabel) {
             const { baseReps, type, unilateral, isTimeBased, isPaused } = move;
             const isRapidInterval = formatName.includes("TABATA") || formatName.includes("INTERVALS");
-            
             let tag = '';
             if (unilateral === 'alt') tag = ' (Alt)';
             else if (unilateral === 'switch') tag = isRapidInterval ? ' (Switch Sides Each Round)' : ' (Switch Half)';
-            
             if (type === "distance") {
                 if (isRapidInterval) return intensityLabel === 'High Intensity' ? "Best Effort" : "Moderate Pace";
                 if (formatName.includes("AMRAP")) return "200m Run";
@@ -819,17 +992,11 @@
                 if (formatName.includes("CHIPPER")) return "1km Run";
                 return "400m Run";
             }
-
             if (isRapidInterval) return intensityLabel === 'High Intensity' ? `Max Quality Reps${tag}` : `Moderate Pace${tag}`;
             if (isTimeBased) return `${baseReps} Seconds`;
-
             let finalReps = baseReps;
-            if (formatName.includes("CHIPPER")) {
-                finalReps = (move.intensity === "high" || isPaused) ? 30 : 50;
-            } else if (formatName.includes("EMOM")) {
-                finalReps = Math.ceil(baseReps * 0.85);
-            }
-            
+            if (formatName.includes("CHIPPER")) { finalReps = (move.intensity === "high" || isPaused) ? 30 : 50; } 
+            else if (formatName.includes("EMOM")) { finalReps = Math.ceil(baseReps * 0.85); }
             if ((unilateral === 'alt' || unilateral === 'switch') && finalReps % 2 !== 0) finalReps += 1;
             return `${finalReps}${tag}`;
         }
@@ -845,7 +1012,6 @@
         function openScalingModal(movementName) {
             const isBenchmark = currentWodFormat && currentWodFormat.id === "BASELINE";
             let move;
-            
             if (isBenchmark) {
                 if (movementName === "Push Ups") move = { name: "Push Ups", scaling: { easier: "Knee Push Ups", harder: "N/A" }, kit: "bodyweight" };
                 if (movementName === "Goblet Squat") move = { name: "Goblet Squat", scaling: { easier: "Air Squat", harder: "Increase Weight" }, kit: "kettlebell" };
@@ -853,37 +1019,13 @@
             } else {
                 move = Object.values(PILLARS).flat().find(m => m.name === movementName);
             }
-
             if (!move) return;
-
             typeModalTitle.textContent = "Scale Movement";
             typeModalSubtitle.textContent = movementName.toUpperCase();
             typeModalIcon.innerHTML = `<i data-lucide="trending-down" class="w-6 h-6"></i>`;
-            
-            let contentHTML = `
-                <div class="space-y-4">
-                    <div class="p-5 rounded-3xl space-y-3" style="background-color: var(--bg-toggle)">
-                        <p class="font-black uppercase tracking-widest text-[10px]" style="color: var(--text-heading)">Regression (Easier)</p>
-                        <p class="text-sm font-bold" style="color: var(--text-accent)">${move.scaling.easier}</p>
-                        <p class="text-[10px] opacity-60">Use this if technical form fails or the prescribed volume causes significant rest breaks.</p>
-                    </div>`;
-
-            if (!(isBenchmark && movementName === "Push Ups")) {
-                contentHTML += `
-                    <div class="p-5 border border-dashed rounded-3xl" style="border-color: var(--border-color)">
-                        <p class="font-black uppercase tracking-widest text-[10px] mb-2" style="color: var(--text-muted)">Progression (Harder)</p>
-                        <p class="text-sm font-bold" style="color: var(--text-accent)">${move.scaling.harder}</p>
-                        <p class="text-[10px] opacity-60">Advanced. Use this if you find the current stimulus doesn't challenge your technical threshold.</p>
-                    </div>`;
-            }
-
-            contentHTML += `
-                    <div class="text-[10px] italic opacity-60 leading-relaxed p-2">
-                        "Training is not about suffering; it's about finding the appropriate level of challenge to force adaptation without causing breakdown." - Coach Chris
-                    </div>
-                </div>
-            `;
-            
+            let contentHTML = `<div class="space-y-4"><div class="p-5 rounded-3xl space-y-3" style="background-color: var(--bg-toggle)"><p class="font-black uppercase tracking-widest text-[10px]" style="color: var(--text-heading)">Regression (Easier)</p><p class="text-sm font-bold" style="color: var(--text-accent)">${move.scaling.easier}</p><p class="text-[10px] opacity-60">Use this if technical form fails or the prescribed volume causes significant rest breaks.</p></div>`;
+            if (!(isBenchmark && movementName === "Push Ups")) { contentHTML += `<div class="p-5 border border-dashed rounded-3xl" style="border-color: var(--border-color)"><p class="font-black uppercase tracking-widest text-[10px] mb-2" style="color: var(--text-muted)">Progression (Harder)</p><p class="text-sm font-bold" style="color: var(--text-accent)">${move.scaling.harder}</p><p class="text-[10px] opacity-60">Advanced. Use this if you find the current stimulus doesn't challenge your technical threshold.</p></div>`; }
+            contentHTML += `<div class="text-[10px] italic opacity-60 leading-relaxed p-2">"Training is not about suffering; it's about finding the appropriate level of challenge to force adaptation without causing breakdown." - Coach Chris</div></div>`;
             typeModalContent.innerHTML = contentHTML;
             typeModalOverlay.classList.add('active');
             lucide.createIcons();
@@ -893,44 +1035,19 @@
             generateButton.disabled = true;
             loadingText.textContent = "Loading Benchmark";
             launchOverlay.classList.add('active');
-
             setTimeout(() => {
                 const baselineFormat = FORMATS.find(f => f.id === "AMRAP");
-                const moves = [
-                    { name: "Push Ups", displayReps: "10", kit: "bodyweight" },
-                    { name: "Goblet Squat", displayReps: "15", kit: "kettlebell" },
-                    { name: "KB Swing", displayReps: "25", kit: "kettlebell" }
-                ];
-
+                const moves = [ { name: "Push Ups", displayReps: "10", kit: "bodyweight" }, { name: "Goblet Squat", displayReps: "15", kit: "kettlebell" }, { name: "KB Swing", displayReps: "25", kit: "kettlebell" } ];
                 currentWodFormat = { ...baselineFormat, currentTitle: "BASELINE AMRAP 10", id: "BASELINE" };
-                currentIntensity = "Benchmark Effort";
-                currentIntensityColor = "#000000";
-                currentMovements = moves;
-
+                currentIntensity = "Benchmark Effort"; currentIntensityColor = "#000000"; currentMovements = moves;
+                currentWodCapSeconds = 600;
                 renderWOD("BASELINE AMRAP 10", "Benchmark Work Capacity", moves, "10:00 CAP", "Benchmark Effort", "#000000");
-                
-                instructionContent.innerHTML = `
-                    <div class="focus-pill">
-                        <i data-lucide="gauge" class="w-5 h-5 mt-0.5 shrink-0"></i>
-                        <div class="leading-relaxed">This <strong>Baseline Test</strong> is designed to measure your raw work capacity. Perform this every 4-6 weeks to track progress.</div>
-                    </div>
-                    <div class="space-y-2">
-                        <div class="strategy-step"><i data-lucide="arrow-right-circle" class="w-3 h-3 mt-0.5 opacity-40 shrink-0"></i><span>Goal: 10 Minutes - As many rounds as possible.</span></div>
-                        <div class="strategy-step"><i data-lucide="arrow-right-circle" class="w-3 h-3 mt-0.5 opacity-40 shrink-0"></i><span>Keep movement quality high even as fatigue sets in.</span></div>
-                        <div class="strategy-step"><i data-lucide="arrow-right-circle" class="w-3 h-3 mt-0.5 opacity-40 shrink-0"></i><span>Note your score: (Rounds + Reps + KB Weight) to monitor progress</span></div>
-                    </div>
-                `;
-
+                instructionContent.innerHTML = `<div class="focus-pill"><i data-lucide="gauge" class="w-5 h-5 mt-0.5 shrink-0"></i><div class="leading-relaxed">This <strong>Baseline Test</strong> is designed to measure your raw work capacity. Perform this every 4-6 weeks to track progress.</div></div><div class="space-y-2"><div class="strategy-step"><i data-lucide="arrow-right-circle" class="w-3 h-3 mt-0.5 opacity-40 shrink-0"></i><span>Goal: 10 Minutes - As many rounds as possible.</span></div><div class="strategy-step"><i data-lucide="arrow-right-circle" class="w-3 h-3 mt-0.5 opacity-40 shrink-0"></i><span>Keep movement quality high even as fatigue sets in.</span></div><div class="strategy-step"><i data-lucide="arrow-right-circle" class="w-3 h-3 mt-0.5 opacity-40 shrink-0"></i><span>Note your score: (Rounds + Reps + KB Weight) to monitor progress</span></div></div>`;
                 launchOverlay.classList.remove('active');
                 homeState.classList.add('hidden');
                 wodCard.classList.remove('hidden-initial');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                setTimeout(() => {
-                    wodCard.classList.remove('opacity-0');
-                    generateButton.textContent = "Rebuild Session";
-                    generateButton.disabled = false;
-                    lucide.createIcons();
-                }, 50);
+                setTimeout(() => { wodCard.classList.remove('opacity-0'); generateButton.textContent = "Rebuild Session"; generateButton.disabled = false; resetTimer(); lucide.createIcons(); }, 50);
             }, 600);
         }
 
@@ -942,23 +1059,12 @@
             intensityIndicator.textContent = intensity;
             intensityIndicator.style.backgroundColor = color;
             intensityIndicator.style.color = '#fff';
-
             moves.forEach((move, i) => {
                 const line = document.createElement('div');
                 line.className = 'movement-line';
-                line.innerHTML = `
-                    <div class="flex items-center gap-2">
-                        <span class="opacity-30 text-[10px] font-black">${String.fromCharCode(65 + i)}</span>
-                        <span class="font-bold text-[13px] uppercase tracking-tighter">${move.name}</span>
-                        <span class="opacity-50 text-[11px] font-medium tracking-wide">— ${move.displayReps}</span>
-                    </div>
-                    <button class="scaling-btn" onclick="window.openScaling('${move.name}')">
-                        <i data-lucide="chevrons-down" class="w-3 h-3"></i> Scale
-                    </button>
-                `;
+                line.innerHTML = `<div class="flex items-center gap-2"><span class="opacity-30 text-[10px] font-black">${String.fromCharCode(65 + i)}</span><span class="font-bold text-[13px] uppercase tracking-tighter">${move.name}</span><span class="opacity-50 text-[11px] font-medium tracking-wide">— ${move.displayReps}</span></div><button class="scaling-btn" onclick="window.openScaling('${move.name}')"><i data-lucide="chevrons-down" class="w-3 h-3"></i> Scale</button>`;
                 wodMovements.appendChild(line);
             });
-
             kitContainer.innerHTML = '';
             let kitUsed = new Set(moves.map(m => m.kit));
             kitUsed.forEach(k => {
@@ -973,36 +1079,26 @@
             const selectedKit = Array.from(document.querySelectorAll('input[name="kit-select"]:checked')).map(cb => cb.value);
             const supplementalActive = selectedKit.length > 0;
             const activeKits = ["bodyweight", ...selectedKit];
-            
             generateButton.disabled = true;
             loadingText.textContent = LOADING_PHRASES[phraseIndex];
             phraseIndex = (phraseIndex + 1) % LOADING_PHRASES.length;
             launchOverlay.classList.add('active');
-            
             setTimeout(() => {
                 let format = {...FORMATS[Math.floor(Math.random() * FORMATS.length)]};
                 let movementsSelected = [];
                 let intensityLabel = 'Moderate Effort';
                 let color = '#f59e0b';
-                
-                let hasSwingInSession = false;
-                let hasCleanInSession = false;
-                let hasLongCycleInSession = false;
-                let hasCleanAndPressInSession = false;
-
+                let hasSwingInSession = false; let hasCleanInSession = false; let hasLongCycleInSession = false; let hasCleanAndPressInSession = false;
                 const categoryKeys = Object.keys(PILLARS);
                 let bwCountTarget = supplementalActive ? Math.floor(Math.random() * 3) + 1 : 5;
-
                 let indices = [0, 1, 2, 3, 4].sort(() => Math.random() - 0.5);
                 let bwIndices = indices.slice(0, bwCountTarget);
-
                 categoryKeys.forEach((cat, i) => {
                     let pool = PILLARS[cat].filter(m => activeKits.includes(m.kit));
                     if (hasSwingInSession) pool = pool.filter(m => !m.isSwingVariation);
                     if (hasCleanInSession) pool = pool.filter(m => !m.isCleanVariation);
                     if (hasLongCycleInSession) pool = pool.filter(m => !m.isCleanAndPress);
                     if (hasCleanAndPressInSession) pool = pool.filter(m => !m.isLongCycle);
-
                     let finalPick;
                     if (bwIndices.includes(i)) {
                         let bwPool = pool.filter(m => m.kit === "bodyweight");
@@ -1011,7 +1107,6 @@
                         let kitPool = pool.filter(m => m.kit !== "bodyweight");
                         finalPick = (kitPool.length > 0) ? kitPool[Math.floor(Math.random() * kitPool.length)] : pool[Math.floor(Math.random() * pool.length)];
                     }
-                    
                     if (finalPick) {
                         movementsSelected.push(finalPick);
                         if (finalPick.isSwingVariation) hasSwingInSession = true;
@@ -1020,75 +1115,49 @@
                         if (finalPick.isCleanAndPress) hasCleanAndPressInSession = true;
                     }
                 });
-
-                let displayTitle = format.name;
-                let capStr = "20:00";
-
+                let displayTitle = format.name; let capStr = "20:00";
                 if (format.id === "AMRAP") {
                     const d = [15, 18, 20, 25, 30][Math.floor(Math.random() * 5)];
-                    displayTitle = `AMRAP ${d}`; capStr = `${d}:00`;
-                    intensityLabel = 'Low Intensity'; color = '#10b981';
+                    displayTitle = `AMRAP ${d}`; capStr = `${d}:00`; intensityLabel = 'Low Intensity'; color = '#10b981';
+                    currentWodCapSeconds = d * 60;
                 } else if (format.id === "CHIPPER") {
-                    displayTitle = "CHIPPER"; capStr = "30:00";
-                    intensityLabel = 'Low Intensity'; color = '#10b981';
+                    displayTitle = "CHIPPER"; capStr = "30:00"; intensityLabel = 'Low Intensity'; color = '#10b981';
+                    currentWodCapSeconds = 1800;
                 } else if (format.id === "EMOM") {
                     const rounds = Math.max(3, Math.min(6, Math.floor(22 / movementsSelected.length)));
                     const totalMins = movementsSelected.length * rounds;
-                    displayTitle = `EMOM ${totalMins}`; capStr = `${totalMins}:00`;
-                    intensityLabel = 'Moderate Effort'; color = '#f59e0b';
+                    displayTitle = `EMOM ${totalMins}`; capStr = `${totalMins}:00`; intensityLabel = 'Moderate Effort'; color = '#f59e0b';
+                    currentWodCapSeconds = totalMins * 60;
                 } else if (format.id === "RFT") {
                     const r = Math.floor(Math.random() * 3) + 3;
-                    displayTitle = `${r} ROUNDS FOR TIME`; capStr = "25:00";
-                    intensityLabel = 'High Intensity'; color = '#ef4444';
+                    displayTitle = `${r} ROUNDS FOR TIME`; capStr = "25:00"; intensityLabel = 'High Intensity'; color = '#ef4444';
+                    currentWodCapSeconds = 1500;
                 } else if (format.id === "TABATA") {
                     intensityLabel = 'High Intensity'; color = '#ef4444';
+                    displayTitle = "TABATA";
+                    currentWodCapSeconds = movementsSelected.length * 240; // 4 mins per move
+                    capStr = "VARIES";
                 } else if (format.isInternalSwitch) {
                     const wt = Math.random() > 0.5 ? 30 : 60;
-                    displayTitle = `${wt}/${wt} INTERVALS`; capStr = "20:00";
-                    intensityLabel = 'High Intensity'; color = '#ef4444';
+                    displayTitle = `${wt}/${wt} INTERVALS`; capStr = "20:00"; intensityLabel = 'High Intensity'; color = '#ef4444';
                     format.howTo = [`Work ${wt}s / Rest ${wt}s.`, "Switch movements every work window.", "Focus on repeatable intensity."];
+                    currentWodCapSeconds = 1200;
                 }
-
                 currentWodFormat = {...format, currentTitle: displayTitle};
-                currentIntensity = intensityLabel;
-                currentIntensityColor = color;
-                currentMovements = movementsSelected.map(m => ({
-                    ...m,
-                    displayReps: calculateReps(m, displayTitle, intensityLabel)
-                }));
-
+                currentIntensity = intensityLabel; currentIntensityColor = color;
+                currentMovements = movementsSelected.map(m => ({ ...m, displayReps: calculateReps(m, displayTitle, intensityLabel) }));
                 renderWOD(displayTitle, format.style, currentMovements, `${capStr} CAP`, intensityLabel, color);
-
                 const zoneData = getTrainingZoneInfo(intensityLabel, displayTitle);
-                let instructionsHTML = `
-                    <div class="focus-pill">
-                        <i data-lucide="zap" class="w-5 h-5 mt-0.5 shrink-0"></i>
-                        <div class="leading-relaxed">This <strong>${format.style}</strong> session targets the <strong>${zoneData.zone}</strong> and is ${zoneData.benefit}</div>
-                    </div>
-                    <div class="space-y-2">
-                `;
-                format.howTo.forEach(text => {
-                    instructionsHTML += `<div class="strategy-step"><i data-lucide="arrow-right-circle" class="w-3 h-3 mt-0.5 opacity-40 shrink-0"></i><span>${text}</span></div>`;
-                });
-                instructionsHTML += `</div>`;
-                instructionContent.innerHTML = instructionsHTML;
-
-                homeState.classList.add('hidden');
-                wodCard.classList.remove('hidden-initial');
-                launchOverlay.classList.remove('active');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                setTimeout(() => {
-                    wodCard.classList.remove('opacity-0');
-                    generateButton.textContent = "Rebuild Session";
-                    generateButton.disabled = false;
-                    lucide.createIcons();
-                }, 50);
+                let instructionsHTML = `<div class="focus-pill"><i data-lucide="zap" class="w-5 h-5 mt-0.5 shrink-0"></i><div class="leading-relaxed">This <strong>${format.style}</strong> session targets the <strong>${zoneData.zone}</strong> and is ${zoneData.benefit}</div></div><div class="space-y-2">`;
+                format.howTo.forEach(text => { instructionsHTML += `<div class="strategy-step"><i data-lucide="arrow-right-circle" class="w-3 h-3 mt-0.5 opacity-40 shrink-0"></i><span>${text}</span></div>`; });
+                instructionsHTML += `</div>`; instructionContent.innerHTML = instructionsHTML;
+                homeState.classList.add('hidden'); wodCard.classList.remove('hidden-initial'); launchOverlay.classList.remove('active'); window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => { wodCard.classList.remove('opacity-0'); generateButton.textContent = "Rebuild Session"; generateButton.disabled = false; resetTimer(); lucide.createIcons(); }, 50);
             }, 800);
         }
 
         window.openScaling = openScalingModal;
 
-        // --- GRAPHIC ENGINE ---
         function generateShareableGraphic() {
             if (!currentWodFormat) return;
             const canvas = document.getElementById('render-canvas');
@@ -1115,15 +1184,13 @@
         baselineButton.addEventListener('click', generateBaselineWOD);
         resetButton.addEventListener('click', () => {
             wodCard.classList.add('opacity-0');
-            setTimeout(() => { wodCard.classList.add('hidden-initial'); homeState.classList.remove('hidden'); generateButton.textContent = "Build My Session"; }, 300);
+            setTimeout(() => { wodCard.classList.add('hidden-initial'); homeState.classList.remove('hidden'); generateButton.textContent = "Build My Session"; resetTimer(); }, 300);
         });
-        
         copyButton.addEventListener('click', () => {
             const text = `WOD: ${wodFormatName.textContent}\n${currentMovements.map(m => `- ${m.name}: ${m.displayReps}`).join('\n')}\n\nCOACH CHRIS`;
             const el = document.createElement('textarea'); el.value = text; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
             copyButton.textContent = 'Copied!'; setTimeout(() => copyButton.textContent = 'Copy', 1500);
         });
-
         downloadGraphicButton.addEventListener('click', () => {
             downloadGraphicButton.textContent = 'Generating...';
             setTimeout(() => { generateShareableGraphic(); downloadGraphicButton.textContent = 'Graphic'; }, 100);
@@ -1134,17 +1201,8 @@
             typeModalTitle.textContent = currentWodFormat.id + " Protocol";
             typeModalSubtitle.textContent = "Methodology breakdown";
             typeModalIcon.innerHTML = `<i data-lucide="info" class="w-6 h-6"></i>`;
-            typeModalContent.innerHTML = `
-                <div class="space-y-4">
-                    <p class="text-sm font-medium" style="color: var(--text-heading)">${currentWodFormat.explanation || "Benchmark testing for capacity."}</p>
-                    <div class="p-5 rounded-3xl space-y-3" style="background-color: var(--bg-toggle)">
-                        <p class="text-[11px] leading-relaxed font-semibold italic opacity-80">${currentWodFormat.style || 'Progress Tracking'}</p>
-                        <p class="text-[11px] leading-relaxed">${currentWodFormat.stimulus_expanded || 'Benchmark tests are essential for objective progress tracking.'}</p>
-                    </div>
-                </div>
-            `;
-            typeModalOverlay.classList.add('active');
-            lucide.createIcons();
+            typeModalContent.innerHTML = `<div class="space-y-4"><p class="text-sm font-medium" style="color: var(--text-heading)">${currentWodFormat.explanation || "Benchmark testing for capacity."}</p><div class="p-5 rounded-3xl space-y-3" style="background-color: var(--bg-toggle)"><p class="text-[11px] leading-relaxed font-semibold italic opacity-80">${currentWodFormat.style || 'Progress Tracking'}</p><p class="text-[11px] leading-relaxed">${currentWodFormat.stimulus_expanded || 'Benchmark tests are essential for objective progress tracking.'}</p></div></div>`;
+            typeModalOverlay.classList.add('active'); lucide.createIcons();
         });
 
         const closeTypeModal = () => typeModalOverlay.classList.remove('active');
