@@ -425,7 +425,7 @@
                                 <tr><td>Pull Ups</td><td>Scap Pulls or Ring Rows</td></tr>
                                 <tr><td>KB Squats</td><td>Air Squat / Box Squat</td></tr>
                                 <tr><td>Lunges</td><td>Assisted Lunges (Hold Wall)</td></tr>
-                                <tr><td>KB Swings</td><td>Wall Hinges / Glute Bridges</td></tr>
+                                <tr><td>KB Swings</td><td>Wall Hinges / Glute Bridges / Deadlifts</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -586,6 +586,17 @@
                 <h3 class="text-xs font-black uppercase tracking-widest" style="color: var(--text-muted)">Execution Strategy</h3>
                 <div id="instruction-content" class="space-y-2"></div>
             </div>
+
+            <!-- COACHING CTA BUTTON -->
+            <div class="pt-6 mt-4 border-t border-dashed" style="border-color: var(--border-color)">
+                <a href="https://coachchriscrc.carrd.co/#services" 
+                   target="_blank"
+                   class="flex items-center justify-center gap-3 p-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-95" 
+                   style="background-color: var(--bg-btn-primary); color: var(--btn-text-primary)">
+                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                    <span class="text-[11px] font-brand font-bold uppercase tracking-widest">READY FOR MORE? SEE COACHING OPTIONS</span>
+                </a>
+            </div>
         </div>
 
         <button id="generate-button" class="btn-generate w-full py-5 font-brand font-bold text-xl uppercase tracking-widest rounded-3xl shadow-lg">
@@ -629,12 +640,12 @@
 
         const PILLARS = {
             full_body: [
-                { name: "SA KB Long Cycle", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "high", isLongCycle: true, scaling: { easier: "SA KB Clean & Press", harder: "Heavier KB or Faster Tempo" } },
-                { name: "SA KB Thrusters", type: "power", unilateral: "switch", baseReps: 10, kit: "kettlebell", intensity: "high", scaling: { easier: "KB Goblet Squat", harder: "Double KB Thrusters" } },
-                { name: "SA KB Cluster", type: "power", unilateral: "switch", baseReps: 6, kit: "kettlebell", intensity: "high", scaling: { easier: "KB Clean", harder: "Heavier Load" } },
+                { name: "SA KB Long Cycle", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "high", isLongCycle: true, scaling: { easier: "SA KB Clean + Push Press", harder: "Faster Tempo / More Explosive" } },
+                { name: "SA KB Thrusters", type: "power", unilateral: "switch", baseReps: 10, kit: "kettlebell", intensity: "high", scaling: { easier: "KB Goblet Squat", harder: "Increase Intensity / Pace" } },
+                { name: "SA KB Cluster", type: "power", unilateral: "switch", baseReps: 6, kit: "kettlebell", intensity: "high", scaling: { easier: "KB Clean", harder: "Heavier Single KB" } },
                 { name: "Burpees", type: "cardio", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "moderate", scaling: { easier: "Sprawls / Box Burpees", harder: "Burpee Over Kettlebell" } },
                 { name: "SA KB Clean & Press", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate", isCleanAndPress: true, scaling: { easier: "Push Press only", harder: "Strict Press (Strength)" } },
-                { name: "KB Goblet Thrusters", type: "power", unilateral: null, baseReps: 12, kit: "kettlebell", intensity: "high", scaling: { easier: "Goblet Squat", harder: "Heavier KB" } },
+                { name: "KB Goblet Thrusters", type: "power", unilateral: null, baseReps: 12, kit: "kettlebell", intensity: "high", scaling: { easier: "Goblet Squat", harder: "Heavier Single KB" } },
                 { name: "SA KB Cleans", type: "power", unilateral: "switch", baseReps: 10, kit: "kettlebell", intensity: "moderate", isCleanVariation: true, scaling: { easier: "Deadlifts", harder: "Dead Clean (from floor)" } },
                 { name: "Half Kneeling Cleans", type: "power", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate", isCleanVariation: true, scaling: { easier: "Standing Cleans", harder: "Bottoms Up Clean" } },
                 { name: "Sprawls", type: "cardio", unilateral: null, baseReps: 15, kit: "bodyweight", intensity: "moderate", scaling: { easier: "Step-back Sprawls", harder: "Burpees" } }
@@ -644,18 +655,18 @@
                 { name: "SA KB Push Press", type: "power", unilateral: "switch", baseReps: 10, kit: "kettlebell", intensity: "high", scaling: { easier: "Strict Press (lighter)", harder: "SA KB Thruster" } },
                 { name: "Push-ups", type: "strength", unilateral: null, baseReps: 15, kit: "bodyweight", intensity: "moderate", scaling: { easier: "Box or Knee Push-ups", harder: "Diamond or Pike Push-ups" } },
                 { name: "SA KB Row", type: "strength", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "low", scaling: { easier: "Banded Row", harder: "Pause at Chest" } },
-                { name: "Pull Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup", intensity: "high", scaling: { easier: "Ring Rows / Scap Pulls", harder: "Chest-to-Bar / Weighted" } },
+                { name: "Pull Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup", intensity: "high", scaling: { easier: "Ring Rows / Scap Pulls", harder: "Chest-to-Bar / L-Sit Pull Up" } },
                 { name: "Chin Ups", type: "strength", unilateral: null, baseReps: 8, kit: "pullup", intensity: "high", scaling: { easier: "Negative Chin Ups", harder: "L-Sit Chin Ups" } },
                 { name: "Paused Pull Ups", type: "strength", unilateral: null, baseReps: 6, kit: "pullup", intensity: "high", isPaused: true, scaling: { easier: "Regular Pull Ups", harder: "3-sec Pause" } },
                 { name: "Paused Chin Ups", type: "strength", unilateral: null, baseReps: 6, kit: "pullup", intensity: "high", isPaused: true, scaling: { easier: "Regular Chin Ups", harder: "3-sec Pause" } },
-                { name: "KB Half Kneeling Press", type: "strength", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate", scaling: { easier: "Standing Press", harder: "Double KB (if available)" } },
+                { name: "KB Half Kneeling Press", type: "strength", unilateral: "switch", baseReps: 8, kit: "kettlebell", intensity: "moderate", scaling: { easier: "Standing Press", harder: "Bottoms-up Press" } },
                 { name: "Half Kneeling Clean & Press", type: "power", unilateral: "switch", baseReps: 6, kit: "kettlebell", intensity: "high", isCleanAndPress: true, scaling: { easier: "Standing C&P", harder: "Strict Press from floor" } },
                 { name: "Pike Push-ups", type: "strength", unilateral: null, baseReps: 10, kit: "bodyweight", intensity: "high", scaling: { easier: "High Plank Hold", harder: "Feet Elevated Pike" } },
                 { name: "Diamond Push-ups", type: "strength", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "moderate", scaling: { easier: "Regular Push-ups", harder: "Decline Diamond" } }
             ],
             lower: [
                 { name: "KB Goblet Squats", type: "strength", unilateral: null, baseReps: 15, kit: "kettlebell", intensity: "moderate", scaling: { easier: "Air Squats", harder: "Pause Squats" } },
-                { name: "2H KB Swings", type: "power", unilateral: null, baseReps: 20, kit: "kettlebell", intensity: "moderate", isSwingVariation: true, scaling: { easier: "Wall Hinges", harder: "SA KB Swings" } },
+                { name: "2H KB Swings", type: "power", unilateral: null, baseReps: 20, kit: "kettlebell", intensity: "moderate", isSwingVariation: true, scaling: { easier: "Wall Hinges / Deadlifts", harder: "SA KB Swings" } },
                 { name: "SA KB Swings", type: "power", unilateral: "switch", baseReps: 16, kit: "kettlebell", intensity: "high", isSwingVariation: true, scaling: { easier: "2H Swings", harder: "Hand-to-Hand Swings" } },
                 { name: "KB Goblet Lunges", type: "strength", unilateral: "alt", baseReps: 16, kit: "kettlebell", intensity: "moderate", scaling: { easier: "Bodyweight Lunges", harder: "KB Overhead Lunge" } },
                 { name: "KB Goblet Reverse Lunges", type: "strength", unilateral: "alt", baseReps: 16, kit: "kettlebell", intensity: "moderate", scaling: { easier: "BW Reverse Lunges", harder: "Deficit Rev Lunge" } },
@@ -670,13 +681,13 @@
                 { name: "Single Leg Glute Bridge", type: "strength", unilateral: "switch", baseReps: 12, kit: "bodyweight", intensity: "moderate", scaling: { easier: "Both legs down", harder: "Paused at top" } }
             ],
             core: [
-                { name: "SA KB Plank Drags", type: "stability", unilateral: "alt", baseReps: 12, kit: "kettlebell", intensity: "low", scaling: { easier: "Plank Shoulder Taps", harder: "Heavier KB" } },
+                { name: "SA KB Plank Drags", type: "stability", unilateral: "alt", baseReps: 12, kit: "kettlebell", intensity: "low", scaling: { easier: "Plank Shoulder Taps", harder: "Slow/Controlled Focus" } },
                 { name: "Hanging Leg Raises", type: "stability", unilateral: null, baseReps: 12, kit: "pullup", intensity: "moderate", scaling: { easier: "Knee Raises", harder: "Toes to Bar" } },
                 { name: "Push Up Shoulder Taps", type: "stability", unilateral: "alt", baseReps: 24, kit: "bodyweight", intensity: "moderate", scaling: { easier: "Knee Plank Taps", harder: "Slow/Paused" } },
                 { name: "Plank Shoulder Taps", type: "stability", unilateral: "alt", baseReps: 30, kit: "bodyweight", intensity: "low", scaling: { easier: "Knee Plank", harder: "Feet Elevated" } },
                 { name: "Quadruped Shoulder Taps", type: "stability", unilateral: "alt", baseReps: 20, kit: "bodyweight", intensity: "moderate", scaling: { easier: "Static Bird Dog", harder: "Slow Tempo" } },
                 { name: "Hollow Body Holds", type: "stability", unilateral: null, baseReps: 30, kit: "bodyweight", isTimeBased: true, intensity: "moderate", scaling: { easier: "Dead Bugs", harder: "Rocks" } },
-                { name: "KB Russian Twists", type: "stability", unilateral: "alt", baseReps: 24, kit: "kettlebell", intensity: "moderate", scaling: { easier: "Feet on Floor", harder: "Feet Elevated" } },
+                { name: "KB Russian Twists", type: "stability", unilateral: "alt", baseReps: 24, kit: "kettlebell", intensity: "moderate", scaling: { easier: "Feet on Floor", harder: "Heavier Single KB" } },
                 { name: "Dead Bugs", type: "stability", unilateral: "alt", baseReps: 20, kit: "bodyweight", intensity: "low", scaling: { easier: "Arms only", harder: "KB Loaded" } },
                 { name: "Plank Hold", type: "stability", unilateral: null, baseReps: 45, kit: "bodyweight", isTimeBased: true, intensity: "moderate", scaling: { easier: "Knee Plank", harder: "Plank with Reach" } },
                 { name: "Hi Plank Hold", type: "stability", unilateral: null, baseReps: 45, kit: "bodyweight", isTimeBased: true, intensity: "low", scaling: { easier: "Knee Plank", harder: "Shoulder Taps" } },
@@ -684,13 +695,13 @@
             ],
             conditioning: [
                 { name: "Run", type: "distance", unilateral: null, baseReps: 1, kit: "run", intensity: "moderate", scaling: { easier: "Fast Walk", harder: "Incline Sprints" } },
-                { name: "SA KB Snatches", type: "power", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "high", scaling: { easier: "High Pulls", harder: "Double KB" } },
+                { name: "SA KB Snatches", type: "power", unilateral: "switch", baseReps: 12, kit: "kettlebell", intensity: "high", scaling: { easier: "High Pulls", harder: "Increase Explosiveness" } },
                 { name: "SA KB Cleans", type: "power", unilateral: "switch", baseReps: 16, kit: "kettlebell", intensity: "high", isCleanVariation: true, scaling: { easier: "Swings", harder: "Dead Cleans" } },
                 { name: "Mountain Climbers", type: "cardio", unilateral: "alt", baseReps: 40, kit: "bodyweight", intensity: "moderate", scaling: { easier: "Hands on Box", harder: "Paused at Knee" } },
-                { name: "Jump Squats", type: "power", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "high", scaling: { easier: "Fast Air Squats", harder: "KB Jump Squats" } },
-                { name: "Jump Lunges", type: "power", unilateral: "alt", baseReps: 16, kit: "bodyweight", intensity: "high", scaling: { easier: "Reverse Lunges", harder: "Weighted Jumps" } },
+                { name: "Jump Squats", type: "power", unilateral: null, baseReps: 12, kit: "bodyweight", intensity: "high", scaling: { easier: "Fast Air Squats", harder: "Weighted with KB" } },
+                { name: "Jump Lunges", type: "power", unilateral: "alt", baseReps: 16, kit: "bodyweight", intensity: "high", scaling: { easier: "Reverse Lunges", harder: "Explosive Air Time" } },
                 { name: "KB Hand to Hand Swings", type: "power", unilateral: "alt", baseReps: 20, kit: "kettlebell", intensity: "high", isSwingVariation: true, scaling: { easier: "2H Swings", harder: "Release Swings" } },
-                { name: "2H KB Swings", type: "power", unilateral: null, baseReps: 24, kit: "kettlebell", intensity: "high", isSwingVariation: true, scaling: { easier: "Glute Bridges", harder: "Eye Level Swings" } },
+                { name: "2H KB Swings", type: "power", unilateral: null, baseReps: 24, kit: "kettlebell", intensity: "high", isSwingVariation: true, scaling: { easier: "Glute Bridges / Deadlifts", harder: "Eye Level Swings" } },
                 { name: "Broad Jumps", type: "power", unilateral: null, baseReps: 8, kit: "bodyweight", intensity: "high", scaling: { easier: "Step-ups", harder: "Max Distance" } }
             ]
         };
@@ -832,30 +843,48 @@
         }
 
         function openScalingModal(movementName) {
-            const move = Object.values(PILLARS).flat().find(m => m.name === movementName);
+            const isBenchmark = currentWodFormat && currentWodFormat.id === "BASELINE";
+            let move;
+            
+            if (isBenchmark) {
+                if (movementName === "Push Ups") move = { name: "Push Ups", scaling: { easier: "Knee Push Ups", harder: "N/A" }, kit: "bodyweight" };
+                if (movementName === "Goblet Squat") move = { name: "Goblet Squat", scaling: { easier: "Air Squat", harder: "Increase Weight" }, kit: "kettlebell" };
+                if (movementName === "KB Swing") move = { name: "KB Swing", scaling: { easier: "Kettlebell Deadlift", harder: "Increase Weight" }, kit: "kettlebell" };
+            } else {
+                move = Object.values(PILLARS).flat().find(m => m.name === movementName);
+            }
+
             if (!move) return;
 
             typeModalTitle.textContent = "Scale Movement";
             typeModalSubtitle.textContent = movementName.toUpperCase();
             typeModalIcon.innerHTML = `<i data-lucide="trending-down" class="w-6 h-6"></i>`;
             
-            typeModalContent.innerHTML = `
+            let contentHTML = `
                 <div class="space-y-4">
                     <div class="p-5 rounded-3xl space-y-3" style="background-color: var(--bg-toggle)">
                         <p class="font-black uppercase tracking-widest text-[10px]" style="color: var(--text-heading)">Regression (Easier)</p>
                         <p class="text-sm font-bold" style="color: var(--text-accent)">${move.scaling.easier}</p>
-                        <p class="text-[10px] opacity-60">Use this if technical form fails or the prescribed reps cause you to stop moving for more than 5 seconds.</p>
-                    </div>
+                        <p class="text-[10px] opacity-60">Use this if technical form fails or the prescribed volume causes significant rest breaks.</p>
+                    </div>`;
+
+            if (!(isBenchmark && movementName === "Push Ups")) {
+                contentHTML += `
                     <div class="p-5 border border-dashed rounded-3xl" style="border-color: var(--border-color)">
                         <p class="font-black uppercase tracking-widest text-[10px] mb-2" style="color: var(--text-muted)">Progression (Harder)</p>
                         <p class="text-sm font-bold" style="color: var(--text-accent)">${move.scaling.harder}</p>
                         <p class="text-[10px] opacity-60">Advanced. Use this if you find the current stimulus doesn't challenge your technical threshold.</p>
-                    </div>
+                    </div>`;
+            }
+
+            contentHTML += `
                     <div class="text-[10px] italic opacity-60 leading-relaxed p-2">
                         "Training is not about suffering; it's about finding the appropriate level of challenge to force adaptation without causing breakdown." - Coach Chris
                     </div>
                 </div>
             `;
+            
+            typeModalContent.innerHTML = contentHTML;
             typeModalOverlay.classList.add('active');
             lucide.createIcons();
         }
@@ -868,9 +897,9 @@
             setTimeout(() => {
                 const baselineFormat = FORMATS.find(f => f.id === "AMRAP");
                 const moves = [
-                    { name: "Push Ups", displayReps: "10", kit: "bodyweight", scaling: { easier: "Knee Push Ups", harder: "Diamond Push Ups" } },
-                    { name: "Goblet Squat", displayReps: "15", kit: "kettlebell", scaling: { easier: "Air Squat", harder: "Pause Squat" } },
-                    { name: "KB Swing", displayReps: "25", kit: "kettlebell", scaling: { easier: "Wall Hinge", harder: "Heavier KB" } }
+                    { name: "Push Ups", displayReps: "10", kit: "bodyweight" },
+                    { name: "Goblet Squat", displayReps: "15", kit: "kettlebell" },
+                    { name: "KB Swing", displayReps: "25", kit: "kettlebell" }
                 ];
 
                 currentWodFormat = { ...baselineFormat, currentTitle: "BASELINE AMRAP 10", id: "BASELINE" };
@@ -895,6 +924,7 @@
                 launchOverlay.classList.remove('active');
                 homeState.classList.add('hidden');
                 wodCard.classList.remove('hidden-initial');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 setTimeout(() => {
                     wodCard.classList.remove('opacity-0');
                     generateButton.textContent = "Rebuild Session";
